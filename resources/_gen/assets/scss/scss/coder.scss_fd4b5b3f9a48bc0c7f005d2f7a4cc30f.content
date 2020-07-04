@@ -20,7 +20,7 @@ body {
       line-height: 1.6em; } }
 a {
   font-weight: 300;
-  color: #1565c0;
+  color: #e3ba02;
   text-decoration: none; }
   a:focus, a:hover {
     text-decoration: underline; }
@@ -259,7 +259,7 @@ img.emoji {
       font-family: Lato, Helvetica, sans-serif;
       font-weight: 700; }
       .list ul li .title:hover, .list ul li .title:focus {
-        color: #1565c0; }
+        color: #e3ba02; }
 
 .centered {
   display: flex;
@@ -291,7 +291,7 @@ img.emoji {
           margin-right: 1.0rem;
           font-size: 1.6rem; }
           .centered .about ul li a:hover, .centered .about ul li a:focus {
-            color: #1565c0; }
+            color: #e3ba02; }
           @media only screen and (max-width: 768px) {
             .centered .about ul li a {
               font-size: 1.4rem; } }
@@ -324,7 +324,7 @@ img.emoji {
     line-height: 6.0rem;
     color: #212121; }
   .navigation a:hover, .navigation a:focus {
-    color: #1565c0; }
+    color: #e3ba02; }
   .navigation .navigation-title {
     letter-spacing: 0.1rem;
     text-transform: uppercase; }
@@ -387,7 +387,7 @@ img.emoji {
         color: #212121;
         cursor: pointer; }
         .navigation .menu-button:hover, .navigation .menu-button:focus {
-          color: #1565c0; } }
+          color: #e3ba02; } }
 .pagination {
   margin-top: 6.0rem;
   text-align: center;
@@ -413,6 +413,6 @@ img.emoji {
   line-height: 2.0rem;
   margin-bottom: 1.0rem; }
   .footer a {
-    color: #1565c0; }
+    color: #e3ba02; }
 
 /*# sourceMappingURL=coder.css.map */

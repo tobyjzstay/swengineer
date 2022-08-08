@@ -1,1 +1,10 @@
-[]
+[
+    {
+        "domain": "app.swengineer.dev",
+        "path": "swengineer-app-client/build"
+    },
+    {
+        "domain": "*",
+        "path": "swengineer-app-client/build"
+    }
+]

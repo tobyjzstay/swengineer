@@ -10,15 +10,11 @@ const path = require("path");
 
 const app = express();
 
-app.get("/", function (req, res) {
-    res.send("Hello, World!").status(200);
-});
-
 // virtual hosts
-var virtualHosts = JSON.parse(fs.readFileSync("vhosts.json", "utf8"));
+const virtualHosts = JSON.parse(fs.readFileSync("vhosts.json", "utf8"));
 
 virtualHosts.forEach(function (virtualHost) {
-    var virtualHostApp = express();
+    const virtualHostApp = express();
     virtualHostApp.use(express.static(path.join(__dirname, virtualHost.path)));
     app.use(vhost(virtualHost.domain, virtualHostApp));
 });

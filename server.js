@@ -1,16 +1,15 @@
-/**
- * @author Toby Stayner <toby@swengineer.dev>
- */
-
 const fs = require("fs");
 const http = require("http");
 const express = require("express");
 const vhost = require("vhost");
 const path = require("path");
-const api = require("./swengineer-app-server");
+const serveIndex = require("serve-index");
+const api = require("./server/index");
 
 const app = express();
 api.server(app); // api server
+
+app.use("/public", express.static("public"), serveIndex("public", { icons: true, view: "details", hidden: true }));
 
 // virtual hosts
 const virtualHosts = JSON.parse(fs.readFileSync("vhosts.json", "utf8"));

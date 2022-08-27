@@ -1,10 +1,14 @@
 [
     {
         "domain": "app.swengineer.dev",
-        "path": "swengineer-app-client/build"
+        "path": "client/build"
     },
     {
         "domain": "*",
-        "path": "swengineer-app-client/build"
+        "path": "client/build"
+    },
+    {
+        "domain": "127.0.0.1",
+        "path": "client/build"
     }
 ]

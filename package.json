@@ -1,24 +1,28 @@
 {
-  "name": "swengineer-app",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/tobyjzstay/swengineer-app.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/tobyjzstay/swengineer-app/issues"
-  },
-  "homepage": "https://github.com/tobyjzstay/swengineer-app#readme",
-  "dependencies": {
-    "express": "^4.18.1",
-    "http": "^0.0.1-security",
-    "vhost": "^3.0.2"
-  }
+    "name": "swengineer-app",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "start": "nodemon server.js -L",
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/tobyjzstay/swengineer-app.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/tobyjzstay/swengineer-app/issues"
+    },
+    "homepage": "https://github.com/tobyjzstay/swengineer-app#readme",
+    "dependencies": {
+        "express": "^4.18.1",
+        "http": "^0.0.1-security",
+        "vhost": "^3.0.2"
+    },
+    "devDependencies": {
+        "nodemon": "^2.0.19"
+    }
 }

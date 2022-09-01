@@ -1,8 +1,13 @@
 const http = require("http");
 const express = require("express");
+const api = require("./index");
+require("dotenv").config();
 
 const app = express();
-require("./index").server(app);
+app.use(express.json());
+app.use(express.urlencoded());
+
+api.server(app);
 
 const httpAddress = "localhost";
 const httpPort = 8080;

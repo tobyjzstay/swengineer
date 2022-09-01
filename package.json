@@ -4,6 +4,7 @@
     "private": true,
     "description": "",
     "main": "index.js",
+    "proxy": "http://localhost:8080",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/tobyjzstay/swengineer-app-client.git"
@@ -28,11 +29,13 @@
         "@types/react-dom": "^18.0.6",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
+        "react-router-dom": "^6.3.0",
         "react-scripts": "5.0.1",
         "typescript": "^4.7.4",
         "web-vitals": "^2.1.4"
     },
     "scripts": {
+        "dev": "DEBUG='*' npm run start",
         "start": "react-scripts start",
         "build": "react-scripts build",
         "test": "react-scripts test",

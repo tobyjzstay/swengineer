@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { Box, Button, Container, Grid, Link, TextField, Typography } from "@mui/material";
 
-export default function SignIn() {
+export default function Reset() {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -45,7 +45,7 @@ export default function SignIn() {
                     </Box>
                 </Link>
                 <Typography component="h1" variant="h5">
-                    Register
+                    Reset password
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: "100%" }}>
                     <TextField
@@ -58,28 +58,18 @@ export default function SignIn() {
                         autoComplete="email"
                         autoFocus
                     />
-                    <TextField
-                        margin="normal"
-                        required
-                        fullWidth
-                        name="password"
-                        label="Password"
-                        type="password"
-                        id="password"
-                        autoComplete="current-password"
-                    />
                     <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                        Register
+                        Send email
                     </Button>
                     <Grid container>
                         <Grid item xs>
-                            <Link href="/reset" variant="body2">
-                                {"Forgot password?"}
+                            <Link href="/login" variant="body2">
+                                {"Back"}
                             </Link>
                         </Grid>
                         <Grid item>
-                            <Link href="/login" variant="body2">
-                                {"Already have an account? Log in"}
+                            <Link href="/register" variant="body2">
+                                {"Don't have an account? Register"}
                             </Link>
                         </Grid>
                     </Grid>

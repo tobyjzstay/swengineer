@@ -31,21 +31,23 @@ export default function SignIn() {
                     alignItems: "center",
                 }}
             >
-                <Box display="flex" flexDirection="row" alignItems="center" sx={{ m: 3 }}>
-                    <img
-                        src={process.env.PUBLIC_URL + "logo.svg"}
-                        alt="swengineer"
-                        width={64}
-                        style={{ padding: 10 }}
-                    />
-                    <Typography component="h1" variant="h4">
-                        swengineer
-                    </Typography>
-                </Box>
+                <Link href="/" style={{ textDecoration: "none" }}>
+                    <Box display="flex" flexDirection="row" alignItems="center" sx={{ m: 3 }}>
+                        <img
+                            src={process.env.PUBLIC_URL + "logo.svg"}
+                            alt="swengineer"
+                            width={64}
+                            style={{ padding: 10 }}
+                        />
+                        <Typography component="h1" variant="h4" color="white">
+                            swengineer
+                        </Typography>
+                    </Box>
+                </Link>
                 <Typography component="h1" variant="h5">
                     Log in
                 </Typography>
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: "100%" }}>
                     <TextField
                         margin="normal"
                         required
@@ -67,12 +69,12 @@ export default function SignIn() {
                         autoComplete="current-password"
                     />
                     <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                        Sign In
+                        Log in
                     </Button>
                     <Grid container>
                         <Grid item xs>
-                            <Link href="#" variant="body2">
-                                Forgot password?
+                            <Link href="/reset" variant="body2">
+                                {"Forgot password?"}
                             </Link>
                         </Grid>
                         <Grid item>

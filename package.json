@@ -4,6 +4,7 @@
     "description": "",
     "main": "index.js",
     "scripts": {
+        "dev": "DEBUG='*' npm run start",
         "start": "nodemon server.js -L",
         "test": "echo \"Error: no test specified\" && exit 1"
     },
@@ -24,6 +25,7 @@
         "vhost": "^3.0.2"
     },
     "devDependencies": {
+        "eslint": "^8.23.0",
         "nodemon": "^2.0.19"
     }
 }

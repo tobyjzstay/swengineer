@@ -2,11 +2,12 @@ import { CssBaseline } from "@mui/material";
 import createTheme from "@mui/material/styles/createTheme";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import Home from "./routes/Home";
-import Login from "./routes/Login";
-import PageNotFound from "./routes/PageNotFound";
-import Register from "./routes/Register";
-import Reset from "./routes/Reset";
+import { ChangePassword } from "./routes/ChangePassword";
+import { Home } from "./routes/Home";
+import { Login } from "./routes/Login";
+import { PageNotFound } from "./routes/PageNotFound";
+import { Register } from "./routes/Register";
+import { Reset } from "./routes/Reset";
 
 const darkTheme = createTheme({
     palette: {
@@ -27,6 +28,7 @@ function App() {
                     <Route path="login" element={<Login />} />
                     <Route path="register" element={<Register />} />
                     <Route path="reset" element={<Reset />} />
+                    <Route path="reset/:token" element={<ChangePassword />} />
                     <Route path="*" element={<PageNotFound />} />
                 </Routes>
             </BrowserRouter>

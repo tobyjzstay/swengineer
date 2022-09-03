@@ -1,8 +1,8 @@
-import * as React from "react";
-
 import { Box, Button, Container, Grid, Link, TextField, Typography } from "@mui/material";
+import * as React from "react";
+import { Logo } from "../components/Logo";
 
-export default function Reset() {
+export function Reset() {
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -30,19 +30,7 @@ export default function Reset() {
                     alignItems: "center",
                 }}
             >
-                <Link href="/" style={{ textDecoration: "none" }}>
-                    <Box display="flex" flexDirection="row" alignItems="center" sx={{ m: 3 }}>
-                        <img
-                            src={process.env.PUBLIC_URL + "logo.svg"}
-                            alt="swengineer"
-                            width={64}
-                            style={{ padding: 10 }}
-                        />
-                        <Typography component="h1" variant="h4" color="white">
-                            swengineer
-                        </Typography>
-                    </Box>
-                </Link>
+                <Logo />
                 <Typography component="h1" variant="h5">
                     Reset password
                 </Typography>

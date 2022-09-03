@@ -8,9 +8,8 @@ export default function Reset() {
         const data = new FormData(event.currentTarget);
         const json = {
             email: data.get("email"),
-            password: data.get("password"),
         };
-        fetch("/api/register", {
+        fetch("/api/reset", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

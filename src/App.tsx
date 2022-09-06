@@ -1,6 +1,7 @@
 import { CssBaseline } from "@mui/material";
 import createTheme from "@mui/material/styles/createTheme";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
+import { ProviderContext } from "notistack";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ChangePassword } from "./routes/ChangePassword";
 import { Home } from "./routes/Home";
@@ -37,3 +38,22 @@ function App() {
 }
 
 export default App;
+
+export async function showResponse(
+    response: Response,
+    enqueueSnackbar: ProviderContext["enqueueSnackbar"],
+    closeSnackbar: ProviderContext["closeSnackbar"]
+) {
+    const json = await response.json();
+    if (~~(response.status / 100) === 1) {
+        enqueueSnackbar(json.message, { variant: "info" });
+    } else if (~~(response.status / 100) === 2) {
+        enqueueSnackbar(json.message, { variant: "success" });
+    } else if (~~(response.status / 100) === 3) {
+        enqueueSnackbar(json.message, { variant: "default" });
+    } else if (~~(response.status / 100) === 4) {
+        enqueueSnackbar(json.message, { variant: "error" });
+    } else if (~~(response.status / 100) === 5) {
+        enqueueSnackbar(json.message, { variant: "warning" });
+    }
+}

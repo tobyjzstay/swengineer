@@ -1,10 +1,14 @@
 import { Box, Button, CircularProgress, Container, TextField, Typography } from "@mui/material";
+import { useSnackbar } from "notistack";
 import * as React from "react";
 import { useParams } from "react-router-dom";
+import { showResponse } from "../App";
 import { Logo } from "../components/Logo";
 import { PageNotFoundContent } from "./PageNotFound";
 
 export function ChangePassword() {
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
     const token = useParams().token;
 
     const [componentToRender, setComponentToRender] = React.useState(<CircularProgress />);
@@ -15,10 +19,11 @@ export function ChangePassword() {
             headers: {
                 "Content-Type": "application/json",
             },
-        }).then((res) => {
-            if (res.status === 200) {
+        }).then((response) => {
+            showResponse(response, enqueueSnackbar, closeSnackbar);
+            if (response.status === 200) {
                 setComponentToRender(<NewPassword />);
-            } else if (res.status === 401) {
+            } else if (response.status === 401) {
                 setComponentToRender(<ResendEmail />);
             } else {
                 setComponentToRender(<PageNotFoundContent />);
@@ -30,6 +35,8 @@ export function ChangePassword() {
 }
 
 function NewPassword() {
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
     const token = useParams().token;
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -45,7 +52,7 @@ function NewPassword() {
             },
             body: JSON.stringify(json),
         }).then((response) => {
-            console.log(response);
+            showResponse(response, enqueueSnackbar, closeSnackbar);
         });
     };
 
@@ -75,6 +82,8 @@ function NewPassword() {
 }
 
 function ResendEmail() {
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
     const token = useParams().token;
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -89,7 +98,7 @@ function ResendEmail() {
             },
             body: JSON.stringify(json),
         }).then((response) => {
-            console.log(response);
+            showResponse(response, enqueueSnackbar, closeSnackbar);
         });
     };
 

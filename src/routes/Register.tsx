@@ -1,8 +1,12 @@
 import { Box, Button, Container, Grid, Link, TextField, Typography } from "@mui/material";
+import { useSnackbar } from "notistack";
 import * as React from "react";
+import { showResponse } from "../App";
 import { Logo } from "../components/Logo";
 
 export function Register() {
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
@@ -17,7 +21,7 @@ export function Register() {
             },
             body: JSON.stringify(json),
         }).then((response) => {
-            console.log(response);
+            showResponse(response, enqueueSnackbar, closeSnackbar);
         });
     };
 

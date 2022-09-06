@@ -4,15 +4,15 @@ var mongoose = require("mongoose"),
 var userSchema = new Schema({
     email: {
         type: String,
-        unique: [true, "Email already exists in database."],
+        unique: [true, "Email already exists in database"],
         lowercase: true,
         trim: true,
-        required: [true, "Email not provided."],
+        required: [true, "Email not provided"],
         validate: {
             validator: function (v) {
                 return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
             },
-            message: "{VALUE} is not a valid email.",
+            message: "{VALUE} is not a valid email",
         },
     },
     password: {
@@ -23,6 +23,8 @@ var userSchema = new Schema({
         type: Date,
         default: Date.now,
     },
+    resetPasswordToken: { type: String, unique: true },
+    resetPasswordExpires: { type: Date },
 });
 
 module.exports = mongoose.model("User", userSchema);

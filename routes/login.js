@@ -14,6 +14,15 @@ const saltRounds = Number(process.env.SALT_ROUNDS);
 
 router.post("/register", function (req, res) {
     const { email, password } = req.body;
+
+    if (!email) {
+        res.status(400).json({ message: "Invalid email address" });
+        return;
+    } else if (!password) {
+        res.status(400).json({ message: "Invalid password" });
+        return;
+    }
+
     const user = new User({
         email: email,
         password: bcrypt.hashSync(password, saltRounds),
@@ -43,11 +52,11 @@ router.post("/login", function (req, res) {
                 message: err,
             });
             return;
-        }
-        if (!user) {
-            return res.status(404).json({
+        } else if (!user) {
+            res.status(404).json({
                 message: "User not found",
             });
+            return;
         }
 
         // comparing passwords
@@ -55,9 +64,10 @@ router.post("/login", function (req, res) {
 
         // checking if password was valid and send response accordingly
         if (!passwordIsValid) {
-            return res.status(401).send({
+            res.status(401).send({
                 message: "Invalid password",
             });
+            return;
         }
 
         // signing token with user id
@@ -84,28 +94,155 @@ router.post("/login", function (req, res) {
 });
 
 router.post("/reset", function (req, res) {
-    const { email } = req.body;
+    const { email, token } = req.body;
 
-    User.findOne({
-        email: email,
-    }).exec((err, user) => {
+    if (email) {
+        User.findOne({
+            email: email,
+        }).exec((err, user) => {
+            if (err) {
+                res.status(500).send({
+                    message: err,
+                });
+                return;
+            } else if (!user) {
+                res.status(404).json({
+                    message: "User not found",
+                });
+                return;
+            }
+
+            const token = crypto.randomBytes(cryptoSize).toString("hex");
+            const tokenExpiration = Date.now() + 3600000; // 1 hour
+
+            user.resetPasswordToken = token;
+            user.resetPasswordExpires = tokenExpiration;
+            user.save((err) => {
+                if (err) {
+                    res.status(500).json({
+                        message: err,
+                    });
+                    return;
+                } else {
+                    const host = req.headers.referer.split("reset")[0] + "reset"; // domain
+                    const ip = req.ip;
+                    const err = sendResetEmail(host, token, email, ip);
+                    if (err) {
+                        res.status(500).json({
+                            message: err,
+                        });
+                        return;
+                    } else {
+                        res.status(200).json({
+                            message: "Reset email sent",
+                        });
+                    }
+                }
+            });
+        });
+    } else
+        User.findOne({ resetPasswordToken: token }, function (err, user) {
+            if (err) {
+                res.status(500).json({
+                    message: err,
+                });
+                return;
+            } else if (!user) {
+                res.status(404).json({
+                    message: "User not found",
+                });
+                return;
+            }
+
+            const email = user.email;
+            const token = crypto.randomBytes(cryptoSize).toString("hex");
+            const tokenExpiration = Date.now() + 3600000; // 1 hour
+
+            user.resetPasswordToken = token;
+            user.resetPasswordExpires = tokenExpiration;
+            user.save((err) => {
+                if (err) {
+                    res.status(500).json({
+                        message: err,
+                    });
+                    return;
+                } else {
+                    const host = req.headers.referer.split("reset")[0] + "reset"; // domain
+                    const ip = req.ip;
+                    const err = sendResetEmail(host, token, email, ip);
+                    if (err) {
+                        res.status(500).json({
+                            message: err,
+                        });
+                        return;
+                    } else {
+                        res.status(200).json({
+                            message: "Reset email sent",
+                        });
+                    }
+                }
+            });
+        });
+});
+
+router.get("/reset/:token", function (req, res) {
+    const token = req.params.token;
+
+    User.findOne({ resetPasswordToken: token }, function (err, user) {
         if (err) {
-            res.status(500).send({
+            res.status(500).json({
                 message: err,
             });
             return;
-        }
-        if (!user) {
-            return res.status(404).json({
-                message: "User not found",
+        } else if (!user) {
+            res.status(404).json({
+                message: "Invalid token",
+            });
+            return;
+        } else if (user.resetPasswordExpires < Date.now()) {
+            res.status(401).json({
+                message: "Token has expired",
+            });
+            return;
+        } else {
+            res.status(200).json({
+                message: "Token is valid",
             });
         }
+    });
+});
 
-        const token = crypto.randomBytes(cryptoSize).toString("hex");
-        const tokenExpiration = Date.now() + 3600000; // 1 hour
+router.post("/reset/:token", function (req, res) {
+    const { password } = req.body;
+    const token = req.params.token;
 
-        user.resetPasswordToken = token;
-        user.resetPasswordExpires = tokenExpiration;
+    console.log(token);
+
+    User.findOne({ resetPasswordToken: token }, function (err, user) {
+        if (err) {
+            res.status(500).json({
+                message: err,
+            });
+            return;
+        } else if (!user) {
+            res.status(404).json({
+                message: "Invalid token",
+            });
+            return;
+        } else if (user.resetPasswordExpires < Date.now()) {
+            res.status(401).json({
+                message: "Token has expired",
+            });
+            return;
+        } else if (!password) {
+            res.status(400).json({ message: "Invalid password" });
+            return;
+        }
+
+        user.password = bcrypt.hashSync(password, saltRounds);
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+
         user.save((err) => {
             if (err) {
                 res.status(500).json({
@@ -113,19 +250,9 @@ router.post("/reset", function (req, res) {
                 });
                 return;
             } else {
-                const host = req.headers.referer; // domain
-                const ip = req.ip;
-                const err = sendResetEmail(host, token, email, ip);
-                if (err) {
-                    res.status(500).json({
-                        message: err,
-                    });
-                    return;
-                } else {
-                    res.status(200).json({
-                        message: "Reset email sent",
-                    });
-                }
+                res.status(200).json({
+                    message: "Password changed successfully",
+                });
             }
         });
     });

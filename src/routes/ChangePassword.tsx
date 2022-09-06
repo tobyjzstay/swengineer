@@ -30,13 +30,15 @@ export function ChangePassword() {
 }
 
 function NewPassword() {
+    const token = useParams().token;
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
         const json = {
-            email: data.get("email"),
+            password: data.get("password"),
         };
-        fetch("/api/reset", {
+        fetch(`/api/reset/${token}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -73,11 +75,12 @@ function NewPassword() {
 }
 
 function ResendEmail() {
+    const token = useParams().token;
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
         const json = {
-            email: data.get("email"),
+            token: token,
         };
         fetch("/api/reset", {
             method: "POST",

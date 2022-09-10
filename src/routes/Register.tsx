@@ -1,19 +1,27 @@
-import { Box, Button, Container, Grid, Link, TextField, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Container, Grid, Link, TextField, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { showResponse } from "../App";
 import { Logo } from "../components/Logo";
 
 export function Register() {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const navigate = useNavigate();
+
+    const [submitted, setSubmitted] = React.useState(false);
+    const [responded, setResponded] = React.useState(false);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setSubmitted(true);
+
         const data = new FormData(event.currentTarget);
         const json = {
             email: data.get("email"),
             password: data.get("password"),
         };
+
         fetch("/api/register", {
             method: "POST",
             headers: {
@@ -21,6 +29,10 @@ export function Register() {
             },
             body: JSON.stringify(json),
         }).then((response) => {
+            const success = response.status === 200;
+            setSubmitted(success);
+            setResponded(success);
+            if (success) navigate("/login");
             showResponse(response, enqueueSnackbar, closeSnackbar);
         });
     };
@@ -41,6 +53,7 @@ export function Register() {
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: "100%" }}>
                     <TextField
+                        disabled={submitted}
                         margin="normal"
                         required
                         fullWidth
@@ -51,6 +64,7 @@ export function Register() {
                         autoFocus
                     />
                     <TextField
+                        disabled={submitted}
                         margin="normal"
                         required
                         fullWidth
@@ -60,8 +74,8 @@ export function Register() {
                         id="password"
                         autoComplete="new-password"
                     />
-                    <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                        Register
+                    <Button disabled={submitted} fullWidth sx={{ mt: 3, mb: 2 }} type="submit" variant="contained">
+                        {submitted && !responded ? <CircularProgress size={24.5} /> : "Register"}
                     </Button>
                     <Grid container>
                         <Grid item xs>

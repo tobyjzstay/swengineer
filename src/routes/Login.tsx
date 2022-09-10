@@ -1,4 +1,4 @@
-import { Box, Button, Container, Grid, Link, TextField, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Container, Grid, Link, TextField, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
@@ -9,8 +9,13 @@ export function Login() {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
+    const [submitted, setSubmitted] = React.useState(false);
+    const [responded, setResponded] = React.useState(false);
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setSubmitted(true);
+
         const data = new FormData(event.currentTarget);
         const json = {
             email: data.get("email"),
@@ -23,7 +28,10 @@ export function Login() {
             },
             body: JSON.stringify(json),
         }).then(async (response) => {
-            if (response.status === 200) navigate("/");
+            const success = response.status === 200;
+            setSubmitted(success);
+            setResponded(success);
+            if (success) navigate("/");
             showResponse(response, enqueueSnackbar, closeSnackbar);
         });
     };
@@ -44,6 +52,7 @@ export function Login() {
                 </Typography>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: "100%" }}>
                     <TextField
+                        disabled={submitted}
                         margin="normal"
                         required
                         fullWidth
@@ -54,6 +63,7 @@ export function Login() {
                         autoFocus
                     />
                     <TextField
+                        disabled={submitted}
                         margin="normal"
                         required
                         fullWidth
@@ -63,8 +73,8 @@ export function Login() {
                         id="password"
                         autoComplete="current-password"
                     />
-                    <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
-                        Log in
+                    <Button disabled={submitted} fullWidth sx={{ mt: 3, mb: 2 }} type="submit" variant="contained">
+                        {submitted && !responded ? <CircularProgress size={24.5} /> : "Log in"}
                     </Button>
                     <Grid container>
                         <Grid item xs>

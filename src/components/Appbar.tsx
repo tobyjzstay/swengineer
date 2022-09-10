@@ -57,7 +57,16 @@ export function Appbar() {
                 <IconButton onClick={handleClick}>
                     <Avatar src={user.avatar} sx={{ width: 24, height: 24 }} />
                 </IconButton>
-                <Menu anchorEl={anchorEl} open={open} onClose={handleClose} sx={{ minWidth: 180 }}>
+                <Menu
+                    anchorEl={anchorEl}
+                    open={open}
+                    onClose={handleClose}
+                    PaperProps={{
+                        sx: {
+                            minWidth: 120,
+                        },
+                    }}
+                >
                     {user.email ? (
                         [
                             <MenuItem key="email" disabled divider>
@@ -72,8 +81,8 @@ export function Appbar() {
                                             "Content-Type": "application/json",
                                         },
                                     }).then(async (response) => {
+                                        navigate(0);
                                         showResponse(response, enqueueSnackbar, closeSnackbar);
-                                        navigate("/login");
                                     });
                                 }}
                             >

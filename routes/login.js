@@ -5,10 +5,13 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
+const log4js = require("log4js");
 const User = require("../models/User");
 const verifyToken = require("../middleware");
 
 const router = express.Router();
+const logger = log4js.getLogger();
+logger.level = "all";
 
 const cryptoSize = Number(process.env.CRYPTO_SIZE);
 const saltRounds = Number(process.env.SALT_ROUNDS);
@@ -31,10 +34,17 @@ router.post("/register", function (req, res) {
 
     user.save((err) => {
         if (err) {
-            res.status(500).json({
-                message: err,
-            });
-            return;
+            switch (err.code) {
+                case 11000:
+                    res.status(400).json({
+                        message: "Email address already exists",
+                    });
+                    logger.warn(err, new Error().stack);
+                    return;
+                default:
+                    internalServerError(res, err);
+                    return;
+            }
         } else {
             res.status(200).json({
                 message: "User registered successfully",
@@ -50,9 +60,7 @@ router.post("/login", function (req, res) {
         email: email,
     }).exec((err, user) => {
         if (err) {
-            res.status(500).send({
-                message: err,
-            });
+            internalServerError(res, err);
             return;
         } else if (!user) {
             res.status(404).json({
@@ -92,6 +100,7 @@ router.post("/login", function (req, res) {
 
 router.post("/logout", verifyToken, function (req, res) {
     // TODO: destroy token server side
+
     res.clearCookie("token").status(200).send({
         message: "Logout successful",
     });
@@ -105,9 +114,7 @@ router.post("/reset", function (req, res) {
             email: email,
         }).exec((err, user) => {
             if (err) {
-                res.status(500).send({
-                    message: err,
-                });
+                internalServerError(res, err);
                 return;
             } else if (!user) {
                 res.status(404).json({
@@ -123,18 +130,14 @@ router.post("/reset", function (req, res) {
             user.resetPasswordExpires = tokenExpiration;
             user.save((err) => {
                 if (err) {
-                    res.status(500).json({
-                        message: err,
-                    });
+                    internalServerError(res, err);
                     return;
                 } else {
                     const host = req.headers.referer.split("reset")[0] + "reset"; // domain
                     const ip = req.ip;
                     const err = sendResetEmail(host, token, email, ip);
                     if (err) {
-                        res.status(500).json({
-                            message: err,
-                        });
+                        internalServerError(res, err);
                         return;
                     } else {
                         res.status(200).json({
@@ -147,9 +150,7 @@ router.post("/reset", function (req, res) {
     } else
         User.findOne({ resetPasswordToken: token }, function (err, user) {
             if (err) {
-                res.status(500).json({
-                    message: err,
-                });
+                internalServerError(res, err);
                 return;
             } else if (!user) {
                 res.status(404).json({
@@ -166,18 +167,14 @@ router.post("/reset", function (req, res) {
             user.resetPasswordExpires = tokenExpiration;
             user.save((err) => {
                 if (err) {
-                    res.status(500).json({
-                        message: err,
-                    });
+                    internalServerError(res, err);
                     return;
                 } else {
                     const host = req.headers.referer.split("reset")[0] + "reset"; // domain
                     const ip = req.ip;
                     const err = sendResetEmail(host, token, email, ip);
                     if (err) {
-                        res.status(500).json({
-                            message: err,
-                        });
+                        internalServerError(res, err);
                         return;
                     } else {
                         res.status(200).json({
@@ -194,9 +191,7 @@ router.get("/reset/:token", function (req, res) {
 
     User.findOne({ resetPasswordToken: token }, function (err, user) {
         if (err) {
-            res.status(500).json({
-                message: err,
-            });
+            internalServerError(res, err);
             return;
         } else if (!user) {
             res.status(404).json({
@@ -222,9 +217,7 @@ router.post("/reset/:token", function (req, res) {
 
     User.findOne({ resetPasswordToken: token }, function (err, user) {
         if (err) {
-            res.status(500).json({
-                message: err,
-            });
+            internalServerError(res, err);
             return;
         } else if (!user) {
             res.status(404).json({
@@ -247,9 +240,7 @@ router.post("/reset/:token", function (req, res) {
 
         user.save((err) => {
             if (err) {
-                res.status(500).json({
-                    message: err,
-                });
+                internalServerError(res, err);
                 return;
             } else {
                 res.status(200).json({
@@ -284,6 +275,14 @@ function sendResetEmail(host, token, email, ip) {
     smtpTransport.sendMail(mailOptions, function (err) {
         return err;
     });
+}
+
+function internalServerError(res, err) {
+    res.status(500).json({
+        message: "Internal server error",
+    });
+    logger.error(err, new Error().stack);
+    return;
 }
 
 module.exports = router;

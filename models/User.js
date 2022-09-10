@@ -23,7 +23,7 @@ var userSchema = new Schema({
         type: Date,
         default: Date.now,
     },
-    resetPasswordToken: { type: String, unique: true },
+    resetPasswordToken: { type: String, unique: true, sparse: true },
     resetPasswordExpires: { type: Date },
 });
 

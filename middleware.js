@@ -1,9 +1,11 @@
 const jwt = require("jsonwebtoken");
-User = require("../models/user");
+const User = require("./models/User");
 
 const verifyToken = (req, res, next) => {
-    if (req?.headers?.authorization?.split(" ")[0] === "JWT") {
-        jwt.verify(req.headers.authorization.split(" ")[1], process.env.API_SECRET, function (err, decode) {
+    const token = req.body.token || req.query.token || req.headers["x-access-token"] || req.cookies.token;
+    
+    if (token) {
+        jwt.verify(token, process.env.API_SECRET, function (err, decode) {
             if (err) req.user = undefined;
             User.findOne({
                 _id: decode.id,

@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 const User = require("../models/User");
+const verifyToken = require("../middleware");
 
 const router = express.Router();
 
@@ -44,6 +45,7 @@ router.post("/register", function (req, res) {
 
 router.post("/login", function (req, res) {
     const { email, password } = req.body;
+
     User.findOne({
         email: email,
     }).exec((err, user) => {
@@ -81,15 +83,17 @@ router.post("/login", function (req, res) {
             }
         );
 
-        // responding to client request with user profile success message and access token
-        res.status(200).send({
-            user: {
-                id: user._id,
-                email: user.email,
-            },
+        // responding to client request success message and access token
+        res.cookie("token", token).status(200).send({
             message: "Login successful",
-            accessToken: token,
         });
+    });
+});
+
+router.post("/logout", verifyToken, function (req, res) {
+    // TODO: destroy token server side
+    res.clearCookie("token").status(200).send({
+        message: "Logout successful",
     });
 });
 
@@ -215,8 +219,6 @@ router.get("/reset/:token", function (req, res) {
 router.post("/reset/:token", function (req, res) {
     const { password } = req.body;
     const token = req.params.token;
-
-    console.log(token);
 
     User.findOne({ resetPasswordToken: token }, function (err, user) {
         if (err) {

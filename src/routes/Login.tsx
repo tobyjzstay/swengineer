@@ -1,11 +1,13 @@
 import { Box, Button, Container, Grid, Link, TextField, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { showResponse } from "../App";
 import { Logo } from "../components/Logo";
 
 export function Login() {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const navigate = useNavigate();
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -20,7 +22,8 @@ export function Login() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(json),
-        }).then((response) => {
+        }).then(async (response) => {
+            if (response.status === 200) navigate("/");
             showResponse(response, enqueueSnackbar, closeSnackbar);
         });
     };

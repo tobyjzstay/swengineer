@@ -2,6 +2,7 @@ import { CssBaseline } from "@mui/material";
 import createTheme from "@mui/material/styles/createTheme";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import { ProviderContext } from "notistack";
+import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ChangePassword } from "./routes/ChangePassword";
 import { Home } from "./routes/Home";
@@ -9,6 +10,17 @@ import { Login } from "./routes/Login";
 import { PageNotFound } from "./routes/PageNotFound";
 import { Register } from "./routes/Register";
 import { Reset } from "./routes/Reset";
+
+interface User {
+    email: string;
+    avatar: string;
+}
+
+export const UserContext = React.createContext({
+    user: {} as User,
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    setUser: (user: User) => {},
+});
 
 const darkTheme = createTheme({
     palette: {
@@ -20,19 +32,23 @@ const darkTheme = createTheme({
 });
 
 function App() {
+    const [user, setUser] = React.useState({} as User);
+
     return (
         <ThemeProvider theme={darkTheme}>
-            <CssBaseline />
-            <BrowserRouter>
-                <Routes>
-                    <Route index element={<Home />} />
-                    <Route path="login" element={<Login />} />
-                    <Route path="register" element={<Register />} />
-                    <Route path="reset" element={<Reset />} />
-                    <Route path="reset/:token" element={<ChangePassword />} />
-                    <Route path="*" element={<PageNotFound />} />
-                </Routes>
-            </BrowserRouter>
+            <UserContext.Provider value={{ user, setUser }}>
+                <CssBaseline />
+                <BrowserRouter>
+                    <Routes>
+                        <Route index element={<Home />} />
+                        <Route path="login" element={<Login />} />
+                        <Route path="register" element={<Register />} />
+                        <Route path="reset" element={<Reset />} />
+                        <Route path="reset/:token" element={<ChangePassword />} />
+                        <Route path="*" element={<PageNotFound />} />
+                    </Routes>
+                </BrowserRouter>
+            </UserContext.Provider>
         </ThemeProvider>
     );
 }

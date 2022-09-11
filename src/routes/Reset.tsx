@@ -60,7 +60,7 @@ export function Reset() {
                         autoFocus
                     />
                     <Button disabled={submitted} fullWidth sx={{ mt: 3, mb: 2 }} type="submit" variant="contained">
-                        {submitted ? responded ? "Email sent" : <CircularProgress size={24.5} /> : "Send email"}
+                        {submitted ? responded ? "Reset email sent" : <CircularProgress size={24.5} /> : "Send email"}
                     </Button>
                     <Grid container>
                         <Grid item xs>

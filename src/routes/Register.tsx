@@ -74,7 +74,7 @@ export function Register() {
                         autoComplete="new-password"
                     />
                     <Button disabled={submitted} fullWidth sx={{ mt: 3, mb: 2 }} type="submit" variant="contained">
-                        {submitted ? responded ? "Email sent" : <CircularProgress size={24.5} /> : "Register"}
+                        {submitted ? responded ? "Verification email sent" : <CircularProgress size={24.5} /> : "Send email"}
                     </Button>
                     <Grid container>
                         <Grid item xs>

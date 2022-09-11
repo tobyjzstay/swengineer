@@ -27,8 +27,24 @@ var userSchema = new Schema({
         type: Boolean,
         default: false,
     },
-    verificationToken: { type: String, unique: true, sparse: true },
-    resetPasswordToken: { type: String, unique: true, sparse: true },
+    verificationToken: {
+        type: String,
+        unique: true,
+        partialFilterExpression: {
+            email: {
+                $type: "string",
+            },
+        },
+    },
+    resetPasswordToken: {
+        type: String,
+        unique: true,
+        partialFilterExpression: {
+            email: {
+                $type: "string",
+            },
+        },
+    },
     resetPasswordExpires: { type: Date },
 });
 

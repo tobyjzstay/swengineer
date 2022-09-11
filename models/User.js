@@ -23,6 +23,11 @@ var userSchema = new Schema({
         type: Date,
         default: Date.now,
     },
+    verified: {
+        type: Boolean,
+        default: false,
+    },
+    verificationToken: { type: String, unique: true, sparse: true },
     resetPasswordToken: { type: String, unique: true, sparse: true },
     resetPasswordExpires: { type: Date },
 });

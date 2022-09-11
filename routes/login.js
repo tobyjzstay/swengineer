@@ -27,9 +27,12 @@ router.post("/register", function (req, res) {
         return;
     }
 
+    const token = crypto.randomBytes(cryptoSize).toString("hex");
+
     const user = new User({
         email: email,
         password: bcrypt.hashSync(password, saltRounds),
+        verificationToken: token,
     });
 
     user.save((err) => {
@@ -46,10 +49,47 @@ router.post("/register", function (req, res) {
                     return;
             }
         } else {
-            res.status(200).json({
-                message: "User registered successfully",
-            });
+            const host = req.headers.referer.split("reset")[0]; // domain
+            const err = sendVerificationEmail(host, token, email);
+            if (err) {
+                internalServerError(res, err);
+                return;
+            } else {
+                res.status(200).json({
+                    message: "Verification email sent",
+                });
+            }
         }
+    });
+});
+
+router.get("/register/:token", function (req, res) {
+    const token = req.params.token;
+
+    User.findOne({ verificationToken: token }, function (err, user) {
+        if (err) {
+            internalServerError(res, err);
+            return;
+        } else if (!user) {
+            res.status(404).json({
+                message: "Invalid token",
+            });
+            return;
+        }
+
+        user.verified = true;
+        user.verificationToken = undefined;
+
+        user.save((err) => {
+            if (err) {
+                internalServerError(res, err);
+                return;
+            } else {
+                res.status(200).json({
+                    message: "User verified successfully",
+                });
+            }
+        });
     });
 });
 
@@ -76,6 +116,13 @@ router.post("/login", function (req, res) {
         if (!passwordIsValid) {
             res.status(401).send({
                 message: "Invalid password",
+            });
+            return;
+        }
+
+        if (!user.verified) {
+            res.status(401).send({
+                message: "Email address not verified",
             });
             return;
         }
@@ -250,6 +297,28 @@ router.post("/reset/:token", function (req, res) {
         });
     });
 });
+
+function sendVerificationEmail(host, token, email) {
+    var smtpTransport = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+            user: process.env.NODEMAILER_USER,
+            pass: process.env.NODEMAILER_PASS,
+        },
+    });
+    var mailOptions = {
+        from: `"swengineer" <${process.env.NODEMAILER_USER}>`, // sender address
+        to: email, // list of receivers
+        subject: "Email Verification", // subject line
+        text:
+            `Verify your email address to finish registering your swengineer account.\n` +
+            `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
+            `${host}/${token}\n\n`,
+    };
+    smtpTransport.sendMail(mailOptions, function (err) {
+        return err;
+    });
+}
 
 function sendResetEmail(host, token, email, ip) {
     var smtpTransport = nodemailer.createTransport({

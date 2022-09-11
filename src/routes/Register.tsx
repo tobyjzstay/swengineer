@@ -32,7 +32,6 @@ export function Register() {
             const success = response.status === 200;
             setSubmitted(success);
             setResponded(success);
-            if (success) navigate("/login");
             showResponse(response, enqueueSnackbar, closeSnackbar);
         });
     };
@@ -75,7 +74,7 @@ export function Register() {
                         autoComplete="new-password"
                     />
                     <Button disabled={submitted} fullWidth sx={{ mt: 3, mb: 2 }} type="submit" variant="contained">
-                        {submitted && !responded ? <CircularProgress size={24.5} /> : "Register"}
+                        {submitted ? responded ? "Email sent" : <CircularProgress size={24.5} /> : "Register"}
                     </Button>
                     <Grid container>
                         <Grid item xs>

@@ -8,6 +8,7 @@ import { ChangePassword } from "./routes/ChangePassword";
 import { Home } from "./routes/Home";
 import { Login } from "./routes/Login";
 import { PageNotFound } from "./routes/PageNotFound";
+import { Profile } from "./routes/Profile";
 import { Register } from "./routes/Register";
 import { Reset } from "./routes/Reset";
 import { Verify } from "./routes/Verify";
@@ -47,6 +48,7 @@ function App() {
                         <Route path="register/:token" element={<Verify />} />
                         <Route path="reset" element={<Reset />} />
                         <Route path="reset/:token" element={<ChangePassword />} />
+                        <Route path="profile" element={<Profile />} />
                         <Route path="*" element={<PageNotFound />} />
                     </Routes>
                 </BrowserRouter>

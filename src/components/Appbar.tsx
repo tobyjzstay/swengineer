@@ -44,7 +44,7 @@ export function Appbar() {
     }, []);
 
     return (
-        <AppBar position="static" style={{ background: "transparent", boxShadow: "none" }}>
+        <AppBar position="fixed" style={{ background: "transparent", boxShadow: "none" }}>
             <Toolbar variant="dense">
                 <Link href="/" style={{ textDecoration: "none" }} sx={{ flexGrow: 1 }}>
                     <Box display="flex" alignItems="center">

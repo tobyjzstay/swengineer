@@ -1,4 +1,4 @@
-import { Login, Logout } from "@mui/icons-material";
+import { Login, Logout, Person } from "@mui/icons-material";
 import {
     AppBar,
     Avatar,
@@ -71,6 +71,17 @@ export function Appbar() {
                         [
                             <MenuItem key="email" disabled divider>
                                 {user.email}
+                            </MenuItem>,
+                            <MenuItem
+                                key="profile"
+                                onClick={() => {
+                                    navigate("profile");
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <Person fontSize="small" />
+                                </ListItemIcon>
+                                Profile
                             </MenuItem>,
                             <MenuItem
                                 key="logout"

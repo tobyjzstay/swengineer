@@ -17,43 +17,6 @@ export function Profile() {
 
         const fileReader = new FileReader();
         fileReader.readAsDataURL(image as Blob);
-
-        const { type: mimeType } = image as Blob;
-
-        fileReader.onload = async (fileReaderEvent) => {
-            const imageAsBase64 = await convertBase64(json.image as Blob);
-            const image = document.createElement("img");
-            image.src = imageAsBase64 as string;
-
-            const imageResizeWidth = 100;
-            // if (image.width <= imageResizeWidth) {
-            //  return;
-            // }
-
-            const canvas = document.createElement("canvas");
-            canvas.width = imageResizeWidth;
-            canvas.height = ~~(image.height * (imageResizeWidth / image.width));
-            const context = canvas.getContext("2d", { alpha: false });
-            // if (!context) {
-            //  return;
-            // }
-            context?.drawImage(image, 0, 0, canvas.width, canvas.height);
-
-            // const resizedImageBinary = canvas.toBlob();
-            const resizedImageAsBase64 = canvas.toDataURL(mimeType);
-            // const base64 = await convertBase64(json.image as Blob);
-            setImageSrc(resizedImageAsBase64);
-        };
-
-        // fetch("/api/register", {
-        //     method: "POST",
-        //     headers: {
-        //         "Content-Type": "application/json",
-        //     },
-        //     body: JSON.stringify(json),
-        // }).then((response) => {
-        //     // TODO:
-        // });
     };
 
     return (

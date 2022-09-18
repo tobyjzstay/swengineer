@@ -20,6 +20,7 @@ export function Home() {
 
     React.useLayoutEffect(() => {
         document.body.addEventListener("click", handleClick, true);
+        document.body.addEventListener("keypress", handleClick, true);
         setTimeout(function () {
             setExpanded(false);
         }, DELAY);

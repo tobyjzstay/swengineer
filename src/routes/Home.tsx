@@ -2,23 +2,48 @@ import { Box, Collapse, Container, Fade, Typography } from "@mui/material";
 import React from "react";
 
 import { createTheme, responsiveFontSizes, ThemeProvider } from "@mui/material/styles";
+import { Appbar } from "../components/Appbar";
 
-let theme = createTheme();
-theme = responsiveFontSizes(theme, {
-    factor: 5,
-});
+const DELAY = 3500;
+const COLOUR_DELAY = DELAY + 800;
+const HEADER_DELAY = DELAY + 1000;
 
 export function Home() {
+    const [header, setHeader] = React.useState(false);
     const [expanded, setExpanded] = React.useState(true);
+    const [colour, setColour] = React.useState(false);
 
-    React.useEffect(() => {
+    let theme = createTheme();
+    theme = responsiveFontSizes(theme, {
+        factor: 5,
+    });
+
+    React.useLayoutEffect(() => {
+        document.body.addEventListener("click", handleClick, true);
         setTimeout(function () {
             setExpanded(false);
-        }, 2500);
+        }, DELAY);
+        setTimeout(function () {
+            setColour(true);
+        }, COLOUR_DELAY);
+        setTimeout(function () {
+            setHeader(true);
+        }, HEADER_DELAY);
     }, []);
+
+    function handleClick() {
+        setHeader(true);
+        setColour(true);
+        setExpanded(false);
+    }
 
     return (
         <>
+            <Fade in={header}>
+                <Box>
+                    <Appbar />
+                </Box>
+            </Fade>
             <Container
                 component="main"
                 maxWidth="md"
@@ -29,16 +54,24 @@ export function Home() {
                     textAlign: "left",
                     minHeight: "100vh",
                 }}
+                onClick={handleClick}
             >
-                <Box>
-                    <ThemeProvider theme={theme}>
-                        <Typography component="h1" variant="h1">
-                            Hi, I&apos;m <strong>Toby</strong>,
-                            <br />
-                            <div style={{ display: "flex", flexDirection: "row" }}>
-                                <Typography component="h1" variant="h1" style={{ whiteSpace: "pre" }}>
-                                    a{" "}
-                                </Typography>
+                <ThemeProvider theme={theme}>
+                    <Typography component="h1" variant="h1">
+                        Hi, I&apos;m <strong>Toby</strong>,
+                        <br />
+                        <div style={{ display: "flex", flexDirection: "row" }}>
+                            <Typography component="h1" variant="h1" style={{ whiteSpace: "pre" }}>
+                                a{" "}
+                            </Typography>
+                            <div
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "row",
+                                    color: colour ? "#fdd835" : "#fff",
+                                    transition: "color 0.5s",
+                                }}
+                            >
                                 <strong>s</strong>
                                 <Collapse
                                     orientation="horizontal"
@@ -69,12 +102,12 @@ export function Home() {
                                         </Typography>
                                     </Fade>
                                 </Collapse>
-                                <strong>engineer</strong>.
+                                <strong>engineer</strong>
                             </div>
-                        </Typography>
-                    </ThemeProvider>
-                    <Box sx={{ mt: 1, width: "100%" }}></Box>
-                </Box>
+                            .
+                        </div>
+                    </Typography>
+                </ThemeProvider>
             </Container>
         </>
     );

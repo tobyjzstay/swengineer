@@ -46,14 +46,16 @@ export function Appbar() {
     return (
         <AppBar position="fixed" style={{ background: "transparent", boxShadow: "none" }}>
             <Toolbar variant="dense">
-                <Link href="/" style={{ textDecoration: "none" }} sx={{ flexGrow: 1 }}>
-                    <Box display="flex" alignItems="center">
-                        <img src={"/logo.svg"} alt="swengineer" width={40} style={{ padding: 6 }} />
-                        <Typography component="h1" variant="h4" color="white" fontSize={20}>
-                            swengineer
-                        </Typography>
-                    </Box>
-                </Link>
+                <Box display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
+                    <Link href="/" style={{ textDecoration: "none" }}>
+                        <Box display="flex" alignItems="center">
+                            <img src={"/logo.svg"} alt="swengineer" width={40} style={{ padding: 6 }} />
+                            <Typography component="h1" variant="h4" color="white" fontSize={20}>
+                                swengineer
+                            </Typography>
+                        </Box>
+                    </Link>
+                </Box>
                 <IconButton onClick={handleClick}>
                     <Avatar src={user.avatar} sx={{ width: 24, height: 24 }} />
                 </IconButton>

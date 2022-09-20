@@ -49,7 +49,7 @@ router.post("/register", function (req, res) {
                     return;
             }
         } else {
-            const host = req.headers.referer.split("reset")[0]; // domain
+            const host = req.headers.referer; // domain
             const err = sendVerificationEmail(host, token, email);
             if (err) {
                 internalServerError(res, err);

@@ -15,3 +15,5 @@ const httpServer = http.createServer(app);
 httpServer.listen(httpPort, httpAddress, () => {
     console.log(`HTTP server listening at http://${httpAddress}:${httpPort}/`);
 });
+
+module.exports = app;

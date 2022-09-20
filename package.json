@@ -4,7 +4,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "DEBUG='*' npm run start",
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "test": "ENVIRONMENT='test' mocha --recursive --exit",
         "start": "nodemon server.js -L"
     },
     "author": "",
@@ -22,6 +22,8 @@
         "nodemailer": "^6.7.8"
     },
     "devDependencies": {
-        "eslint": "^8.23.0"
+        "eslint": "^8.23.0",
+        "mocha": "^10.0.0",
+        "supertest": "^6.2.4"
     }
 }

@@ -19,4 +19,5 @@ function server(app) {
     app.use("/api", require("./routes/login"));
 }
 
+module.exports.mongoose = mongoose;
 module.exports.server = server;

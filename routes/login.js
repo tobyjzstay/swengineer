@@ -27,39 +27,50 @@ router.post("/register", function (req, res) {
         return;
     }
 
-    const token = crypto.randomBytes(cryptoSize).toString("hex");
-
-    const user = new User({
-        email: email,
-        password: bcrypt.hashSync(password, saltRounds),
-        verificationToken: token,
-    });
-
-    user.save((err) => {
+    User.findOne({ email: email }, function (err, user) {
         if (err) {
-            switch (err.code) {
-                case 11000:
-                    res.status(400).json({
-                        message: "Email address already exists",
-                    });
-                    logger.warn(err, new Error().stack);
-                    return;
-                default:
+            logger.error(err);
+            res.status(500).json({ message: "Internal server error" });
+            return;
+        } else if (user) {
+            res.status(400).json({ message: "User already exists" });
+            return;
+        }
+
+        const token = crypto.randomBytes(cryptoSize).toString("hex");
+
+        const newUser = new User({
+            email: email,
+            password: bcrypt.hashSync(password, saltRounds),
+            verificationToken: token,
+        });
+
+        newUser.save((err) => {
+            if (err) {
+                switch (err.code) {
+                    case 11000:
+                        res.status(400).json({
+                            message: "Email address already exists",
+                        });
+                        logger.warn(err, new Error().stack);
+                        return;
+                    default:
+                        internalServerError(res, err);
+                        return;
+                }
+            } else {
+                const host = req.headers.referer; // domain
+                const err = sendVerificationEmail(host, token, email);
+                if (err) {
                     internalServerError(res, err);
                     return;
+                } else {
+                    res.status(200).json({
+                        message: "Verification email sent",
+                    });
+                }
             }
-        } else {
-            const host = req.headers.referer; // domain
-            const err = sendVerificationEmail(host, token, email);
-            if (err) {
-                internalServerError(res, err);
-                return;
-            } else {
-                res.status(200).json({
-                    message: "Verification email sent",
-                });
-            }
-        }
+        });
     });
 });
 
@@ -110,7 +121,7 @@ router.post("/login", function (req, res) {
         }
 
         // comparing passwords
-        var passwordIsValid = bcrypt.compareSync(password, user.password);
+        var passwordIsValid = password && bcrypt.compareSync(password, user.password);
 
         // checking if password was valid and send response accordingly
         if (!passwordIsValid) {

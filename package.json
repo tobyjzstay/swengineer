@@ -4,7 +4,7 @@
     "main": "index.js",
     "scripts": {
         "dev": "DEBUG='*' npm run start",
-        "test": "ENVIRONMENT='test' mocha --recursive --exit",
+        "test": "ENVIRONMENT='test' PORT=8888 mocha --recursive --exit",
         "start": "nodemon server.js -L"
     },
     "author": "",

@@ -298,6 +298,21 @@ router.post("/reset/:token", function (req, res) {
     });
 });
 
+router.post("/delete", verifyToken, function (req, res) {
+    const user = req.user;
+
+    User.findByIdAndDelete(user.id, (err) => {
+        if (err) {
+            internalServerError(res, err);
+            return;
+        } else {
+            res.status(200).json({
+                message: "Account deleted",
+            });
+        }
+    });
+});
+
 function sendVerificationEmail(host, token, email) {
     var smtpTransport = nodemailer.createTransport({
         service: "gmail",

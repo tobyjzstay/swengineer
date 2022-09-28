@@ -29,21 +29,11 @@ var userSchema = new Schema({
     },
     verificationToken: {
         type: String,
-        unique: true,
-        partialFilterExpression: {
-            email: {
-                $type: "string",
-            },
-        },
+        sparse: true,
     },
     resetPasswordToken: {
         type: String,
-        unique: true,
-        partialFilterExpression: {
-            email: {
-                $type: "string",
-            },
-        },
+        sparse: true,
     },
     resetPasswordExpires: { type: Date },
 });

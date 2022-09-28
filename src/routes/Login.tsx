@@ -88,6 +88,16 @@ export function Login() {
                             </Link>
                         </Grid>
                     </Grid>
+                    <Button
+                        disabled={submitted}
+                        fullWidth
+                        sx={{ mt: 3, mb: 2 }}
+                        variant="contained"
+                        color="secondary"
+                        href="api/auth/google"
+                    >
+                        {submitted && !responded ? <CircularProgress size={24.5} /> : "Log in with Google"}
+                    </Button>
                 </Box>
             </Box>
         </Container>

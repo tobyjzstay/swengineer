@@ -79,7 +79,7 @@ export function Home() {
                                     in={expanded}
                                     timeout={{
                                         enter: 250,
-                                        exit: 1000,
+                                        exit: 750,
                                     }}
                                 >
                                     <Fade in={expanded}>

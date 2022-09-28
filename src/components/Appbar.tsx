@@ -93,7 +93,7 @@ export function Appbar() {
                                         headers: {
                                             "Content-Type": "application/json",
                                         },
-                                    }).then(async (response) => {
+                                    }).then((response) => {
                                         navigate(0);
                                         showResponse(response, enqueueSnackbar, closeSnackbar);
                                     });

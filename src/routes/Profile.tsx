@@ -1,24 +1,43 @@
-import { Box, Button, Container, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Container, TextField, Typography } from "@mui/material";
+import { useSnackbar } from "notistack";
 import React from "react";
+import { useNavigate } from "react-router-dom";
+import { showResponse, UserContext } from "../App";
 import { Appbar } from "../components/Appbar";
 
 export function Profile() {
-    const [imageSrc, setImageSrc] = React.useState("");
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const navigate = useNavigate();
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const [submitted, setSubmitted] = React.useState(false);
+    const [responded, setResponded] = React.useState(false);
+    const [value, setValue] = React.useState("");
+
+    const { user } = React.useContext(UserContext);
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        setSubmitted(true);
 
         const data = new FormData(event.currentTarget);
         const json = {
-            image: data.get("image"),
+            email: data.get("email"),
+            password: data.get("password"),
         };
-
-        const image = json.image;
-
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(image as Blob);
+        fetch("/api/delete", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(json),
+        }).then(async (response) => {
+            const success = response.status === 200;
+            setSubmitted(success);
+            setResponded(success);
+            if (success) navigate("/");
+            showResponse(response, enqueueSnackbar, closeSnackbar);
+        });
     };
-
     return (
         <>
             <Appbar />
@@ -34,33 +53,34 @@ export function Profile() {
                     <Typography component="h1" variant="h5">
                         Profile
                     </Typography>
+                    <Typography>
+                        To confirm your account deletion, enter your email associated with your account.
+                    </Typography>
                     <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: "100%" }}>
-                        <Button component="label" variant="contained">
-                            Upload
-                            <input name="image" hidden accept="image/*" type="file" />
-                        </Button>
-                        <Button fullWidth sx={{ mt: 3, mb: 2 }} type="submit" variant="contained">
-                            Submit
+                        <TextField
+                            disabled={submitted}
+                            margin="normal"
+                            required
+                            fullWidth
+                            id="email"
+                            label="Email Address"
+                            name="email"
+                            value={value}
+                            onChange={(event) => setValue(event.target.value)}
+                        />
+                        <Button
+                            disabled={submitted || value !== user?.email}
+                            fullWidth
+                            sx={{ mt: 3, mb: 2 }}
+                            type="submit"
+                            variant="contained"
+                            color="error"
+                        >
+                            {submitted && !responded ? <CircularProgress size={24.5} /> : "Delete account"}
                         </Button>
                     </Box>
-                    <Box component="img" src={imageSrc} />
                 </Box>
             </Container>
         </>
     );
 }
-
-const convertBase64 = (file: Blob) => {
-    return new Promise((resolve, reject) => {
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(file);
-
-        fileReader.onload = () => {
-            resolve(fileReader.result);
-        };
-
-        fileReader.onerror = (error) => {
-            reject(error);
-        };
-    });
-};

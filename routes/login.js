@@ -121,7 +121,7 @@ router.post("/login", function (req, res) {
         }
 
         if (!user.verified) {
-            res.status(401).send({
+            res.status(403).send({
                 message: "Email address not verified",
             });
             return;

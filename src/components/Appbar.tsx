@@ -77,7 +77,7 @@ export function Appbar() {
                             <MenuItem
                                 key="profile"
                                 onClick={() => {
-                                    navigate("profile");
+                                    navigate("/profile");
                                 }}
                             >
                                 <ListItemIcon>

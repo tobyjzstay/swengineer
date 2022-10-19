@@ -191,7 +191,7 @@ router.post("/reset", function (req, res) {
                     internalServerError(res, err);
                     return;
                 } else {
-                    const host = req.headers.referer.split("reset")[0] + "reset"; // domain
+                    const host = req.headers?.referer?.split("reset")[0] + "reset"; // TODO: fix this undefined error
                     const ip = req.ip;
                     const err = sendResetEmail(host, token, email, ip);
                     if (err) {

@@ -7,6 +7,7 @@ const vhost = require("vhost");
 const path = require("path");
 const serveIndex = require("serve-index");
 const api = require("./server/index");
+const cluster = require("node:cluster");
 
 const app = express();
 api.server(app); // api server
@@ -22,10 +23,27 @@ virtualHosts.forEach(function (virtualHost) {
     app.use(vhost(virtualHost.domain, virtualHostApp));
 });
 
-const httpAddress = "localhost";
-const httpPort = 8080;
+// check if cluster is primary
+if (cluster.isPrimary) {
+    console.log(`Primary ${process.pid} is running`);
 
-const httpServer = http.createServer(app);
-httpServer.listen(httpPort, httpAddress, () => {
-    console.log(`HTTP server listening at http://${httpAddress}:${httpPort}/`);
-});
+    // Fork workers.
+    const numCPUs = require("os").cpus().length;
+    for (let i = 0; i < numCPUs; i++) {
+        cluster.fork();
+    }
+
+    cluster.on("exit", (worker) => {
+        console.log(`Worker ${worker.process.pid} died`);
+    });
+} else {
+    const httpAddress = "localhost";
+    const httpPort = 8080;
+
+    const httpServer = http.createServer(app);
+    httpServer.listen(httpPort, httpAddress, () => {
+        console.log(`HTTP server listening at http://${httpAddress}:${httpPort}/`);
+    });
+
+    console.log(`Worker ${process.pid} started`);
+}

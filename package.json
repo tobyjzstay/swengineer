@@ -6,7 +6,7 @@
     "scripts": {
         "dev": "DEBUG='*' npm run start",
         "start": "nodemon server.js -L",
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "(cd client && npm test) && (cd server && npm test)"
     },
     "repository": {
         "type": "git",

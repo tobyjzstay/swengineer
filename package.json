@@ -39,7 +39,7 @@
         "dev": "DEBUG='*' npm run start",
         "start": "react-scripts start",
         "build": "react-scripts build",
-        "test": "react-scripts test",
+        "test": "react-scripts test --passWithNoTests --watchAll=false",
         "eject": "react-scripts eject"
     },
     "eslintConfig": {

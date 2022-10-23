@@ -7,7 +7,7 @@ const cors = require("cors");
 
 require("./passport");
 
-const password = process.env.PASSWORD;
+const password = process.env.MONGODB_PASSWORD;
 const environment = process.env.ENVIRONMENT;
 const secret = process.env.PASSPORT_SECRET;
 

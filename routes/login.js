@@ -3,7 +3,7 @@ require("dotenv").config();
 const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const crypto = require("crypto");
+const crypto = require("node:crypto");
 const nodemailer = require("nodemailer");
 const log4js = require("log4js");
 const User = require("../models/User");
@@ -328,12 +328,12 @@ function sendVerificationEmail(host, token, email) {
     var smtpTransport = nodemailer.createTransport({
         service: "gmail",
         auth: {
-            user: process.env.NODEMAILER_USER,
-            pass: process.env.NODEMAILER_PASS,
+            user: process.env.GMAIL_EMAIL,
+            pass: process.env.GMAIL_PASSWORD,
         },
     });
     var mailOptions = {
-        from: `"swengineer" <${process.env.NODEMAILER_USER}>`, // sender address
+        from: `"swengineer" <${process.env.GMAIL_EMAIL}>`, // sender address
         to: email, // list of receivers
         subject: "Email Verification", // subject line
         text:
@@ -350,12 +350,12 @@ function sendResetEmail(host, token, email, ip) {
     var smtpTransport = nodemailer.createTransport({
         service: "gmail",
         auth: {
-            user: process.env.NODEMAILER_USER,
-            pass: process.env.NODEMAILER_PASS,
+            user: process.env.GMAIL_EMAIL,
+            pass: process.env.GMAIL_PASSWORD,
         },
     });
     var mailOptions = {
-        from: `"swengineer" <${process.env.NODEMAILER_USER}>`, // sender address
+        from: `"swengineer" <${process.env.GMAIL_EMAIL}>`, // sender address
         to: email, // list of receivers
         subject: "Password Reset", // subject line
         text:

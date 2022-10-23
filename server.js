@@ -1,7 +1,7 @@
 require("dotenv").config({ path: "./server/.env" });
 
 const fs = require("fs");
-const http = require("http");
+const http = require("node:http");
 const express = require("express");
 const vhost = require("vhost");
 const path = require("path");

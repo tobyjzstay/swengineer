@@ -4,9 +4,9 @@
     "description": "",
     "main": "index.js",
     "scripts": {
-        "dev": "DEBUG='*' npm run start",
+        "dev": "DEBUG='*' pnpm run start",
         "start": "nodemon server.js -L",
-        "test": "(cd client && npm test) && (cd server && npm test)"
+        "test": "pnpm --prefix ./client/ test && pnpm --prefix ./server/ test"
     },
     "repository": {
         "type": "git",
@@ -21,7 +21,6 @@
     "dependencies": {
         "dotenv": "^16.0.2",
         "express": "^4.18.1",
-        "http": "^0.0.1-security",
         "serve-index": "^1.9.1",
         "vhost": "^3.0.2"
     },

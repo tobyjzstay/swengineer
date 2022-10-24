@@ -1,4 +1,6 @@
-import { Login, Logout, Person } from "@mui/icons-material";
+import Login from "@mui/icons-material/Login";
+import Logout from "@mui/icons-material/Logout";
+import Person from "@mui/icons-material/Person";
 import {
     AppBar,
     Avatar,

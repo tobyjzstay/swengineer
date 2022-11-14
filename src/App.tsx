@@ -5,6 +5,7 @@ import { ProviderContext } from "notistack";
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ChangePassword } from "./routes/ChangePassword";
+import { Clock } from "./routes/Clock";
 import { Home } from "./routes/Home";
 import { Login } from "./routes/Login";
 import { PageNotFound } from "./routes/PageNotFound";
@@ -52,6 +53,7 @@ function App() {
                         <Route path="reset" element={<Reset />} />
                         <Route path="reset/:token" element={<ChangePassword />} />
                         <Route path="profile" element={<Profile />} />
+                        <Route path="clock" element={<Clock />} />
                         <Route path="*" element={<PageNotFound />} />
                     </Routes>
                 </BrowserRouter>

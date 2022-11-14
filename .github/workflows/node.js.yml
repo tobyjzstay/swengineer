@@ -4,30 +4,30 @@
 name: Node.js CI
 
 on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    push:
+        branches: ["main"]
+    pull_request:
+        branches: ["main"]
 
 jobs:
-  build:
+    build:
+        runs-on: ubuntu-latest
 
-    runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                node-version: [14.x, 16.x, 18.x]
+                # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
-    strategy:
-      matrix:
-        node-version: [14.x, 16.x, 18.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
-    steps:
-    - uses: actions/checkout@v3
-      with:
-        token: ${{ secrets.PAT }}
-        submodules: recursive
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: pnpm/action-setup@v2.2.4
-      with:
-          version: 6.0.2
-    - run: pnpm install -r
-    - run: pnpm --if-present run build
-    - run: pnpm test
+        steps:
+            - uses: actions/checkout@v3
+            - name: "Decrypt .env secret"
+              run: ./decrypt.sh
+              env:
+                  ENV_SECRET: ${{ secrets.ENV_SECRET }}
+            - name: Use Node.js ${{ matrix.node-version }}
+              uses: pnpm/action-setup@v2.2.4
+              with:
+                  version: 6.0.2
+            - run: pnpm install -r
+            - run: pnpm --if-present run build
+            - run: pnpm test

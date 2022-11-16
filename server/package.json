@@ -1,15 +1,9 @@
 {
     "name": "swengineer-app-server",
     "version": "1.0.0",
-    "main": "index.js",
-    "scripts": {
-        "dev": "DEBUG='*' npm run start",
-        "test": "ENVIRONMENT='test' HTTP_PORT=8888 mocha --recursive --exit",
-        "start": "nodemon server.js -L"
-    },
-    "author": "",
-    "license": "ISC",
-    "description": "",
+    "description": "Server side for swengineer",
+    "author": "Toby Stayner <toby@swengineer.dev>",
+    "private": true,
     "dependencies": {
         "bcrypt": "^5.0.1",
         "cookie-parser": "^1.4.6",
@@ -28,5 +22,11 @@
         "eslint": "^8.23.0",
         "mocha": "^10.0.0",
         "supertest": "^6.2.4"
+    },
+    "main": "index.js",
+    "scripts": {
+        "dev": "DEBUG='*' npm run start",
+        "test": "ENVIRONMENT='test' HTTP_PORT=8888 mocha --recursive --exit",
+        "start": "nodemon server.js -L"
     }
 }

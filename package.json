@@ -1,23 +1,17 @@
 {
     "name": "swengineer-app",
     "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "scripts": {
-        "dev": "DEBUG='*' pnpm run start",
-        "start": "nodemon server.js -L",
-        "test": "pnpm --prefix ./client/ test && pnpm --prefix ./server/ test"
-    },
+    "description": "A simple Node.js application",
+    "private": true,
     "repository": {
         "type": "git",
         "url": "git+https://github.com/tobyjzstay/swengineer-app.git"
     },
-    "author": "",
-    "license": "ISC",
     "bugs": {
         "url": "https://github.com/tobyjzstay/swengineer-app/issues"
     },
-    "homepage": "https://github.com/tobyjzstay/swengineer-app#readme",
+    "homepage": "https://swengineer.dev/",
+    "author": "Toby Stayner <toby@swengineer.dev>",
     "dependencies": {
         "dotenv": "^16.0.2",
         "express": "^4.18.1",
@@ -27,5 +21,12 @@
     "devDependencies": {
         "eslint": "^8.23.0",
         "nodemon": "^2.0.19"
+    },
+    "main": "index.js",
+    "scripts": {
+        "install": "pnpm --prefix ./client/ install && pnpm --prefix ./server/ install",
+        "dev": "DEBUG='*' pnpm run start",
+        "start": "nodemon server.js -L",
+        "test": "pnpm --prefix ./client/ test && pnpm --prefix ./server/ test"
     }
 }

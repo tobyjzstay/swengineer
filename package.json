@@ -19,14 +19,16 @@
         "vhost": "^3.0.2"
     },
     "devDependencies": {
+        "concurrently": "^7.5.0",
         "eslint": "^8.23.0",
         "nodemon": "^2.0.19"
     },
     "main": "index.js",
     "scripts": {
         "install": "pnpm --prefix ./client/ install && pnpm --prefix ./server/ install",
+        "build": "pnpm --prefix ./client/ run build",
         "dev": "DEBUG='*' pnpm run start",
-        "start": "nodemon server.js -L",
+        "start": "concurrently \"nodemon server.js -L\" \"pnpm --prefix ./client/ start\" -n \"server,client\" -c \"bgBlue.bold,bgMagenta.bold\"",
         "test": "pnpm --prefix ./client/ test && pnpm --prefix ./server/ test"
     }
 }

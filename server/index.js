@@ -2,6 +2,7 @@ const cookieParser = require("cookie-parser");
 const express = require("express");
 const mongoose = require("mongoose");
 const passport = require("passport");
+const path = require("node:path");
 const session = require("express-session");
 const cors = require("cors");
 
@@ -26,6 +27,8 @@ function server(app) {
     app.use(cors());
 
     app.use(cookieParser());
+
+    app.use(express.static(path.join(__dirname, "../client/build")));
 
     app.use("/api", require("./routes/index"));
     app.use("/api/auth", require("./routes/auth"));

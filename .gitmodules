@@ -1,6 +1,3 @@
 [submodule "swengineer-app-client"]
 	path = client
 	url = git@github.com:tobyjzstay/swengineer-app-client.git
-[submodule "server"]
-	path = server
-	url = git@github.com:tobyjzstay/swengineer-app-server.git

@@ -4,6 +4,7 @@ specifiers:
   concurrently: ^7.5.0
   dotenv: ^16.0.2
   eslint: ^8.23.0
+  eslint-plugin-only-warn: ^1.0.3
   express: ^4.18.1
   nodemon: ^2.0.19
   serve-index: ^1.9.1
@@ -18,6 +19,7 @@ dependencies:
 devDependencies:
   concurrently: 7.5.0
   eslint: 8.23.0
+  eslint-plugin-only-warn: 1.0.3
   nodemon: 2.0.19
 
 packages:
@@ -412,6 +414,11 @@ packages:
   /escape-string-regexp/4.0.0:
     resolution: {integrity: sha512-TtpcNJ3XAzx3Gq8sWRzJaVajRs0uVxA2YAkdb1jm2YkPz4G6egUFAyA3n5vtEIZefPk5Wa4UXbKuS5fKkJWdgA==}
     engines: {node: '>=10'}
+    dev: true
+
+  /eslint-plugin-only-warn/1.0.3:
+    resolution: {integrity: sha512-XQOX/TfLoLw6h8ky51d29uUjXRTQHqBGXPylDEmy5fe/w7LIOnp8MA24b1OSMEn9BQoKow1q3g1kLe5/9uBTvw==}
+    engines: {node: '>=6'}
     dev: true
 
   /eslint-scope/7.1.1:

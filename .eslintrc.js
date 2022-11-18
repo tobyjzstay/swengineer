@@ -8,5 +8,6 @@ module.exports = {
     parserOptions: {
         ecmaVersion: "latest",
     },
+    plugins: ["only-warn"],
     rules: {},
 };

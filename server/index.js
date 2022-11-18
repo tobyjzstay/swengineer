@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const cookieParser = require("cookie-parser");
 const express = require("express");
 const mongoose = require("mongoose");
@@ -12,7 +14,6 @@ const cluster = require("node:cluster");
 // const vhost = require("vhost");
 
 require("./passport");
-require("dotenv").config();
 
 const password = process.env.MONGODB_PASSWORD;
 const environment = process.env.ENVIRONMENT;

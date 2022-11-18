@@ -5,35 +5,75 @@ const passport = require("passport");
 const path = require("node:path");
 const session = require("express-session");
 const cors = require("cors");
+// const fs = require("fs");
+const http = require("node:http");
+const serveIndex = require("serve-index");
+const cluster = require("node:cluster");
+// const vhost = require("vhost");
 
 require("./passport");
+require("dotenv").config();
 
 const password = process.env.MONGODB_PASSWORD;
 const environment = process.env.ENVIRONMENT;
 const secret = process.env.PASSPORT_SECRET;
 
+// mongoose
 const uri = `mongodb+srv://admin:${password}@cluster0.gvtap.mongodb.net/${environment}?retryWrites=true&w=majority`;
-
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: "1" });
 
-function server(app) {
-    // initialize passport
-    app.use(passport.initialize());
-    app.use(session({ secret: secret, resave: true, saveUninitialized: true }));
+// express
+const app = express();
 
-    app.use(express.urlencoded({ extended: true }));
-    app.use(express.json());
+// initialize passport
+app.use(passport.initialize());
+app.use(session({ secret: secret, resave: true, saveUninitialized: true }));
 
-    app.use(cors());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-    app.use(cookieParser());
+app.use(cors());
 
-    app.use(express.static(path.join(__dirname, "../client/build")));
+app.use(cookieParser());
 
-    app.use("/api", require("./routes/index"));
-    app.use("/api/auth", require("./routes/auth"));
-    app.use("/api", require("./routes/login"));
+app.use(express.static(path.join(__dirname, "../client/build")));
+
+app.use("/api", require("./routes/index"));
+app.use("/api/auth", require("./routes/auth"));
+app.use("/api", require("./routes/login"));
+
+app.use("/public", express.static("public"), serveIndex("public", { icons: true, view: "details", hidden: true }));
+
+// virtual hosts
+// const virtualHosts = JSON.parse(fs.readFileSync("vhosts.json", "utf8"));
+
+// virtualHosts.forEach(function (virtualHost) {
+//     const virtualHostApp = express();
+//     virtualHostApp.use(express.static(path.join(__dirname, virtualHost.path)));
+//     app.use(vhost(virtualHost.domain, virtualHostApp));
+// });
+
+// check if cluster is primary
+if (cluster.isPrimary) {
+    console.log(`Primary ${process.pid} is running`);
+
+    // Fork workers.
+    const numCPUs = require("os").cpus().length;
+    for (let i = 0; i < numCPUs; i++) {
+        cluster.fork();
+    }
+
+    cluster.on("exit", (worker) => {
+        console.log(`Worker ${worker.process.pid} died`);
+    });
+} else {
+    const httpAddress = "localhost";
+    const httpPort = 8080;
+
+    const httpServer = http.createServer(app);
+    httpServer.listen(httpPort, httpAddress, () => {
+        console.log(`HTTP server listening at http://${httpAddress}:${httpPort}/`);
+    });
+
+    console.log(`Worker ${process.pid} started`);
 }
-
-module.exports.mongoose = mongoose;
-module.exports.server = server;

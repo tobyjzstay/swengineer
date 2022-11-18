@@ -27,6 +27,6 @@
     "scripts": {
         "dev": "DEBUG='*' npm run start",
         "test": "ENVIRONMENT='test' HTTP_PORT=8888 mocha --recursive --exit",
-        "start": "nodemon server.js -L"
+        "start": "nodemon index.js -L"
     }
 }

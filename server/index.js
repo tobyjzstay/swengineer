@@ -18,6 +18,7 @@ require("./passport");
 const password = process.env.MONGODB_PASSWORD;
 const environment = process.env.ENVIRONMENT;
 const secret = process.env.PASSPORT_SECRET;
+const multiThreaded = process.env.MULTI_THREADED === "true";
 
 // mongoose
 const uri = `mongodb+srv://admin:${password}@cluster0.gvtap.mongodb.net/${environment}?retryWrites=true&w=majority`;
@@ -55,7 +56,7 @@ app.use("/public", express.static("public"), serveIndex("public", { icons: true,
 // });
 
 // check if cluster is primary
-if (cluster.isPrimary) {
+if (multiThreaded && cluster.isPrimary) {
     console.log(`Primary ${process.pid} is running`);
 
     // Fork workers.
@@ -78,3 +79,7 @@ if (cluster.isPrimary) {
 
     console.log(`Worker ${process.pid} started`);
 }
+
+// export app and mongoose
+module.exports.app = app;
+module.exports.mongoose = mongoose;

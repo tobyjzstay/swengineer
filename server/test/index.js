@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-const app = require("../server");
+const { app } = require("../index");
 const request = require("supertest");
 
 describe("GET /ping", function () {

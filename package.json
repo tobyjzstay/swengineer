@@ -30,6 +30,6 @@
         "build": "pnpm --prefix ./client/ run build",
         "dev": "DEBUG='*' pnpm run start",
         "start": "concurrently \"pnpm --prefix ./server/ start\" \"pnpm --prefix ./client/ start\" -n \"server,client\" -c \"bgBlue.bold,bgMagenta.bold\"",
-        "test": "pnpm --prefix ./client/ test && pnpm --prefix ./server/ test"
+        "test": "pnpm --prefix ./server/ test && pnpm --prefix ./client/ test"
     }
 }

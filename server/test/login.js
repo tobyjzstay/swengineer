@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
-const app = require("../server");
-const mongoose = require("../index").mongoose;
+const { app } = require("../index");
+const { mongoose } = require("../index");
 const request = require("supertest");
 const User = require("../models/User");
 

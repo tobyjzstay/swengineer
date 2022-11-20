@@ -47,12 +47,12 @@ function App() {
                 <BrowserRouter>
                     <Routes>
                         <Route index element={<Home />} />
-                        <Route path="login" element={<Login />} />
+                        {/* <Route path="login" element={<Login />} />
                         <Route path="register" element={<Register />} />
                         <Route path="register/:token" element={<Verify />} />
                         <Route path="reset" element={<Reset />} />
                         <Route path="reset/:token" element={<ChangePassword />} />
-                        <Route path="profile" element={<Profile />} />
+                        <Route path="profile" element={<Profile />} /> */}
                         <Route path="clock" element={<Clock />} />
                         <Route path="*" element={<PageNotFound />} />
                     </Routes>

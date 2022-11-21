@@ -58,7 +58,7 @@ export function Appbar() {
                         </Box>
                     </Link>
                 </Box>
-                {/* <IconButton onClick={handleClick}>
+                <IconButton onClick={handleClick}>
                     <Avatar src={user.avatar} sx={{ width: 24, height: 24 }} />
                 </IconButton>
                 <Menu
@@ -115,7 +115,7 @@ export function Appbar() {
                             Login
                         </MenuItem>
                     )}
-                </Menu> */}
+                </Menu>
             </Toolbar>
         </AppBar>
     );

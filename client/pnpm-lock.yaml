@@ -17,7 +17,7 @@ specifiers:
   '@typescript-eslint/parser': ^5.36.1
   eslint: ^8.23.0
   eslint-plugin-react: ^7.31.3
-  notistack: ^2.0.5
+  notistack: 3.0.0-alpha.11
   react: ^18.2.0
   react-dom: ^18.2.0
   react-router-dom: ^6.3.0
@@ -37,7 +37,7 @@ dependencies:
   '@types/node': 16.11.56
   '@types/react': 18.0.17
   '@types/react-dom': 18.0.6
-  notistack: 2.0.5_3zj5ox6754auabwxgijmx2t7ra
+  notistack: 3.0.0-alpha.11_biqbaboplfbrettd7655fr4n2y
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
   react-router-dom: 6.3.0_biqbaboplfbrettd7655fr4n2y
@@ -5490,6 +5490,12 @@ packages:
       merge2: 1.4.1
       slash: 3.0.0
 
+  /goober/2.1.11:
+    resolution: {integrity: sha512-5SS2lmxbhqH0u9ABEWq7WPU69a4i2pYcHeCxqaNq6Cw3mnrF0ghWNM4tEGid4dKy8XNIAUbuThuozDHHKJVh3A==}
+    peerDependencies:
+      csstype: ^3.0.10
+    dev: false
+
   /graceful-fs/4.2.10:
     resolution: {integrity: sha512-9ByhssR2fPVsNZj478qUUbKfmL0+t5BDVyjShtyZZLiK7ZDAArFFfopyOTj0M05wE2tJPisA4iTnnXl2YoPvOA==}
     dev: false
@@ -7043,27 +7049,19 @@ packages:
     engines: {node: '>=10'}
     dev: false
 
-  /notistack/2.0.5_3zj5ox6754auabwxgijmx2t7ra:
-    resolution: {integrity: sha512-Ig2T1Muqkc1PaSQcEDrK7diKv6cBxw02Iq6uv074ySfgq524TV5lK41diAb6OSsaiWfp3aRt+T3+0MF8m2EcJQ==}
+  /notistack/3.0.0-alpha.11_biqbaboplfbrettd7655fr4n2y:
+    resolution: {integrity: sha512-QfiVC1On1Zfs1UADxgRRhcVhAWveD3lBUKhDwx0GdXoSKii0UARz0tfJyIwwOxy5Lr+DOeAHz8Mvl1GwpeVnQQ==}
+    engines: {node: '>=12.0.0', npm: '>=6.0.0'}
     peerDependencies:
-      '@emotion/react': ^11.4.1
-      '@emotion/styled': ^11.3.0
-      '@mui/material': ^5.0.0
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    peerDependenciesMeta:
-      '@emotion/react':
-        optional: true
-      '@emotion/styled':
-        optional: true
     dependencies:
-      '@emotion/react': 11.10.0_ug65io7jkbhmo4fihdmbrh3ina
-      '@emotion/styled': 11.10.0_lzabd6uj4wst47copsenr4b56q
-      '@mui/material': 5.10.2_sqzxty2p7kxc2tmue4tecplwku
       clsx: 1.2.1
-      hoist-non-react-statics: 3.3.2
+      goober: 2.1.11
       react: 18.2.0
       react-dom: 18.2.0_react@18.2.0
+    transitivePeerDependencies:
+      - csstype
     dev: false
 
   /npm-run-path/4.0.1:

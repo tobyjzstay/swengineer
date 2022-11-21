@@ -1,9 +1,10 @@
-import { CssBaseline } from "@mui/material";
+import { AlertColor, CssBaseline } from "@mui/material";
 import createTheme from "@mui/material/styles/createTheme";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
-import { ProviderContext } from "notistack";
+import { ProviderContext, SnackbarProvider } from "notistack";
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { SnackbarAlert } from "./components/SnackbarAlert";
 import { ChangePassword } from "./routes/ChangePassword";
 import { Clock } from "./routes/Clock";
 import { Home } from "./routes/Home";
@@ -42,22 +43,29 @@ function App() {
 
     return (
         <ThemeProvider theme={darkTheme}>
-            <UserContext.Provider value={{ user, setUser }}>
-                <CssBaseline />
-                <BrowserRouter>
-                    <Routes>
-                        <Route index element={<Home />} />
-                        {/* <Route path="login" element={<Login />} />
-                        <Route path="register" element={<Register />} />
-                        <Route path="register/:token" element={<Verify />} />
-                        <Route path="reset" element={<Reset />} />
-                        <Route path="reset/:token" element={<ChangePassword />} />
-                        <Route path="profile" element={<Profile />} /> */}
-                        <Route path="clock" element={<Clock />} />
-                        <Route path="*" element={<PageNotFound />} />
-                    </Routes>
-                </BrowserRouter>
-            </UserContext.Provider>
+            <SnackbarProvider
+                maxSnack={3}
+                Components={{
+                    alert: SnackbarAlert,
+                }}
+            >
+                <UserContext.Provider value={{ user, setUser }}>
+                    <CssBaseline />
+                    <BrowserRouter>
+                        <Routes>
+                            <Route index element={<Home />} />
+                            <Route path="login" element={<Login />} />
+                            <Route path="register" element={<Register />} />
+                            <Route path="register/:token" element={<Verify />} />
+                            <Route path="reset" element={<Reset />} />
+                            <Route path="reset/:token" element={<ChangePassword />} />
+                            <Route path="profile" element={<Profile />} />
+                            <Route path="clock" element={<Clock />} />
+                            <Route path="*" element={<PageNotFound />} />
+                        </Routes>
+                    </BrowserRouter>
+                </UserContext.Provider>
+            </SnackbarProvider>
         </ThemeProvider>
     );
 }
@@ -70,15 +78,38 @@ export async function showResponse(
     closeSnackbar: ProviderContext["closeSnackbar"]
 ) {
     const json = await response.json();
-    if (~~(response.status / 100) === 1) {
-        enqueueSnackbar(json.message, { variant: "info" });
-    } else if (~~(response.status / 100) === 2) {
-        enqueueSnackbar(json.message, { variant: "success" });
-    } else if (~~(response.status / 100) === 3) {
-        enqueueSnackbar(json.message, { variant: "default" });
-    } else if (~~(response.status / 100) === 4) {
-        enqueueSnackbar(json.message, { variant: "error" });
-    } else if (~~(response.status / 100) === 5) {
-        enqueueSnackbar(json.message, { variant: "warning" });
+    switch (~~(response.status / 100)) {
+        case 1:
+        case 3:
+            enqueueSnackbar(json.message, {
+                variant: "alert",
+                severity: "info",
+            });
+            break;
+        case 2:
+            enqueueSnackbar(json.message, {
+                variant: "alert",
+                severity: "success",
+            });
+            break;
+        default:
+        case 4:
+            enqueueSnackbar(json.message, {
+                variant: "alert",
+                severity: "error",
+            });
+            break;
+        case 5:
+            enqueueSnackbar(json.message, {
+                variant: "alert",
+                severity: "warning",
+            });
+            break;
+    }
+}
+
+declare module "notistack" {
+    interface VariantOverrides {
+        alert: { severity: AlertColor };
     }
 }

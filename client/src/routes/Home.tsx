@@ -19,8 +19,7 @@ export function Home() {
     });
 
     React.useLayoutEffect(() => {
-        document.body.addEventListener("click", handleClick, true);
-        document.body.addEventListener("keypress", handleClick, true);
+        document.body.addEventListener("keypress", handleIntereaction, true);
         setTimeout(function () {
             setExpanded(false);
         }, DELAY);
@@ -32,7 +31,7 @@ export function Home() {
         }, HEADER_DELAY);
     }, []);
 
-    function handleClick() {
+    function handleIntereaction() {
         setHeader(true);
         setColour(true);
         setExpanded(false);
@@ -55,7 +54,7 @@ export function Home() {
                     textAlign: "left",
                     minHeight: "100vh",
                 }}
-                onClick={handleClick}
+                onClick={handleIntereaction}
             >
                 <ThemeProvider theme={theme}>
                     <Typography component="h1" variant="h1">

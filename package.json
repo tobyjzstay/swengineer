@@ -13,6 +13,7 @@
     "homepage": "https://swengineer.dev/",
     "author": "Toby Stayner <toby@swengineer.dev>",
     "dependencies": {
+        "@fontsource/cascadia-mono": "^4.2.1",
         "dotenv": "^16.0.2",
         "express": "^4.18.1",
         "serve-index": "^1.9.1",

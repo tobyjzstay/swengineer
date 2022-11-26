@@ -23,8 +23,18 @@ export function Home() {
     const [colour, setColour] = React.useState(false);
     const [synonym, setSynonym] = React.useState<string | undefined>();
 
+    const pageRef = React.useRef<HTMLDivElement>(null);
+
     React.useLayoutEffect(() => {
-        document.body.addEventListener("keypress", handleIntereaction, true);
+        if (pageRef?.current) {
+            pageRef.current.tabIndex = 0;
+            pageRef.current.onclick = () => {
+                handleInteraction();
+            };
+            pageRef.current.onkeydown = () => {
+                handleInteraction();
+            };
+        }
         setTimeout(function () {
             setExpanded(false);
         }, DELAY);
@@ -47,14 +57,14 @@ export function Home() {
         }, SYNONYM_INTERVAL);
     }, []);
 
-    function handleIntereaction() {
+    function handleInteraction() {
         setHeader(true);
         setColour(true);
         setExpanded(false);
     }
 
     return (
-        <>
+        <Box ref={pageRef}>
             <Fade in={header}>
                 <Box>
                     <Appbar />
@@ -70,7 +80,6 @@ export function Home() {
                     textAlign: "left",
                     minHeight: "100vh",
                 }}
-                onClick={handleIntereaction}
             >
                 <ThemeProvider theme={theme}>
                     <Typography component="h1" variant="h1">
@@ -143,6 +152,6 @@ export function Home() {
                     </Typography>
                 </ThemeProvider>
             </Container>
-        </>
+        </Box>
     );
 }

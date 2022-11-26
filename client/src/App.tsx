@@ -1,7 +1,7 @@
 import { AlertColor, CssBaseline } from "@mui/material";
 import createTheme from "@mui/material/styles/createTheme";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
-import { ProviderContext, SnackbarProvider } from "notistack";
+import { ProviderContext, SnackbarKey, SnackbarProvider } from "notistack";
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { SnackbarAlert } from "./components/SnackbarAlert";
@@ -14,6 +14,8 @@ import { Profile } from "./routes/Profile";
 import { Register } from "./routes/Register";
 import { Reset } from "./routes/Reset";
 import { Verify } from "./routes/Verify";
+
+const snackbars: SnackbarKey[] = [];
 
 interface User {
     email: string;
@@ -36,6 +38,9 @@ const darkTheme = createTheme({
             main: "#1565c0",
         },
     },
+    typography: {
+        fontFamily: "Cascadia Mono",
+    },
 });
 
 function App() {
@@ -48,6 +53,7 @@ function App() {
                 Components={{
                     alert: SnackbarAlert,
                 }}
+                transitionDuration={{ enter: 50, exit: 150 }}
             >
                 <UserContext.Provider value={{ user, setUser }}>
                     <CssBaseline />
@@ -81,35 +87,52 @@ export async function showResponse(
     switch (~~(response.status / 100)) {
         case 1:
         case 3:
-            enqueueSnackbar(json.message, {
-                variant: "alert",
-                severity: "info",
-            });
+            snackbars.push(
+                enqueueSnackbar(json?.message ?? "", {
+                    variant: "alert",
+                    severity: "info",
+                    status: response.status,
+                    statusText: response.statusText,
+                })
+            );
             break;
         case 2:
-            enqueueSnackbar(json.message, {
-                variant: "alert",
-                severity: "success",
-            });
+            snackbars.push(
+                enqueueSnackbar(json?.message ?? "", {
+                    variant: "alert",
+                    severity: "success",
+                    status: response.status,
+                    statusText: response.statusText,
+                })
+            );
             break;
         default:
         case 4:
-            enqueueSnackbar(json.message, {
-                variant: "alert",
-                severity: "error",
-            });
+            snackbars.push(
+                enqueueSnackbar(json?.message ?? "", {
+                    variant: "alert",
+                    severity: "error",
+                    status: response.status,
+                    statusText: response.statusText,
+                })
+            );
             break;
         case 5:
-            enqueueSnackbar(json.message, {
-                variant: "alert",
-                severity: "warning",
-            });
+            snackbars.push(
+                enqueueSnackbar(json?.message ?? "", {
+                    variant: "alert",
+                    severity: "warning",
+                    status: response.status,
+                    statusText: response.statusText,
+                })
+            );
             break;
     }
+    snackbars.length > 3 && closeSnackbar(snackbars.shift());
 }
 
 declare module "notistack" {
     interface VariantOverrides {
-        alert: { severity: AlertColor };
+        alert: { severity: AlertColor; status: number; statusText: string };
     }
 }

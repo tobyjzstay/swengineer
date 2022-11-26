@@ -20,6 +20,9 @@ const environment = process.env.ENVIRONMENT;
 const secret = process.env.PASSPORT_SECRET;
 const multiThreaded = process.env.MULTI_THREADED === "true";
 
+const httpAddress = "localhost";
+const httpPort = process.env.HTTP_PORT;
+
 // mongoose
 const uri = `mongodb+srv://admin:${password}@cluster0.gvtap.mongodb.net/${environment}?retryWrites=true&w=majority`;
 mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: "1" });
@@ -69,9 +72,6 @@ if (multiThreaded && cluster.isPrimary) {
         console.log(`Worker ${worker.process.pid} died`);
     });
 } else {
-    const httpAddress = "localhost";
-    const httpPort = 8080;
-
     const httpServer = http.createServer(app);
     httpServer.listen(httpPort, httpAddress, () => {
         console.log(`HTTP server listening at http://${httpAddress}:${httpPort}/`);

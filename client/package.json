@@ -32,6 +32,8 @@
     },
     "main": "index.js",
     "scripts": {
+        "preinstall": "npx only-allow pnpm",
+        "install": "pnpm install",
         "dev": "DEBUG='*' npm run start ",
         "start": "react-scripts start",
         "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build",

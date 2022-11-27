@@ -1,3 +1,5 @@
+![swengineer](images/logo.png)
+
 # swengineer
 
 ## Install

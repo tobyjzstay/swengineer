@@ -12,7 +12,9 @@ export function PageNotFound() {
                     alignItems: "center",
                 }}
             >
-                <Logo />
+                <Box sx={{ m: 3 }}>
+                    <Logo />
+                </Box>
                 <PageNotFoundContent />
             </Box>
         </Container>

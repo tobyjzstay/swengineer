@@ -6,7 +6,7 @@ import { Logo } from "../components/Logo";
 
 export function Reset() {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-    
+
     const [submitted, setSubmitted] = React.useState(false);
     const [responded, setResponded] = React.useState(false);
 
@@ -43,7 +43,9 @@ export function Reset() {
                     alignItems: "center",
                 }}
             >
-                <Logo />
+                <Box sx={{ m: 3 }}>
+                    <Logo />
+                </Box>
                 <Typography component="h1" variant="h5">
                     Reset password
                 </Typography>

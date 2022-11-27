@@ -46,7 +46,9 @@ export function Login() {
                     alignItems: "center",
                 }}
             >
-                <Logo />
+                <Box sx={{ m: 3 }}>
+                    <Logo />
+                </Box>
                 <Typography component="h1" variant="h5">
                     Log in
                 </Typography>

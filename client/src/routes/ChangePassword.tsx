@@ -139,8 +139,9 @@ function FormContainer({ children }: { children?: React.ReactNode }) {
                     alignItems: "center",
                 }}
             >
-                <Logo />
-
+                <Box sx={{ m: 3 }}>
+                    <Logo />
+                </Box>
                 {children}
             </Box>
         </Container>

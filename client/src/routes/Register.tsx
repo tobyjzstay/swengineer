@@ -46,7 +46,9 @@ export function Register() {
                     alignItems: "center",
                 }}
             >
-                <Logo />
+                <Box sx={{ m: 3 }}>
+                    <Logo />
+                </Box>
                 <Typography component="h1" variant="h5">
                     Register
                 </Typography>
@@ -74,7 +76,15 @@ export function Register() {
                         autoComplete="new-password"
                     />
                     <Button disabled={submitted} fullWidth sx={{ mt: 3, mb: 2 }} type="submit" variant="contained">
-                        {submitted ? responded ? "Verification email sent" : <CircularProgress size={24.5} /> : "Send email"}
+                        {submitted ? (
+                            responded ? (
+                                "Verification email sent"
+                            ) : (
+                                <CircularProgress size={24.5} />
+                            )
+                        ) : (
+                            "Send email"
+                        )}
                     </Button>
                     <Grid container>
                         <Grid item xs>

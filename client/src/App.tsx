@@ -38,9 +38,6 @@ const darkTheme = createTheme({
             main: "#1565c0",
         },
     },
-    typography: {
-        fontFamily: "Cascadia Mono",
-    },
 });
 
 function App() {

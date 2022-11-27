@@ -5,18 +5,16 @@ import {
     AppBar,
     Avatar,
     Box,
-    IconButton,
-    Link,
-    ListItemIcon,
+    IconButton, ListItemIcon,
     Menu,
     MenuItem,
-    Toolbar,
-    Typography
+    Toolbar
 } from "@mui/material";
 import { useSnackbar } from "notistack";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { showResponse, UserContext } from "../App";
+import { Logo } from "./Logo";
 
 export function Appbar() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -49,14 +47,7 @@ export function Appbar() {
         <AppBar position="fixed" style={{ background: "transparent", boxShadow: "none" }}>
             <Toolbar variant="dense">
                 <Box display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
-                    <Link href="/" style={{ textDecoration: "none" }}>
-                        <Box display="flex" alignItems="center">
-                            <img src={"/logo.svg"} alt="swengineer" width={40} style={{ padding: 6 }} />
-                            <Typography component="h1" variant="h4" color="white" fontSize={20}>
-                                swengineer
-                            </Typography>
-                        </Box>
-                    </Link>
+                    <Logo scale={0.6} />
                 </Box>
                 <IconButton onClick={handleClick}>
                     <Avatar src={user.avatar} sx={{ width: 24, height: 24 }} />

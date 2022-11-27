@@ -39,7 +39,9 @@ export function Verify() {
                     alignItems: "center",
                 }}
             >
-                <Logo />
+                <Box sx={{ m: 3 }}>
+                    <Logo />
+                </Box>
                 {componentToRender}
             </Box>
         </Container>

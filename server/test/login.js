@@ -4,7 +4,7 @@ const { mongoose } = require("../index");
 const request = require("supertest");
 const User = require("../models/User");
 
-makeSuite("POST /register", () => {
+describe("POST /register", () => {
     makeSuite("Register user", () => {
         it("Register a new user", (done) => {
             request(app)
@@ -30,7 +30,7 @@ makeSuite("POST /register", () => {
     });
 });
 
-makeSuite("POST /login", () => {
+describe("POST /login", () => {
     makeSuite("Unregistered user", () => {
         it("Log in with invalid email", (done) => {
             request(app).post("/api/login").send({ email: "alice@example.com", password: "alice" }).expect(404, done);
@@ -124,7 +124,7 @@ makeSuite("POST /login", () => {
     });
 });
 
-makeSuite("GET /register/:token", () => {
+describe("GET /register/:token", () => {
     makeSuite("Verify token", () => {
         it("Register a new user", (done) => {
             request(app)
@@ -157,7 +157,7 @@ makeSuite("GET /register/:token", () => {
     });
 });
 
-makeSuite("POST /reset", () => {
+describe("POST /reset", () => {
     makeSuite("Valid email", () => {
         it("Register a new user", (done) => {
             request(app)
@@ -178,7 +178,7 @@ makeSuite("POST /reset", () => {
     });
 });
 
-makeSuite("GET /reset/:token", () => {
+describe("GET /reset/:token", () => {
     makeSuite("Valid password token", () => {
         it("Register a new user", (done) => {
             request(app)
@@ -245,7 +245,7 @@ makeSuite("GET /reset/:token", () => {
     });
 });
 
-makeSuite("POST /reset/:token", () => {
+describe("POST /reset/:token", () => {
     makeSuite("Valid password token", () => {
         it("Register a new user", (done) => {
             request(app)
@@ -258,11 +258,11 @@ makeSuite("POST /reset/:token", () => {
             request(app).post("/api/reset").send({ email: "alice@example.com" }).expect(200, done);
         });
 
-        it("Check reset password link valid", (done) => {
+        it("Reset password with valid token", (done) => {
             getUser("alice@example.com", (user) => {
                 request(app)
-                    .get("/api/reset/" + user.resetPasswordToken)
-                    .send()
+                    .post("/api/reset/" + user.resetPasswordToken)
+                    .send({ password: "bob" })
                     .expect(200, done);
             });
         });
@@ -280,8 +280,8 @@ makeSuite("POST /reset/:token", () => {
             request(app).post("/api/reset").send({ email: "alice@example.com" }).expect(200, done);
         });
 
-        it("Check reset password link invalid", (done) => {
-            request(app).get("/api/reset/thisisnotavalidtoken").send().expect(404, done);
+        it("Reset password with invalid token", (done) => {
+            request(app).post("/api/reset/thisisnotavalidtoken").send({ password: "bob" }).expect(404, done);
         });
     });
 
@@ -297,14 +297,14 @@ makeSuite("POST /reset/:token", () => {
             request(app).post("/api/reset").send({ email: "alice@example.com" }).expect(200, done);
         });
 
-        it("Check expired reset password link invalid", (done) => {
+        it("Reset password with expired token", (done) => {
             getUser("alice@example.com", (user) => {
                 // make token expired
                 user.resetPasswordExpires = Date(0);
                 user.save().then(() => {
                     request(app)
                         .post("/api/reset/" + user.resetPasswordToken)
-                        .send({ email: "alice@example.com", password: "alice" })
+                        .send({ password: "bob" })
                         .expect(401, done);
                 });
             });

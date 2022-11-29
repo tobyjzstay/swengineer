@@ -26,7 +26,6 @@
     "main": "index.js",
     "scripts": {
         "preinstall": "npx only-allow pnpm",
-        "install": "pnpm install",
         "dev": "DEBUG='*' npm run start",
         "test": "ENVIRONMENT='test' HTTP_PORT=8888 MULTI_THREADED=false mocha --recursive --exit --timeout 10000",
         "start": "nodemon index.js -L"

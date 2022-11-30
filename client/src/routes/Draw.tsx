@@ -1,69 +1,116 @@
+import { Button, Paper, Slider } from "@mui/material";
 import React from "react";
 
-type Position = {
-    x: number;
-    y: number;
-};
+const enum Shape {
+    LINE,
+}
 
 export function Draw() {
     const [canvasRef, setCanvasRef] = React.useState<HTMLCanvasElement | null>(null);
+    const [ctx, setCtx] = React.useState<CanvasRenderingContext2D | null>(null);
+    const [isDrawing, setIsDrawing] = React.useState(false);
+    const [shape, setShape] = React.useState(Shape.LINE);
+    const [lineWidth, setLineWidth] = React.useState(10);
+    const [position, setPosition] = React.useState([0, 0]);
 
     React.useEffect(() => {
-        if (!canvasRef) return;
-        const ctx = canvasRef.getContext("2d");
-        if (!ctx) return;
-        const canvas = ctx.canvas;
-
-        let isDrawing = false;
-        let x = 0;
-        let y = 0;
-
-        // handle resize
-        window.addEventListener("resize", () => {
-            const ratio = window.devicePixelRatio;
-            const style = canvas.style;
-
-            style.width = "" + window.innerWidth / ratio + "px";
-            style.height = "" + window.innerHeight / ratio + "px";
-
+        if (canvasRef) {
+            const ctx = canvasRef.getContext("2d");
+            if (!ctx) return;
+            const canvas = ctx.canvas;
             canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
+            canvas.height = window.innerHeight - 8;
+            ctx.translate(0.5, 0.5);
+            setCtx(ctx);
+        }
+    }, [canvasRef]);
 
+    React.useEffect(() => {
+        if (!canvasRef || !ctx) return;
+        canvasRef.addEventListener("mousedown", mousedownListener);
+        canvasRef.addEventListener("mousemove", mousemoveListener);
+        canvasRef.addEventListener("mouseup", mouseupListener);
+        return () => {
+            canvasRef.removeEventListener("mousedown", mousedownListener);
+            canvasRef.removeEventListener("mousemove", mousemoveListener);
+            canvasRef.removeEventListener("mouseup", mouseupListener);
+        };
+    }, [canvasRef, ctx, isDrawing, shape, lineWidth, position]);
 
-        canvasRef.addEventListener("mousedown", (e) => {
-            x = e.offsetX;
-            y = e.offsetY;
-            isDrawing = true;
-        });
+    const mousedownListener = (e: MouseEvent) => {
+        if (!ctx) return;
+        const x = e.offsetX;
+        const y = e.offsetY;
+        setPosition([x, y]);
+        setIsDrawing(true);
+        if (shape === Shape.LINE) {
+            ctx.beginPath();
+            ctx.lineWidth = lineWidth;
+            ctx.lineCap = "round";
+            ctx.lineJoin = "round";
+            ctx.strokeStyle = "white";
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+    };
 
-        canvasRef.addEventListener("mousemove", (e) => {
-            if (isDrawing) {
-                drawLine(ctx, x, y, e.offsetX, e.offsetY);
-                x = e.offsetX;
-                y = e.offsetY;
-            }
-        });
+    const mousemoveListener = (e: MouseEvent) => {
+        if (!ctx) return;
+        if (!isDrawing) return;
+        const px = position[0];
+        const py = position[1];
+        const x = e.offsetX;
+        const y = e.offsetY;
+        setPosition([x, y]);
+        if (shape === Shape.LINE) {
+            ctx.beginPath();
+            ctx.moveTo(px, py);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+        }
+    };
 
-        canvasRef.addEventListener("mouseup", (e) => {
-            if (isDrawing) {
-                drawLine(ctx, x, y, e.offsetX, e.offsetY);
-                x = 0;
-                y = 0;
-                isDrawing = false;
-            }
-        });
-    });
+    const mouseupListener = (e: MouseEvent) => {
+        if (!ctx) return;
+        if (!isDrawing) return;
+        const px = position[0];
+        const py = position[1];
+        const x = e.offsetX;
+        const y = e.offsetY;
+        if (shape === Shape.LINE) {
+            setPosition([x, y]);
+            ctx.beginPath();
+            ctx.moveTo(px, py);
+            ctx.lineTo(x, y);
+            ctx.stroke();
+            setIsDrawing(false);
+        }
+    };
 
-    return <canvas ref={setCanvasRef} />;
-}
-
-function drawLine(ctx: CanvasRenderingContext2D, x1: number, y1: number, x2: number, y2: number) {
-    ctx.beginPath();
-    ctx.strokeStyle = "white";
-    ctx.lineWidth = 1;
-    ctx.moveTo(x1, y1);
-    ctx.lineTo(x2, y2);
-    ctx.stroke();
-    ctx.closePath();
+    return (
+        <>
+            <canvas ref={setCanvasRef} />
+            <Paper sx={{ position: "absolute", bottom: 0, left: 0, p: 2, m: 2 }}>
+                <Button
+                    variant="contained"
+                    onClick={() => {
+                        if (!canvasRef) return;
+                        const ctx = canvasRef.getContext("2d");
+                        if (!ctx) return;
+                        ctx.clearRect(0, 0, canvasRef.width, canvasRef.height);
+                    }}
+                >
+                    Clear
+                </Button>
+                <Slider
+                    min={1}
+                    max={20}
+                    value={lineWidth}
+                    onChange={(e, v) => {
+                        setLineWidth(v as number);
+                    }}
+                />
+            </Paper>
+        </>
+    );
 }

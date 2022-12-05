@@ -6,9 +6,10 @@ const enum Shape {
     STROKE = "Stroke",
     LINE = "Line",
     RECTANGLE = "Rectangle",
+    ELLIPSE = "Ellipse",
 }
 
-const shapes = [Shape.STROKE, Shape.LINE, Shape.RECTANGLE];
+const shapes = [Shape.STROKE, Shape.LINE, Shape.RECTANGLE, Shape.ELLIPSE];
 
 const enum Color {
     BLACK = "#000000",
@@ -115,9 +116,9 @@ export function Draw() {
 
         setIsDrawing(true);
         ctx.beginPath();
-        if (shape === Shape.RECTANGLE) return;
+        if (shape !== Shape.STROKE) return;
         ctx.lineTo(x, y);
-        if (shape === Shape.STROKE) ctx.stroke();
+        ctx.stroke();
     };
 
     const handleMouseMove = (e: MouseEvent) => {
@@ -150,14 +151,14 @@ export function Draw() {
         const y = e.offsetY;
         position.current = [x, y];
 
-        if (shape === Shape.RECTANGLE) {
-            ctx.strokeRect(px, py, x - px, y - py);
+        if (shape === Shape.ELLIPSE) {
+            ctx.ellipse((x + px) / 2, (y + py) / 2, Math.abs(x - px) / 2, Math.abs(y - py) / 2, 0, 0, 2 * Math.PI);
             ctx.stroke();
+        } else if (shape === Shape.RECTANGLE) {
+            ctx.strokeRect(px, py, x - px, y - py);
         } else {
-            if (shape === Shape.STROKE) {
-                ctx.beginPath();
-                ctx.moveTo(px, py);
-            }
+            if (shape === Shape.STROKE) ctx.beginPath();
+            ctx.moveTo(px, py);
             ctx.lineTo(x, y);
             ctx.stroke();
         }

@@ -5,9 +5,10 @@ import React from "react";
 const enum Shape {
     STROKE = "Stroke",
     LINE = "Line",
+    RECTANGLE = "Rectangle",
 }
 
-const shapes = [Shape.STROKE, Shape.LINE];
+const shapes = [Shape.STROKE, Shape.LINE, Shape.RECTANGLE];
 
 const enum Color {
     BLACK = "#000000",
@@ -114,6 +115,7 @@ export function Draw() {
 
         setIsDrawing(true);
         ctx.beginPath();
+        if (shape === Shape.RECTANGLE) return;
         ctx.lineTo(x, y);
         if (shape === Shape.STROKE) ctx.stroke();
     };
@@ -121,6 +123,8 @@ export function Draw() {
     const handleMouseMove = (e: MouseEvent) => {
         if (!ctx) return;
         if (!isDrawing) return;
+
+        if (shape !== Shape.STROKE) return;
 
         const px = position.current[0];
         const py = position.current[1];
@@ -146,12 +150,17 @@ export function Draw() {
         const y = e.offsetY;
         position.current = [x, y];
 
-        if (shape === Shape.STROKE) {
-            ctx.beginPath();
-            ctx.moveTo(px, py);
+        if (shape === Shape.RECTANGLE) {
+            ctx.strokeRect(px, py, x - px, y - py);
+            ctx.stroke();
+        } else {
+            if (shape === Shape.STROKE) {
+                ctx.beginPath();
+                ctx.moveTo(px, py);
+            }
+            ctx.lineTo(x, y);
+            ctx.stroke();
         }
-        ctx.lineTo(x, y);
-        ctx.stroke();
         setIsDrawing(false);
     };
 

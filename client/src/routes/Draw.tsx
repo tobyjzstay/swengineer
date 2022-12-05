@@ -1,10 +1,13 @@
 import SquareIcon from "@mui/icons-material/Square";
-import { Box, Button, Fade, IconButton, Paper, Slider } from "@mui/material";
+import { Box, Button, Fade, IconButton, MenuItem, Paper, Select, Slider } from "@mui/material";
 import React from "react";
 
 const enum Shape {
-    LINE,
+    STROKE = "Stroke",
+    LINE = "Line",
 }
+
+const shapes = [Shape.STROKE, Shape.LINE];
 
 const enum Color {
     BLACK = "#000000",
@@ -56,7 +59,7 @@ export function Draw() {
     const [canvasRef, setCanvasRef] = React.useState<HTMLCanvasElement | null>(null);
     const [ctx, setCtx] = React.useState<CanvasRenderingContext2D | null>(null);
     const [isDrawing, setIsDrawing] = React.useState(false);
-    const [shape, setShape] = React.useState(Shape.LINE);
+    const [shape, setShape] = React.useState(Shape.STROKE);
     const [lineWidth, setLineWidth] = React.useState(3);
     const [color, setColor] = React.useState(Color.BLACK);
     const position = React.useRef([0, 0]);
@@ -85,7 +88,7 @@ export function Draw() {
             canvasRef.removeEventListener("mousemove", handleMouseMove);
             canvasRef.removeEventListener("mouseup", handleMouseUp);
         };
-    }, [canvasRef, ctx, isDrawing, shape, lineWidth, color]);
+    }, [canvasRef, ctx, isDrawing, shape, lineWidth, color, shape]);
 
     const handleResize = () => {
         if (!ctx) return;
@@ -99,30 +102,33 @@ export function Draw() {
 
     const handleMouseDown = (e: MouseEvent) => {
         if (!ctx) return;
+
         const x = e.offsetX;
         const y = e.offsetY;
         position.current = [x, y];
+
+        ctx.lineWidth = lineWidth;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.strokeStyle = color;
+
         setIsDrawing(true);
-        if (shape === Shape.LINE) {
-            ctx.beginPath();
-            ctx.lineWidth = lineWidth;
-            ctx.lineCap = "round";
-            ctx.lineJoin = "round";
-            ctx.strokeStyle = color;
-            ctx.lineTo(x, y);
-            ctx.stroke();
-        }
+        ctx.beginPath();
+        ctx.lineTo(x, y);
+        if (shape === Shape.STROKE) ctx.stroke();
     };
 
     const handleMouseMove = (e: MouseEvent) => {
         if (!ctx) return;
         if (!isDrawing) return;
+
         const px = position.current[0];
         const py = position.current[1];
         const x = e.offsetX;
         const y = e.offsetY;
         position.current = [x, y];
-        if (shape === Shape.LINE) {
+
+        if (shape === Shape.STROKE) {
             ctx.beginPath();
             ctx.moveTo(px, py);
             ctx.lineTo(x, y);
@@ -133,23 +139,30 @@ export function Draw() {
     const handleMouseUp = (e: MouseEvent) => {
         if (!ctx) return;
         if (!isDrawing) return;
+
         const px = position.current[0];
         const py = position.current[1];
         const x = e.offsetX;
         const y = e.offsetY;
-        if (shape === Shape.LINE) {
-            position.current = [x, y];
+        position.current = [x, y];
+
+        if (shape === Shape.STROKE) {
             ctx.beginPath();
             ctx.moveTo(px, py);
-            ctx.lineTo(x, y);
-            ctx.stroke();
-            setIsDrawing(false);
         }
+        ctx.lineTo(x, y);
+        ctx.stroke();
+        setIsDrawing(false);
     };
 
     const handleColorChange = (color: Color) => {
         if (!ctx) return;
         setColor(color);
+    };
+
+    const handleShapeClick = (shape: Shape) => {
+        if (!ctx) return;
+        setShape(shape);
     };
 
     const handleClear = (ctx: CanvasRenderingContext2D | null) => {
@@ -176,6 +189,13 @@ export function Draw() {
                             setLineWidth(v as number);
                         }}
                     />
+                    <Select value={shape} size="small">
+                        {shapes.map((shape, i) => (
+                            <MenuItem key={i} value={shape} onClick={() => handleShapeClick(shape)}>
+                                {shape}
+                            </MenuItem>
+                        ))}
+                    </Select>
                     <Box display="flex">
                         {colors.map((_color, i) => {
                             if (i % 2 !== 0) return;

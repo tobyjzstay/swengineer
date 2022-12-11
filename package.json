@@ -29,7 +29,7 @@
     "scripts": {
         "preinstall": "npx only-allow pnpm",
         "install": "pnpm --prefix ./client/ install && pnpm --prefix ./server/ install",
-        "build": "pnpm --prefix ./client/ run build",
+        "build": "pnpm --prefix ./client/ run build && pnpm --prefix ./server/ run build",
         "dev": "DEBUG='*' pnpm run start",
         "start": "concurrently \"pnpm --prefix ./server/ start\" \"pnpm --prefix ./client/ start\" -n \"server,client\" -c \"bgBlue.bold,bgMagenta.bold\"",
         "test": "pnpm --prefix ./server/ test && pnpm --prefix ./client/ test"

@@ -1,8 +1,7 @@
 /* eslint-disable no-undef */
-const { app } = require("../index");
-const { mongoose } = require("../index");
+const { app, mongoose } = require("../src/index");
 const request = require("supertest");
-const User = require("../models/User");
+const User = require("../src/models/User");
 
 describe("POST /register", () => {
     makeSuite("Register user", () => {

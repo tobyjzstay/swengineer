@@ -1,5 +1,5 @@
 import bcrypt from "bcrypt";
-import express from "express";
+import express, { Response } from "express";
 import jwt from "jsonwebtoken";
 import log4js from "log4js";
 import crypto from "node:crypto";
@@ -9,12 +9,11 @@ import { User } from "../models/User";
 
 const router = express.Router();
 const logger = log4js.getLogger();
-logger.level = "all";
 
 const cryptoSize = Number(process.env.CRYPTO_SIZE);
 const saltRounds = Number(process.env.SALT_ROUNDS);
 
-router.post("/register", function (req, res) {
+router.post("/register", (req, res) => {
     const { email, password } = req.body;
 
     if (!email) {
@@ -25,22 +24,21 @@ router.post("/register", function (req, res) {
         return;
     }
 
-    User.findOne({ email: email }, function (err: NodeJS.ErrnoException, user: User) {
+    User.findOne({ email }, (err: NodeJS.ErrnoException, user: User) => {
         if (err) {
-            logger.error(err);
-            res.status(500).json({ message: "Internal server error" });
+            internalServerError(res, err);
             return;
         } else if (user) {
             res.status(400).json({ message: "User already exists" });
             return;
         }
 
-        const token = crypto.randomBytes(cryptoSize).toString("hex");
+        const verificationToken = crypto.randomBytes(cryptoSize).toString("hex");
 
         const newUser = new User({
-            email: email,
+            email,
             password: bcrypt.hashSync(password, saltRounds),
-            verificationToken: token,
+            verificationToken,
         });
 
         newUser.save((err: NodeJS.ErrnoException) => {
@@ -58,7 +56,7 @@ router.post("/register", function (req, res) {
                 }
             } else {
                 const host = req.headers.referer; // domain
-                const err = sendVerificationEmail(host, token, email);
+                const err = sendVerificationEmail(host, verificationToken, email);
                 if (err) {
                     internalServerError(res, err);
                     return;
@@ -72,10 +70,10 @@ router.post("/register", function (req, res) {
     });
 });
 
-router.get("/register/:token", function (req, res) {
+router.get("/register/:token", (req, res) => {
     const token = req.params.token;
 
-    User.findOne({ verificationToken: token }, function (err, user) {
+    User.findOne({ verificationToken: token }, (err: NodeJS.ErrnoException, user: User) => {
         if (err) {
             internalServerError(res, err);
             return;
@@ -102,7 +100,7 @@ router.get("/register/:token", function (req, res) {
     });
 });
 
-router.post("/login", function (req, res) {
+router.post("/login", (req, res) => {
     const { email, password } = req.body;
 
     User.findOne({
@@ -154,7 +152,7 @@ router.post("/login", function (req, res) {
     });
 });
 
-router.post("/logout", verifyToken, function (req, res) {
+router.post("/logout", verifyToken, (_req, res) => {
     // TODO: destroy token server side
 
     res.clearCookie("token").status(200).send({
@@ -162,7 +160,7 @@ router.post("/logout", verifyToken, function (req, res) {
     });
 });
 
-router.post("/reset", function (req, res) {
+router.post("/reset", (req, res) => {
     const { email, token } = req.body;
 
     if (email) {
@@ -205,7 +203,7 @@ router.post("/reset", function (req, res) {
             });
         });
     } else
-        User.findOne({ resetPasswordToken: token }, function (err: NodeJS.ErrnoException, user: User) {
+        User.findOne({ resetPasswordToken: token }, (err: NodeJS.ErrnoException, user: User) => {
             if (err) {
                 internalServerError(res, err);
                 return;
@@ -244,10 +242,10 @@ router.post("/reset", function (req, res) {
         });
 });
 
-router.get("/reset/:token", function (req, res) {
+router.get("/reset/:token", (req, res) => {
     const token = req.params.token;
 
-    User.findOne({ resetPasswordToken: token }, function (err, user) {
+    User.findOne({ resetPasswordToken: token }, (err: NodeJS.ErrnoException, user: User) => {
         if (err) {
             internalServerError(res, err);
             return;
@@ -256,7 +254,7 @@ router.get("/reset/:token", function (req, res) {
                 message: "Invalid token",
             });
             return;
-        } else if (user.resetPasswordExpires < Date.now()) {
+        } else if (user.resetPasswordExpires.getTime() < new Date().getTime()) {
             res.status(401).json({
                 message: "Token has expired",
             });
@@ -269,11 +267,11 @@ router.get("/reset/:token", function (req, res) {
     });
 });
 
-router.post("/reset/:token", function (req, res) {
+router.post("/reset/:token", (req, res) => {
     const { password } = req.body;
     const token = req.params.token;
 
-    User.findOne({ resetPasswordToken: token }, function (err, user) {
+    User.findOne({ resetPasswordToken: token }, (err: NodeJS.ErrnoException, user: User) => {
         if (err) {
             internalServerError(res, err);
             return;
@@ -282,7 +280,7 @@ router.post("/reset/:token", function (req, res) {
                 message: "Invalid token",
             });
             return;
-        } else if (user.resetPasswordExpires < Date.now()) {
+        } else if (user.resetPasswordExpires.getTime() < new Date().getTime()) {
             res.status(401).json({
                 message: "Token has expired",
             });
@@ -309,10 +307,10 @@ router.post("/reset/:token", function (req, res) {
     });
 });
 
-router.post("/delete", verifyToken, function (req, res) {
+router.post("/delete", verifyToken, (req, res) => {
     const user = req.user as User;
 
-    User.findByIdAndDelete(user.id, (err) => {
+    User.findByIdAndDelete(user.id, (err: NodeJS.ErrnoException) => {
         if (err) {
             internalServerError(res, err);
             return;
@@ -324,7 +322,7 @@ router.post("/delete", verifyToken, function (req, res) {
     });
 });
 
-function sendVerificationEmail(host, token, email): NodeJS.ErrnoException {
+function sendVerificationEmail(host: string, token: string, email: string): NodeJS.ErrnoException {
     var smtpTransport = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -341,13 +339,13 @@ function sendVerificationEmail(host, token, email): NodeJS.ErrnoException {
             `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
             `${host}/${token}\n\n`,
     };
-    smtpTransport.sendMail(mailOptions, function (err) {
+    smtpTransport.sendMail(mailOptions, (err) => {
         return err;
     });
     return null;
 }
 
-function sendResetEmail(host, token, email, ip): NodeJS.ErrnoException {
+function sendResetEmail(host: string, token: string, email: string, ip: string): NodeJS.ErrnoException {
     var smtpTransport = nodemailer.createTransport({
         service: "gmail",
         auth: {
@@ -368,13 +366,13 @@ function sendResetEmail(host, token, email, ip): NodeJS.ErrnoException {
             `IP Address: ${ip}\n` +
             `Created: ${new Date().toString()}\n`,
     };
-    smtpTransport.sendMail(mailOptions, function (err) {
+    smtpTransport.sendMail(mailOptions, (err) => {
         return err;
     });
     return null;
 }
 
-function internalServerError(res, err) {
+function internalServerError(res: Response, err: NodeJS.ErrnoException) {
     res.status(500).json({
         message: "Internal server error",
     });

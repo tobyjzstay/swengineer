@@ -3,9 +3,10 @@ import jwt from "jsonwebtoken";
 import passport from "passport";
 import { verifyToken } from "../middleware";
 import { User } from "../models/User";
+
 const router = express.Router();
 
-router.get("/", verifyToken, function (req, res) {
+router.get("/", verifyToken, (req, res) => {
     const user = req.user as User;
     res.status(200).json({ email: user?.email });
 });

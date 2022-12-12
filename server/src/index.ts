@@ -5,6 +5,7 @@ import cors from "cors";
 import express from "express";
 // const fs = require("fs");
 import session from "express-session";
+import log4js from "log4js";
 import mongoose from "mongoose";
 import cluster from "node:cluster";
 import http from "node:http";
@@ -12,6 +13,9 @@ import path from "node:path";
 import passport from "passport";
 import serveIndex from "serve-index";
 // const vhost = require("vhost");
+
+const logger = log4js.getLogger();
+logger.level = "all";
 
 require("./passport");
 
@@ -28,7 +32,7 @@ mongoose.set("strictQuery", true);
 mongoose.connect(uri, { serverApi: "1" });
 
 // express
-const app = express();
+export const app = express();
 
 // initialize passport
 app.use(passport.initialize());
@@ -79,7 +83,3 @@ if (multiThreaded && cluster.isPrimary) {
 
     console.log(`Worker ${process.pid} started`);
 }
-
-// export app and mongoose
-module.exports.app = app;
-module.exports.mongoose = mongoose;

@@ -27,7 +27,7 @@
     },
     "main": "index.js",
     "scripts": {
-        "preinstall": "npx only-allow pnpm",
+        "preinstall": "npx -y only-allow pnpm",
         "install": "pnpm --prefix ./client/ install && pnpm --prefix ./server/ install",
         "build": "pnpm --prefix ./client/ run build && pnpm --prefix ./server/ run build",
         "dev": "DEBUG='*' pnpm run start",

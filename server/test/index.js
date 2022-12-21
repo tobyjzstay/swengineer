@@ -1,6 +1,6 @@
-/* eslint-disable no-undef */
-const { app } = require("../dist/index");
+const { describe, it } = require("mocha");
 const request = require("supertest");
+const { app } = require("../dist/index");
 
 describe("GET /ping", function () {
     it("Ping API server", function (done) {

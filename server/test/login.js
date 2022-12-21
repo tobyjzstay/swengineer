@@ -1,6 +1,6 @@
-/* eslint-disable no-undef */
-const { app, mongoose } = require("../dist/index");
+const { before, after, describe, it } = require("mocha");
 const request = require("supertest");
+const { app, mongoose } = require("../dist/index");
 const { User } = require("../dist/models/User");
 
 describe("POST /register", () => {

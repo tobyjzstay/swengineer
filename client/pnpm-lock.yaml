@@ -3,6 +3,7 @@ lockfileVersion: 5.4
 specifiers:
   '@emotion/react': ^11.10.0
   '@emotion/styled': ^11.10.0
+  '@fontsource/cascadia-mono': ^4.2.1
   '@fontsource/roboto': ^4.5.7
   '@mui/icons-material': ^5.10.9
   '@mui/material': ^5.9.3
@@ -16,6 +17,7 @@ specifiers:
   '@typescript-eslint/eslint-plugin': ^5.36.1
   '@typescript-eslint/parser': ^5.36.1
   eslint: ^8.23.0
+  eslint-plugin-only-warn: ^1.0.3
   eslint-plugin-react: ^7.31.3
   notistack: 3.0.0-alpha.11
   react: ^18.2.0
@@ -27,6 +29,7 @@ specifiers:
 dependencies:
   '@emotion/react': 11.10.0_ug65io7jkbhmo4fihdmbrh3ina
   '@emotion/styled': 11.10.0_lzabd6uj4wst47copsenr4b56q
+  '@fontsource/cascadia-mono': 4.2.1
   '@fontsource/roboto': 4.5.8
   '@mui/icons-material': 5.10.9_w6lqgcouxzl2mvirhyaas5p52y
   '@mui/material': 5.10.2_sqzxty2p7kxc2tmue4tecplwku
@@ -48,6 +51,7 @@ devDependencies:
   '@typescript-eslint/eslint-plugin': 5.36.1_lbwfnm54o3pmr3ypeqp3btnera
   '@typescript-eslint/parser': 5.36.1_yqf6kl63nyoq5megxukfnom5rm
   eslint: 8.23.0
+  eslint-plugin-only-warn: 1.1.0
   eslint-plugin-react: 7.31.3_eslint@8.23.0
 
 packages:
@@ -1746,6 +1750,11 @@ packages:
       strip-json-comments: 3.1.1
     transitivePeerDependencies:
       - supports-color
+
+  /@fontsource/cascadia-mono/4.2.1:
+    resolution: {integrity: sha512-++ve/OJH3fBRGOe6AY+gq6olgNMzJP+cSWehn7ZS6G7Md2L1cjvSMgx7WS5rGcknPHGnxJHCyM84v0/FAwm15w==}
+    deprecated: Deprecated
+    dev: false
 
   /@fontsource/roboto/4.5.8:
     resolution: {integrity: sha512-CnD7zLItIzt86q4Sj3kZUiLcBk1dSk81qcqgMGaZe7SQ1P8hFNxhMl5AZthK1zrDM5m74VVhaOpuMGIL4gagaA==}
@@ -4876,6 +4885,11 @@ packages:
       minimatch: 3.1.2
       semver: 6.3.0
     dev: false
+
+  /eslint-plugin-only-warn/1.1.0:
+    resolution: {integrity: sha512-2tktqUAT+Q3hCAU0iSf4xAN1k9zOpjK5WO8104mB0rT/dGhOa09582HN5HlbxNbPRZ0THV7nLGvzugcNOSjzfA==}
+    engines: {node: '>=6'}
+    dev: true
 
   /eslint-plugin-react-hooks/4.6.0_eslint@8.23.0:
     resolution: {integrity: sha512-oFc7Itz9Qxh2x4gNHStv3BqJq54ExXmfC+a1NjAta66IAN87Wu0R/QArgIS9qKzX3dXKPI9H5crl9QchNMY9+g==}

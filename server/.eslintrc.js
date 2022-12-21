@@ -5,10 +5,11 @@ module.exports = {
         es2021: true,
     },
     extends: "eslint:recommended",
+    parser: "@typescript-eslint/parser",
     parserOptions: {
-        ecmaVersion: "latest",
+        requireConfigFile: false,
         sourceType: "module",
     },
-    parser: "@babel/eslint-parser",
+    plugins: ["@typescript-eslint", "only-warn"],
     rules: {},
 };

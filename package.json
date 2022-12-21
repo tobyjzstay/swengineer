@@ -13,21 +13,15 @@
     "homepage": "https://swengineer.dev/",
     "author": "Toby Stayner <toby@swengineer.dev>",
     "dependencies": {
-        "@fontsource/cascadia-mono": "^4.2.1",
         "dotenv": "^16.0.2",
         "express": "^4.18.1",
-        "serve-index": "^1.9.1",
-        "vhost": "^3.0.2"
+        "serve-index": "^1.9.1"
     },
     "devDependencies": {
         "concurrently": "^7.5.0",
-        "eslint": "^8.23.0",
-        "eslint-plugin-only-warn": "^1.0.3",
         "nodemon": "^2.0.19"
     },
-    "main": "index.js",
     "scripts": {
-        "preinstall": "npx -y only-allow pnpm",
         "install": "pnpm --prefix ./client/ install && pnpm --prefix ./server/ install",
         "build": "pnpm --prefix ./client/ run build && pnpm --prefix ./server/ run build",
         "dev": "DEBUG='*' pnpm run start",

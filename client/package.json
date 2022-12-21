@@ -7,6 +7,7 @@
     "dependencies": {
         "@emotion/react": "^11.10.0",
         "@emotion/styled": "^11.10.0",
+        "@fontsource/cascadia-mono": "^4.2.1",
         "@fontsource/roboto": "^4.5.7",
         "@mui/icons-material": "^5.10.9",
         "@mui/material": "^5.9.3",
@@ -28,12 +29,12 @@
         "@typescript-eslint/eslint-plugin": "^5.36.1",
         "@typescript-eslint/parser": "^5.36.1",
         "eslint": "^8.23.0",
+        "eslint-plugin-only-warn": "^1.0.3",
         "eslint-plugin-react": "^7.31.3"
     },
     "main": "index.js",
     "scripts": {
-        "preinstall": "npx only-allow pnpm",
-        "dev": "DEBUG='*' npm run start ",
+        "dev": "DEBUG='*' pnpm run start ",
         "start": "react-scripts start",
         "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build",
         "test": "react-scripts test --passWithNoTests --watchAll=false",

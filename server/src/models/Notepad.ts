@@ -28,6 +28,6 @@ const notepadSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
-} as any);
+});
 
 export const Notepad = mongoose.model<Notepad>("Notepad", notepadSchema);

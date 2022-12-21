@@ -13,7 +13,7 @@ export interface User extends mongoose.Document {
 const userSchema = new mongoose.Schema({
     email: {
         type: String,
-        unique: [true, "Email already exists in database"],
+        unique: true,
         lowercase: true,
         trim: true,
         required: [true, "Email not provided"],
@@ -45,6 +45,6 @@ const userSchema = new mongoose.Schema({
         sparse: true,
     },
     resetPasswordExpires: { type: Date },
-} as any);
+});
 
 export const User = mongoose.model<User>("User", userSchema);

@@ -119,7 +119,7 @@ router.post("/login", (req, res) => {
         }
 
         // comparing passwords
-        var passwordIsValid = password && bcrypt.compareSync(password, user.password);
+        const passwordIsValid = password && bcrypt.compareSync(password, user.password);
 
         // checking if password was valid and send response accordingly
         if (!passwordIsValid) {
@@ -137,7 +137,7 @@ router.post("/login", (req, res) => {
         }
 
         // signing token with user id
-        var token = jwt.sign(
+        const token = jwt.sign(
             {
                 id: user.id,
             },
@@ -325,14 +325,14 @@ router.post("/delete", verifyToken, (req, res) => {
 });
 
 function sendVerificationEmail(host: string, token: string, email: string): NodeJS.ErrnoException {
-    var smtpTransport = nodemailer.createTransport({
+    const smtpTransport = nodemailer.createTransport({
         service: "gmail",
         auth: {
             user: process.env.GMAIL_EMAIL,
             pass: process.env.GMAIL_PASSWORD,
         },
     });
-    var mailOptions = {
+    const mailOptions = {
         from: `"swengineer" <${process.env.GMAIL_EMAIL}>`, // sender address
         to: email, // list of receivers
         subject: "Email Verification", // subject line
@@ -348,14 +348,14 @@ function sendVerificationEmail(host: string, token: string, email: string): Node
 }
 
 function sendResetEmail(host: string, token: string, email: string, ip: string): NodeJS.ErrnoException {
-    var smtpTransport = nodemailer.createTransport({
+    const smtpTransport = nodemailer.createTransport({
         service: "gmail",
         auth: {
             user: process.env.GMAIL_EMAIL,
             pass: process.env.GMAIL_PASSWORD,
         },
     });
-    var mailOptions = {
+    const mailOptions = {
         from: `"swengineer" <${process.env.GMAIL_EMAIL}>`, // sender address
         to: email, // list of receivers
         subject: "Password Reset", // subject line

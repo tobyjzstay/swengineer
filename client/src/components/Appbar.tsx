@@ -1,15 +1,7 @@
 import Login from "@mui/icons-material/Login";
 import Logout from "@mui/icons-material/Logout";
 import Person from "@mui/icons-material/Person";
-import {
-    AppBar,
-    Avatar,
-    Box,
-    IconButton, ListItemIcon,
-    Menu,
-    MenuItem,
-    Toolbar
-} from "@mui/material";
+import { AppBar, Avatar, Box, IconButton, ListItemIcon, Menu, MenuItem, Toolbar } from "@mui/material";
 import { useSnackbar } from "notistack";
 import React from "react";
 import { useNavigate } from "react-router-dom";
@@ -29,7 +21,7 @@ export function Appbar() {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
-    const { user, setUser } = React.useContext(UserContext);
+    const [user, setUser] = React.useContext(UserContext);
 
     React.useEffect(() => {
         fetch(`/api/auth`, {

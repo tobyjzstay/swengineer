@@ -24,11 +24,10 @@ interface User {
     avatar: string;
 }
 
-export const UserContext = React.createContext({
-    user: {} as User,
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    setUser: (user: User) => {},
-});
+export const UserContext = React.createContext<[User, React.Dispatch<React.SetStateAction<User>>]>([
+    Object.create(null),
+    () => undefined,
+]);
 
 const darkTheme = createTheme({
     palette: {
@@ -43,7 +42,7 @@ const darkTheme = createTheme({
 });
 
 function App() {
-    const [user, setUser] = React.useState({} as User);
+    const user = React.useState(Object.create(null));
 
     return (
         <ThemeProvider theme={darkTheme}>
@@ -54,7 +53,7 @@ function App() {
                 }}
                 transitionDuration={{ enter: 50, exit: 150 }}
             >
-                <UserContext.Provider value={{ user, setUser }}>
+                <UserContext.Provider value={user}>
                     <CssBaseline />
                     <BrowserRouter>
                         <Routes>

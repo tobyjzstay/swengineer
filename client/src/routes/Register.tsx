@@ -1,13 +1,11 @@
 import { Box, Button, CircularProgress, Container, Grid, Link, TextField, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import { showResponse } from "../App";
 import { Logo } from "../components/Logo";
 
 export function Register() {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-    const navigate = useNavigate();
 
     const [submitted, setSubmitted] = React.useState(false);
     const [responded, setResponded] = React.useState(false);

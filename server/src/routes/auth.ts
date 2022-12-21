@@ -23,7 +23,7 @@ router.get(
 router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
     const user = req.user as User;
 
-    var token = jwt.sign(
+    const token = jwt.sign(
         {
             id: user.id,
         },

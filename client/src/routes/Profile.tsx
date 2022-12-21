@@ -13,7 +13,7 @@ export function Profile() {
     const [responded, setResponded] = React.useState(false);
     const [value, setValue] = React.useState("");
 
-    const { user } = React.useContext(UserContext);
+    const [user] = React.useContext(UserContext);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();

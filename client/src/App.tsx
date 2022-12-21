@@ -10,6 +10,7 @@ import { Clock } from "./routes/Clock";
 import { Draw } from "./routes/Draw";
 import { Home } from "./routes/Home";
 import { Login } from "./routes/Login";
+import { Notepad } from "./routes/Notepad";
 import { PageNotFound } from "./routes/PageNotFound";
 import { Profile } from "./routes/Profile";
 import { Register } from "./routes/Register";
@@ -66,6 +67,7 @@ function App() {
                             <Route path="profile" element={<Profile />} />
                             <Route path="clock" element={<Clock />} />
                             <Route path="draw" element={<Draw />} />
+                            <Route path="notepad" element={<Notepad />} />
                             <Route path="*" element={<PageNotFound />} />
                         </Routes>
                     </BrowserRouter>
@@ -128,6 +130,7 @@ export async function showResponse(
             break;
     }
     snackbars.length > 3 && closeSnackbar(snackbars.shift());
+    return json;
 }
 
 declare module "notistack" {

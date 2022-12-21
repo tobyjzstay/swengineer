@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
         trim: true,
         required: [true, "Email not provided"],
         validate: {
-            validator: function (v) {
+            validator: function (v: string) {
                 return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
             },
             message: "{VALUE} is not a valid email",

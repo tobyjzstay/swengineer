@@ -46,11 +46,7 @@ app.use(cors());
 app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, "../../client/build")));
-
 app.use("/api", require("./routes/index"));
-app.use("/api/auth", require("./routes/auth"));
-app.use("/api", require("./routes/login"));
-
 app.use("/public", express.static("../public"), serveIndex("public", { icons: true, view: "details", hidden: true }));
 
 // virtual hosts

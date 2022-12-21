@@ -1,9 +1,11 @@
 import bcrypt from "bcrypt";
-import express, { Response } from "express";
+import express from "express";
 import jwt from "jsonwebtoken";
 import log4js from "log4js";
 import crypto from "node:crypto";
 import nodemailer from "nodemailer";
+import { internalServerError } from ".";
+import { app } from "..";
 import { verifyToken } from "../middleware";
 import { User } from "../models/User";
 
@@ -153,7 +155,7 @@ router.post("/login", (req, res) => {
 });
 
 router.post("/logout", verifyToken, (_req, res) => {
-    // TODO: destroy token server side
+    app.locals.user = undefined;
 
     res.clearCookie("token").status(200).send({
         message: "Logout successful",
@@ -370,14 +372,6 @@ function sendResetEmail(host: string, token: string, email: string, ip: string):
         return err;
     });
     return null;
-}
-
-function internalServerError(res: Response, err: NodeJS.ErrnoException) {
-    res.status(500).json({
-        message: "Internal server error",
-    });
-    logger.error(err, new Error().stack);
-    return;
 }
 
 module.exports = router;

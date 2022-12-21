@@ -1,27 +1,27 @@
+import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { Types } from "mongoose";
+import { app } from ".";
 import { User } from "./models/User";
+import { internalServerError } from "./routes";
 
-export const verifyToken = (req, res, next) => {
+export const verifyToken = (req: Request, res: Response, next: () => void) => {
     const token = req.body.token || req.query.token || req.headers["x-access-token"] || req.cookies.token;
 
-    if (token) {
-        jwt.verify(token, process.env.API_SECRET, function (err, decode) {
-            if (err) req.user = undefined;
-            User.findOne({
-                _id: decode?.id,
-            }).exec((err, user) => {
-                if (err) {
-                    res.status(500).send({
-                        message: err,
-                    });
-                } else {
-                    req.user = user;
-                    next();
-                }
-            });
+    if (token)
+        jwt.verify(token, process.env.API_SECRET, (err: NodeJS.ErrnoException, decode: { id: Types.ObjectId }) => {
+            const { id } = decode;
+            if (err) internalServerError(res, err);
+            else
+                User.findOne({
+                    _id: id,
+                }).exec((err, user) => {
+                    if (err) internalServerError(res, err);
+                    else {
+                        app.locals.user = user;
+                        next();
+                    }
+                });
         });
-    } else {
-        req.user = undefined;
-        next();
-    }
+    else next();
 };

@@ -1,13 +1,14 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import passport from "passport";
+import { app } from "..";
 import { verifyToken } from "../middleware";
 import { User } from "../models/User";
 
 const router = express.Router();
 
 router.get("/", verifyToken, (req, res) => {
-    const user = req.user as User;
+    const user = app.locals.user as User;
     res.status(200).json({ email: user?.email });
 });
 
@@ -21,9 +22,6 @@ router.get(
 // redirect to home page after successful login
 router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
     const user = req.user as User;
-    jwt.sign({ email: user.email }, process.env.API_SECRET, {
-        expiresIn: "1h",
-    });
 
     var token = jwt.sign(
         {
@@ -36,9 +34,7 @@ router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
     );
 
     // responding to client request success message and access token
-    res.cookie("token", token).status(200).send({
-        message: "Login successful",
-    });
+    res.cookie("token", token).redirect("/");
 });
 
 module.exports = router;

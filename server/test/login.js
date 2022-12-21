@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
-const { app, mongoose } = require("../src/index");
+const { app, mongoose } = require("../dist/index");
 const request = require("supertest");
-const User = require("../src/models/User");
+const { User } = require("../dist/models/User");
 
 describe("POST /register", () => {
     makeSuite("Register user", () => {
@@ -314,13 +314,11 @@ describe("POST /reset/:token", () => {
 function makeSuite(name, tests) {
     describe(name, () => {
         before((done) => {
-            mongoose.connection.collections.users.drop(() => {
-                done();
-            });
+            drop(done);
         });
         tests();
         after((done) => {
-            done();
+            drop(done);
         });
     });
 }
@@ -330,8 +328,8 @@ function getUser(email, func) {
 }
 
 // clean up
-after((done) => {
+function drop(done) {
     mongoose.connection.collections.users.drop(() => {
         done();
     });
-});
+}

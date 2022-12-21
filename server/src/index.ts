@@ -3,7 +3,6 @@ require("dotenv").config();
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
-// const fs = require("fs");
 import session from "express-session";
 import log4js from "log4js";
 import mongoose from "mongoose";
@@ -12,7 +11,6 @@ import http from "node:http";
 import path from "node:path";
 import passport from "passport";
 import serveIndex from "serve-index";
-// const vhost = require("vhost");
 
 const logger = log4js.getLogger();
 logger.level = "all";
@@ -49,15 +47,6 @@ app.use(express.static(path.join(__dirname, "../../client/build")));
 app.use("/api", require("./routes/index"));
 app.use("/public", express.static("../public"), serveIndex("public", { icons: true, view: "details", hidden: true }));
 
-// virtual hosts
-// const virtualHosts = JSON.parse(fs.readFileSync("vhosts.json", "utf8"));
-
-// virtualHosts.forEach(function (virtualHost) {
-//     const virtualHostApp = express();
-//     virtualHostApp.use(express.static(path.join(__dirname, virtualHost.path)));
-//     app.use(vhost(virtualHost.domain, virtualHostApp));
-// });
-
 // check if cluster is primary
 if (multiThreaded && cluster.isPrimary) {
     console.log(`Primary ${process.pid} is running`);
@@ -79,3 +68,5 @@ if (multiThreaded && cluster.isPrimary) {
 
     console.log(`Worker ${process.pid} started`);
 }
+
+module.exports.mongoose = mongoose;

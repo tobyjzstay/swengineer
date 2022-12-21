@@ -10,9 +10,14 @@ export const verifyToken = (req: Request, res: Response, next: () => void) => {
 
     if (token)
         jwt.verify(token, process.env.API_SECRET, (err: NodeJS.ErrnoException, decode: { id: Types.ObjectId }) => {
-            const { id } = decode;
-            if (err) internalServerError(res, err);
-            else
+            if (!decode) {
+                next();
+                return;
+            } else if (err) {
+                internalServerError(res, err);
+                return;
+            } else {
+                const { id } = decode;
                 User.findOne({
                     _id: id,
                 }).exec((err, user) => {
@@ -22,6 +27,7 @@ export const verifyToken = (req: Request, res: Response, next: () => void) => {
                         next();
                     }
                 });
+            }
         });
     else next();
 };

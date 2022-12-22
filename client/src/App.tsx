@@ -20,8 +20,9 @@ import { Verify } from "./routes/Verify";
 const snackbars: SnackbarKey[] = [];
 
 interface User {
+    id: string;
     email: string;
-    avatar: string;
+    created: string;
 }
 
 export const UserContext = React.createContext<[User, React.Dispatch<React.SetStateAction<User>>]>([

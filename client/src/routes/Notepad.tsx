@@ -22,7 +22,7 @@ import { showResponse } from "../App";
 import { Appbar } from "../components/Appbar";
 
 interface Notepad {
-    _id: string;
+    id: string;
     title: string;
     content: string;
     created: Date;
@@ -84,7 +84,7 @@ export function Notepad() {
         e.stopPropagation();
         const notepad = notepads[index];
         const json = {
-            id: notepad._id,
+            id: notepad.id,
         };
         fetch("/api/notepad/delete", {
             method: "POST",
@@ -108,7 +108,7 @@ export function Notepad() {
         if (!edit) return;
         const notepad = notepads[notepadIndex];
         const json = {
-            id: notepad._id,
+            id: notepad.id,
             title: notepad.title,
             content: notepad.content,
         };
@@ -167,7 +167,7 @@ export function Notepad() {
                         {notepads
                             .sort((a, b) => b.modified.getTime() - a.modified.getTime())
                             .map((notepad, i) => (
-                                <Grid key={notepad._id} item xs={12}>
+                                <Grid key={notepad.id} item xs={12}>
                                     <Card sx={{ width: "100%", marginTop: 2 }}>
                                         <CardActionArea onClick={() => handleClick(i)}>
                                             <CardContent>

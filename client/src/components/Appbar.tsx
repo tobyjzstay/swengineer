@@ -31,7 +31,8 @@ export function Appbar() {
             },
         }).then(async (response) => {
             const json = await response.json();
-            setUser(json);
+            const { user } = json;
+            setUser(user);
         });
     }, []);
 
@@ -42,7 +43,7 @@ export function Appbar() {
                     <Logo scale={0.6} />
                 </Box>
                 <IconButton onClick={handleClick}>
-                    <Avatar src={user.avatar} sx={{ width: 24, height: 24 }} />
+                    <Avatar sx={{ width: 24, height: 24 }} />
                 </IconButton>
                 <Menu
                     anchorEl={anchorEl}

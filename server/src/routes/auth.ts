@@ -9,7 +9,14 @@ const router = express.Router();
 
 router.get("/", verifyToken, (req, res) => {
     const user = app.locals.user as User;
-    res.status(200).json({ email: user?.email });
+
+    const userData = {
+        id: user?._id,
+        email: user?.email,
+        created: user?.created,
+    };
+
+    res.status(200).json({ user: userData });
 });
 
 router.get(

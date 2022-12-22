@@ -23,7 +23,17 @@ router.get("/", verifyToken, (_req, res) => {
                 return;
             }
 
-            res.status(200).json({ notepads });
+            const notepadsData = notepads.map((notepad) => {
+                return {
+                    id: notepad._id,
+                    title: notepad.title,
+                    content: notepad.content,
+                    created: notepad.created,
+                    modified: notepad.modified,
+                };
+            });
+
+            res.status(200).json({ notepads: notepadsData });
         });
 });
 

@@ -12,6 +12,19 @@ export function Login() {
     const [submitted, setSubmitted] = React.useState(false);
     const [responded, setResponded] = React.useState(false);
 
+    React.useEffect(() => {
+        fetch(`/api/auth`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        }).then(async (response) => {
+            const json = await response.json();
+            const { user } = json;
+            if (user) navigate("/", { replace: true });
+        });
+    }, []);
+
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setSubmitted(true);

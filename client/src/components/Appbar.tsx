@@ -55,7 +55,7 @@ export function Appbar() {
                         },
                     }}
                 >
-                    {user.email ? (
+                    {user?.email ? (
                         [
                             <MenuItem key="email" disabled divider>
                                 {user.email}

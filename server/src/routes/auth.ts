@@ -7,14 +7,16 @@ import { User } from "../models/User";
 
 const router = express.Router();
 
-router.get("/", verifyToken, (req, res) => {
+router.get("/", verifyToken, (_req, res) => {
     const user = app.locals.user as User;
 
-    const userData = {
-        id: user?._id,
-        email: user?.email,
-        created: user?.created,
-    };
+    const userData = user
+        ? {
+              id: user._id,
+              email: user.email,
+              created: user.created,
+          }
+        : undefined;
 
     res.status(200).json({ user: userData });
 });

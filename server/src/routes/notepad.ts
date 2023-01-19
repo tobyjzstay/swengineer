@@ -7,7 +7,7 @@ import { User } from "../models/User";
 
 const router = express.Router();
 
-router.get("/", verifyToken, (_req, res) => {
+router.get("/", verifyToken, (req, res) => {
     const user = app.locals.user as User;
 
     if (!user) {

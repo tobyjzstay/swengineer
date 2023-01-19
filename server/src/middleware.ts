@@ -11,7 +11,7 @@ export const verifyToken = (req: Request, res: Response, next: () => void) => {
     if (token)
         jwt.verify(token, process.env.API_SECRET, (err: NodeJS.ErrnoException, decode: { id: Types.ObjectId }) => {
             if (!decode) {
-                next();
+                loginRedirect(req, res);
                 return;
             } else if (err) {
                 internalServerError(res, err);
@@ -29,5 +29,15 @@ export const verifyToken = (req: Request, res: Response, next: () => void) => {
                 });
             }
         });
-    else next();
+    else loginRedirect(req, res);
 };
+
+function loginRedirect(req: Request, res: Response) {
+    const referer = req.headers.referer;
+    const path = referer?.split("/").slice(3).join("/");
+
+    res.status(401).json({
+        message: "Login required",
+        redirect: "/login" + (path ? `?redirect=/${path}` : ""),
+    });
+}

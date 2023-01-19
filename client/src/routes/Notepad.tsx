@@ -18,7 +18,8 @@ import {
 } from "@mui/material";
 import { useSnackbar } from "notistack";
 import React from "react";
-import { showResponse } from "../App";
+import { useNavigate } from "react-router-dom";
+import { showResponse as handleResponse } from "../App";
 import { Appbar } from "../components/Appbar";
 
 interface Notepad {
@@ -31,6 +32,7 @@ interface Notepad {
 
 export function Notepad() {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const navigate = useNavigate();
     const forceUpdate = useForceUpdate();
 
     const [refresh, setRefresh] = React.useState(true);
@@ -46,7 +48,7 @@ export function Notepad() {
                 "Content-Type": "application/json",
             },
         }).then(async (response) => {
-            const json = await showResponse(response, enqueueSnackbar, closeSnackbar);
+            const json = await handleResponse(response, enqueueSnackbar, closeSnackbar, navigate);
             const { notepads } = json;
             setNotepads(
                 notepads.map((notepad: Notepad) => ({
@@ -76,7 +78,7 @@ export function Notepad() {
         }).then((response) => {
             const success = response.status === 201;
             if (success) setRefresh(true);
-            showResponse(response, enqueueSnackbar, closeSnackbar);
+            handleResponse(response, enqueueSnackbar, closeSnackbar);
         });
     };
 
@@ -95,7 +97,7 @@ export function Notepad() {
         }).then((response) => {
             const success = response.status === 200;
             if (success) notepads.splice(index, 1);
-            showResponse(response, enqueueSnackbar, closeSnackbar);
+            handleResponse(response, enqueueSnackbar, closeSnackbar);
             forceUpdate();
         });
     };
@@ -119,7 +121,7 @@ export function Notepad() {
             },
             body: JSON.stringify(json),
         }).then(async (response) => {
-            const json = await showResponse(response, enqueueSnackbar, closeSnackbar);
+            const json = await handleResponse(response, enqueueSnackbar, closeSnackbar);
             const { modified } = json;
             if (modified) notepads[notepadIndex].modified = new Date(modified);
             setEdit(false);

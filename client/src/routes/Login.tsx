@@ -1,13 +1,22 @@
 import { Box, Button, CircularProgress, Container, Grid, Link, TextField, Typography } from "@mui/material";
 import { useSnackbar } from "notistack";
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { showResponse } from "../App";
 import { Logo } from "../components/Logo";
+
+function useQuery() {
+    const { search } = useLocation();
+
+    return React.useMemo(() => new URLSearchParams(search), [search]);
+}
 
 export function Login() {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const navigate = useNavigate();
+
+    const query = useQuery();
+    const redirect = query.get("redirect");
 
     const [submitted, setSubmitted] = React.useState(false);
     const [responded, setResponded] = React.useState(false);
@@ -29,12 +38,14 @@ export function Login() {
         event.preventDefault();
         setSubmitted(true);
 
+        console.log("redirect? ", redirect);
+
         const data = new FormData(event.currentTarget);
         const json = {
             email: data.get("email"),
             password: data.get("password"),
         };
-        fetch("/api/login", {
+        fetch("/api/login" + (redirect ? `?redirect=${redirect}` : ""), {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -46,6 +57,7 @@ export function Login() {
             setResponded(success);
             if (success) navigate("/");
             showResponse(response, enqueueSnackbar, closeSnackbar);
+            if (redirect) navigate(redirect);
         });
     };
 

@@ -104,6 +104,8 @@ router.get("/register/:token", (req, res) => {
 
 router.post("/login", (req, res) => {
     const { email, password } = req.body;
+    const redirect = req.query.redirect;
+    console.log(redirect);
 
     User.findOne({
         email: email,
@@ -147,10 +149,12 @@ router.post("/login", (req, res) => {
             }
         );
 
-        // responding to client request success message and access token
-        res.cookie("token", token).status(200).send({
-            message: "Login successful",
-        });
+        res.cookie("token", token)
+            .status(200)
+            .send({
+                message: "Login successful",
+                redirect: redirect && req.headers.referer + redirect,
+            });
     });
 });
 

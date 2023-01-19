@@ -3,7 +3,7 @@ import createTheme from "@mui/material/styles/createTheme";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
 import { ProviderContext, SnackbarKey, SnackbarProvider } from "notistack";
 import React from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, NavigateFunction, Route, Routes } from "react-router-dom";
 import { SnackbarAlert } from "./components/SnackbarAlert";
 import { ChangePassword } from "./routes/ChangePassword";
 import { Clock } from "./routes/Clock";
@@ -82,12 +82,13 @@ export default App;
 export async function showResponse(
     response: Response,
     enqueueSnackbar: ProviderContext["enqueueSnackbar"],
-    closeSnackbar: ProviderContext["closeSnackbar"]
+    closeSnackbar: ProviderContext["closeSnackbar"],
+    navigate?: NavigateFunction
 ) {
     const json = await response.json();
+    if (navigate && json?.redirect) navigate(json.redirect, { replace: true });
     switch (~~(response.status / 100)) {
         case 1:
-        case 3:
             snackbars.push(
                 enqueueSnackbar(json?.message ?? "", {
                     variant: "alert",
@@ -102,6 +103,16 @@ export async function showResponse(
                 enqueueSnackbar(json?.message ?? "", {
                     variant: "alert",
                     severity: "success",
+                    status: response.status,
+                    statusText: response.statusText,
+                })
+            );
+            break;
+        case 3:
+            snackbars.push(
+                enqueueSnackbar(json?.message ?? "", {
+                    variant: "alert",
+                    severity: "info",
                     status: response.status,
                     statusText: response.statusText,
                 })

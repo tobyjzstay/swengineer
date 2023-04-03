@@ -1,9 +1,9 @@
 import express from "express";
-import { internalServerError } from ".";
 import { app } from "..";
 import { verifyToken } from "../middleware";
 import { Notepad } from "../models/Notepad";
 import { User } from "../models/User";
+import { internalServerError } from "./api";
 
 const router = express.Router();
 

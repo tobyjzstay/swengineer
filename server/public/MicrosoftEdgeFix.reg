@@ -1,0 +1,29 @@
+Windows Registry Editor Version 5.00
+
+; Configure Autofill
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main]
+"UseFormSuggest"=
+
+; Configure Do Not Track
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main]
+"DoNotTrack"=dword:00000001
+
+; Configure Password Manager
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\MicrosoftEdge\Main]
+"FormSuggest Passwords"=hexadecimal(2):No
+
+; Configure search suggestions in Address bar
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\MicrosoftEdge\SearchScopes]
+"ShowSearchSuggestionsGlobal"=dword:00000000
+
+; Configure Windows Defender SmartScreen Filter (Windows 10, version 1703)
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\MicrosoftEdge\PhishingFilter]
+"EnabledV9"=dword:00000000
+
+; Allow web content on New Tab page
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\MicrosoftEdge\SearchScopes]
+"AllowWebContentOnNewTabPage"=dword:00000000
+
+; Configure corporate Home pages
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\MicrosoftEdge\ServiceUI]
+"ProvisionedHomePages"=dword:00000000

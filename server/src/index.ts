@@ -44,8 +44,9 @@ app.use(cors());
 app.use(cookieParser());
 
 app.use(express.static(path.join(__dirname, "../../client/build")));
-app.use("/api", require("./routes/index"));
-app.use("/public", express.static("../public"), serveIndex("public", { icons: true, view: "details", hidden: true }));
+app.use("/", require("./routes/index"));
+app.use("/api", require("./routes/api"));
+app.use("/public", express.static("public"), serveIndex("public", { icons: true, view: "details", hidden: true }));
 
 // check if cluster is primary
 if (multiThreaded && cluster.isPrimary) {

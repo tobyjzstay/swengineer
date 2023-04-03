@@ -1,0 +1,36 @@
+Windows Registry Editor Version 5.00
+
+; Turn on Suggested Sites
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Internet Explorer\Suggested Sites]
+"Enabled"=dword:00000000
+
+; Allow Microsoft services to provide enhanced suggestions as the user types in the Address Bar
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Internet Explorer]
+AllowServicePoweredQSA=dword:00000000
+
+; Turn off the auto-complete feature for web addresses
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Explorer\AutoComplete]
+"AutoSuggest"=hexadecimal(2):No
+
+; Disable Periodic Check for Internet Explorer software updates
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Internet Explorer\Infodelivery\Restrictions]
+"NoUpdateCheck"=dword:1
+
+; Turn off browser geolocation
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Internet Explorer\Geolocation]
+"Enabled"=dword:00000001
+
+; Prevent managing SmartScreen filter
+[HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\ Internet Explorer\PhishingFilter]
+"Enabled"=dword:00000000
+
+; Choose whether employees can configure Compatibility View.
+HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\MicrosoftEdge\BrowserEmulation!MSCompatibilityMode
+REG_DWORD: 0
+
+; Turn off the flip ahead with page prediction feature
+HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Internet Explorer\FlipAhead!Enabled 
+
+; Turn off background synchronization for feeds and Web Slices
+HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Internet Explorer\Feeds!BackgroundSyncStatus
+DWORD:0

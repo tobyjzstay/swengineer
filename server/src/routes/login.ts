@@ -4,10 +4,10 @@ import jwt from "jsonwebtoken";
 import log4js from "log4js";
 import crypto from "node:crypto";
 import nodemailer from "nodemailer";
-import { internalServerError } from ".";
 import { app } from "..";
 import { verifyToken } from "../middleware";
 import { User } from "../models/User";
+import { internalServerError } from "./api";
 
 const router = express.Router();
 const logger = log4js.getLogger();

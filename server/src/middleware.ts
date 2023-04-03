@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import { Types } from "mongoose";
 import { app } from ".";
 import { User } from "./models/User";
-import { internalServerError } from "./routes";
+import { internalServerError } from "./routes/api";
 
 export const verifyToken = (req: Request, res: Response, next: () => void) => {
     const token = req.body.token || req.query.token || req.headers["x-access-token"] || req.cookies.token;

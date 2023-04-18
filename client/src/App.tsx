@@ -1,9 +1,9 @@
-import { AlertColor, CssBaseline } from "@mui/material";
-import createTheme from "@mui/material/styles/createTheme";
+import { CssBaseline } from "@mui/material";
 import ThemeProvider from "@mui/material/styles/ThemeProvider";
-import { ProviderContext, SnackbarKey, SnackbarProvider } from "notistack";
+import createTheme from "@mui/material/styles/createTheme";
+import { SnackbarKey, SnackbarProvider } from "notistack";
 import React from "react";
-import { BrowserRouter, NavigateFunction, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { SnackbarAlert } from "./components/SnackbarAlert";
 import { ChangePassword } from "./routes/ChangePassword";
 import { Clock } from "./routes/Clock";
@@ -17,7 +17,7 @@ import { Register } from "./routes/Register";
 import { Reset } from "./routes/Reset";
 import { Verify } from "./routes/Verify";
 
-const snackbars: SnackbarKey[] = [];
+export const snackbars: SnackbarKey[] = [];
 
 interface User {
     id: string;
@@ -48,7 +48,6 @@ function App() {
     return (
         <ThemeProvider theme={darkTheme}>
             <SnackbarProvider
-                maxSnack={3}
                 Components={{
                     alert: SnackbarAlert,
                 }}
@@ -79,73 +78,58 @@ function App() {
 
 export default App;
 
-export async function showResponse(
-    response: Response,
-    enqueueSnackbar: ProviderContext["enqueueSnackbar"],
-    closeSnackbar: ProviderContext["closeSnackbar"],
-    navigate?: NavigateFunction
-) {
-    const json = await response.json();
-    if (navigate && json?.redirect) navigate(json.redirect, { replace: true });
-    switch (~~(response.status / 100)) {
-        case 1:
-            snackbars.push(
-                enqueueSnackbar(json?.message ?? "", {
-                    variant: "alert",
-                    severity: "info",
-                    status: response.status,
-                    statusText: response.statusText,
-                })
-            );
-            break;
-        case 2:
-            snackbars.push(
-                enqueueSnackbar(json?.message ?? "", {
-                    variant: "alert",
-                    severity: "success",
-                    status: response.status,
-                    statusText: response.statusText,
-                })
-            );
-            break;
-        case 3:
-            snackbars.push(
-                enqueueSnackbar(json?.message ?? "", {
-                    variant: "alert",
-                    severity: "info",
-                    status: response.status,
-                    statusText: response.statusText,
-                })
-            );
-            break;
-        default:
-        case 4:
-            snackbars.push(
-                enqueueSnackbar(json?.message ?? "", {
-                    variant: "alert",
-                    severity: "error",
-                    status: response.status,
-                    statusText: response.statusText,
-                })
-            );
-            break;
-        case 5:
-            snackbars.push(
-                enqueueSnackbar(json?.message ?? "", {
-                    variant: "alert",
-                    severity: "warning",
-                    status: response.status,
-                    statusText: response.statusText,
-                })
-            );
-            break;
-    }
-    snackbars.length > 3 && closeSnackbar(snackbars.shift());
-    return json;
-}
+// export async function showResponse(
+//     response: Response,
+//     enqueueSnackbar: ProviderContext["enqueueSnackbar"],
+//     closeSnackbar: ProviderContext["closeSnackbar"],
+//     navigate?: NavigateFunction
+// ) {
+//     const json = await response.json();
+//     let severity: AlertColor = "info";
+//     // if (navigate && json?.redirect) navigate(json.redirect, { replace: true });
+//     switch (~~(response.status / 100)) {
+//         default:
+//         case 1:
+//             severity = "info";
+//             break;
+//         case 2:
+//             severity = "success";
+//             break;
+//         case 3:
+//             severity = "info";
+//             break;
+//         case 4:
+//             severity = "error";
+//             break;
+//         case 5:
+//             severity = "warning";
+//             break;
+//     }
 
-declare module "notistack" {
-    interface VariantOverrides {
-        alert: { severity: AlertColor; status: number; statusText: string };
+//     snackbars.push(
+//         enqueueSnackbar(isJsonString(json) ? json.message : json, {
+//             variant: "alert",
+//             severity: severity,
+//             status: response.status,
+//             statusText: response.statusText,
+//         })
+//     );
+
+//     snackbars.length > 3 && closeSnackbar(snackbars.shift());
+//     return json;
+// }
+
+// declare module "notistack" {
+//     interface VariantOverrides {
+//         alert: { severity: AlertColor; status: number; statusText: string };
+//     }
+// }
+
+function isJsonString(str: string) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
     }
+    return true;
 }

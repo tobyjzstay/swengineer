@@ -14,13 +14,13 @@ import {
     Grid,
     IconButton,
     TextField,
-    Typography
+    Typography,
 } from "@mui/material";
 import { useSnackbar } from "notistack";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { showResponse as handleResponse } from "../App";
 import { Appbar } from "../components/Appbar";
+import { getRequest, postRequest, showResponse } from "../components/Request";
 
 interface Notepad {
     id: string;
@@ -42,13 +42,8 @@ export function Notepad() {
 
     React.useEffect(() => {
         if (!refresh) return;
-        fetch(`/api/notepad`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        }).then(async (response) => {
-            const json = await handleResponse(response, enqueueSnackbar, closeSnackbar, navigate);
+        getRequest("/notepad").then(async (response) => {
+            const json = await response.json();
             const { notepads } = json;
             setNotepads(
                 notepads.map((notepad: Notepad) => ({
@@ -70,15 +65,10 @@ export function Notepad() {
     }, [notepads, notepadIndex]);
 
     const handleCreate = () => {
-        fetch("/api/notepad/create", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        }).then((response) => {
+        getRequest("/notepad/create").then((response) => {
             const success = response.status === 201;
             if (success) setRefresh(true);
-            handleResponse(response, enqueueSnackbar, closeSnackbar);
+            showResponse(response);
         });
     };
 
@@ -88,16 +78,10 @@ export function Notepad() {
         const json = {
             id: notepad.id,
         };
-        fetch("/api/notepad/delete", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(json),
-        }).then((response) => {
+        postRequest("/notepad/delete", json).then((response) => {
             const success = response.status === 200;
             if (success) notepads.splice(index, 1);
-            handleResponse(response, enqueueSnackbar, closeSnackbar);
+            showResponse(response);
             forceUpdate();
         });
     };
@@ -114,14 +98,8 @@ export function Notepad() {
             title: notepad.title,
             content: notepad.content,
         };
-        fetch(`/api/notepad/edit`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(json),
-        }).then(async (response) => {
-            const json = await handleResponse(response, enqueueSnackbar, closeSnackbar);
+        postRequest("/notepad/edit", json).then(async (response) => {
+            const json = await response.json();
             const { modified } = json;
             if (modified) notepads[notepadIndex].modified = new Date(modified);
             setEdit(false);

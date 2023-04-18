@@ -1,12 +1,9 @@
 import { Box, Button, CircularProgress, Container, Grid, Link, TextField, Typography } from "@mui/material";
-import { useSnackbar } from "notistack";
 import * as React from "react";
-import { showResponse } from "../App";
 import { Logo } from "../components/Logo";
+import { postRequest } from "../components/Request";
 
 export function Reset() {
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-
     const [submitted, setSubmitted] = React.useState(false);
     const [responded, setResponded] = React.useState(false);
 
@@ -19,17 +16,10 @@ export function Reset() {
             email: data.get("email"),
         };
 
-        fetch("/api/reset", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(json),
-        }).then((response) => {
+        postRequest("/reset", json).then((response) => {
             const success = response.status === 200;
             setSubmitted(success);
             setResponded(success);
-            showResponse(response, enqueueSnackbar, closeSnackbar);
         });
     };
 

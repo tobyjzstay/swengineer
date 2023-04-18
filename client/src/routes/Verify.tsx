@@ -1,31 +1,23 @@
 import { Box, CircularProgress, Container } from "@mui/material";
-import { useSnackbar } from "notistack";
 import * as React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { showResponse } from "../App";
 import { Logo } from "../components/Logo";
+import { getRequest } from "../components/Request";
 import { PageNotFoundContent } from "./PageNotFound";
 
 export function Verify() {
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const navigate = useNavigate();
     const token = useParams().token;
 
     const [componentToRender, setComponentToRender] = React.useState(<CircularProgress />);
 
     React.useEffect(() => {
-        fetch(`/api/register/${token}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        }).then((response) => {
+        getRequest(`/register/${token}`).then((response) => {
             if (response.status === 200) {
                 navigate("/login");
             } else {
                 setComponentToRender(<PageNotFoundContent />);
             }
-            showResponse(response, enqueueSnackbar, closeSnackbar);
         });
     }, []);
 

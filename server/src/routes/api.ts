@@ -5,12 +5,16 @@ const router = express.Router();
 const logger = log4js.getLogger();
 
 router.get("/ping", (_req, res) => {
-    res.sendStatus(200);
+    res.status(200).json({ message: "Pong!" });
 });
 
 router.use("/auth", require("./auth"));
 router.use("/", require("./login")); // TODO: prefix
 router.use("/notepad", require("./notepad"));
+
+router.use((_req, res) => {
+    res.status(404).json("Not found");
+});
 
 export function internalServerError(res: Response, err: NodeJS.ErrnoException) {
     res.status(500).json({

@@ -2,8 +2,9 @@ import { Box, Button, CircularProgress, Container, TextField, Typography } from 
 import { useSnackbar } from "notistack";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { showResponse, UserContext } from "../App";
+import { UserContext } from "../App";
 import { Appbar } from "../components/Appbar";
+import { postRequest } from "../components/Request";
 
 export function Profile() {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
@@ -24,18 +25,11 @@ export function Profile() {
             email: data.get("email"),
             password: data.get("password"),
         };
-        fetch("/api/delete", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(json),
-        }).then(async (response) => {
+        postRequest("/delete", json).then(async (response) => {
             const success = response.status === 200;
             setSubmitted(success);
             setResponded(success);
             if (success) navigate("/");
-            showResponse(response, enqueueSnackbar, closeSnackbar);
         });
     };
     return (

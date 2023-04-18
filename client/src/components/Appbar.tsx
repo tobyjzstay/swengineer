@@ -2,11 +2,11 @@ import Login from "@mui/icons-material/Login";
 import Logout from "@mui/icons-material/Logout";
 import Person from "@mui/icons-material/Person";
 import { AppBar, Avatar, Box, IconButton, ListItemIcon, Menu, MenuItem, Toolbar } from "@mui/material";
-import { useSnackbar } from "notistack";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { showResponse, UserContext } from "../App";
+import { UserContext } from "../App";
 import { Logo } from "./Logo";
+import { getRequest, postRequest, showResponse } from "./Request";
 
 export function Appbar() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -18,18 +18,12 @@ export function Appbar() {
         setAnchorEl(null);
     };
 
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
     const [user, setUser] = React.useContext(UserContext);
 
     React.useEffect(() => {
-        fetch(`/api/auth`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        }).then(async (response) => {
+        getRequest("auth").then(async (response) => {
             const json = await response.json();
             const { user } = json;
             setUser(user);
@@ -74,14 +68,9 @@ export function Appbar() {
                             <MenuItem
                                 key="logout"
                                 onClick={() => {
-                                    fetch(`/api/logout`, {
-                                        method: "POST",
-                                        headers: {
-                                            "Content-Type": "application/json",
-                                        },
-                                    }).then((response) => {
+                                    postRequest("/logout", null).then((response) => {
                                         navigate(0);
-                                        showResponse(response, enqueueSnackbar, closeSnackbar);
+                                        showResponse(response);
                                     });
                                 }}
                             >

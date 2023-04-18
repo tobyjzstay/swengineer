@@ -1,9 +1,8 @@
 import { Box, Button, CircularProgress, Container, Grid, Link, TextField, Typography } from "@mui/material";
-import { useSnackbar } from "notistack";
 import * as React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { showResponse } from "../App";
 import { Logo } from "../components/Logo";
+import { getRequest, postRequest } from "../components/Request";
 
 function useQuery() {
     const { search } = useLocation();
@@ -12,7 +11,6 @@ function useQuery() {
 }
 
 export function Login() {
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
     const query = useQuery();
@@ -22,12 +20,7 @@ export function Login() {
     const [responded, setResponded] = React.useState(false);
 
     React.useEffect(() => {
-        fetch(`/api/auth`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        }).then(async (response) => {
+        getRequest("/auth").then(async (response) => {
             const json = await response.json();
             const { user } = json;
             if (user) navigate("/", { replace: true });
@@ -38,25 +31,16 @@ export function Login() {
         event.preventDefault();
         setSubmitted(true);
 
-        console.log("redirect? ", redirect);
-
         const data = new FormData(event.currentTarget);
         const json = {
             email: data.get("email"),
             password: data.get("password"),
         };
-        fetch("/api/login" + (redirect ? `?redirect=${redirect}` : ""), {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(json),
-        }).then(async (response) => {
+        postRequest("/login" + redirect ? `?redirect=${redirect}` : "", json).then(async (response) => {
             const success = response.status === 200;
             setSubmitted(success);
             setResponded(success);
             if (success) navigate("/");
-            showResponse(response, enqueueSnackbar, closeSnackbar);
             if (redirect) navigate(redirect);
         });
     };

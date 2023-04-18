@@ -1,7 +1,10 @@
 import { Box, Container, Typography } from "@mui/material";
 import { Logo } from "../components/Logo";
+import { getRequest } from "../components/Request";
 
 export function PageNotFound() {
+    
+    getRequest(window.location.pathname);
     return (
         <Container component="main" maxWidth="xs">
             <Box
@@ -23,8 +26,9 @@ export function PageNotFound() {
 
 export function PageNotFoundContent() {
     return (
+        // display the path the user tried to access
         <Typography component="h1" variant="h5">
-            Page not found
+            Page not found for path: {window.location.pathname}
         </Typography>
     );
 }

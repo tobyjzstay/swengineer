@@ -1,25 +1,18 @@
 import { Box, Button, CircularProgress, Container, TextField, Typography } from "@mui/material";
-import { useSnackbar } from "notistack";
 import * as React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { showResponse } from "../App";
 import { Logo } from "../components/Logo";
+import { getRequest, postRequest, showResponse } from "../components/Request";
 import { PageNotFoundContent } from "./PageNotFound";
 
 export function ChangePassword() {
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const token = useParams().token;
 
     const [componentToRender, setComponentToRender] = React.useState(<CircularProgress />);
 
     React.useEffect(() => {
-        fetch(`/api/reset/${token}`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-            },
-        }).then((response) => {
-            showResponse(response, enqueueSnackbar, closeSnackbar);
+        getRequest(`/reset/${token}`).then((response) => {
+            showResponse(response);
             if (response.status === 200) {
                 setComponentToRender(<NewPassword />);
             } else if (response.status === 401) {
@@ -34,7 +27,6 @@ export function ChangePassword() {
 }
 
 function NewPassword() {
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const navigate = useNavigate();
 
     const [submitted, setSubmitted] = React.useState(false);
@@ -51,18 +43,12 @@ function NewPassword() {
             password: data.get("password"),
         };
 
-        fetch(`/api/reset/${token}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(json),
-        }).then((response) => {
+        postRequest(`/reset/${token}`, json).then((response) => {
             const success = response.status === 200;
             setSubmitted(success);
             setResponded(success);
             if (success) navigate("/login");
-            showResponse(response, enqueueSnackbar, closeSnackbar);
+            showResponse(response);
         });
     };
 
@@ -93,8 +79,6 @@ function NewPassword() {
 }
 
 function ResendEmail() {
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-
     const token = useParams().token;
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -102,14 +86,8 @@ function ResendEmail() {
         const json = {
             token: token,
         };
-        fetch("/api/reset", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(json),
-        }).then((response) => {
-            showResponse(response, enqueueSnackbar, closeSnackbar);
+        postRequest("/reset", json).then((response) => {
+            showResponse(response);
         });
     };
 

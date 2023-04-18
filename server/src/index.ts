@@ -25,7 +25,8 @@ const multiThreaded = process.env.MULTI_THREADED === "true";
 const httpPort = process.env.HTTP_PORT;
 
 // mongoose
-const uri = `mongodb+srv://admin:${password}@cluster0.gvtap.mongodb.net/${environment}?retryWrites=true&w=majority`;
+// const uri = `mongodb+srv://admin:${password}@cluster0.gvtap.mongodb.net/${environment}?retryWrites=true&w=majority`;
+const uri = `mongodb://127.0.0.1:27017/${environment}`
 mongoose.set("strictQuery", true);
 mongoose.connect(uri, { serverApi: "1" });
 

@@ -105,7 +105,6 @@ router.get("/register/:token", (req, res) => {
 router.post("/login", (req, res) => {
     const { email, password } = req.body;
     const redirect = req.query.redirect;
-    console.log(redirect);
 
     User.findOne({
         email: email,

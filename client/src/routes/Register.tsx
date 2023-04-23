@@ -17,7 +17,7 @@ export function Register() {
             password: data.get("password"),
         };
 
-        postRequest("/register", json).then((response) => {
+        postRequest("/auth/register", json).then((response) => {
             const success = response.status === 200;
             setSubmitted(success);
             setResponded(success);

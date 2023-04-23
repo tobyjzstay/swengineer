@@ -16,7 +16,7 @@ export function Reset() {
             email: data.get("email"),
         };
 
-        postRequest("/reset", json).then((response) => {
+        postRequest("/auth/reset", json).then((response) => {
             const success = response.status === 200;
             setSubmitted(success);
             setResponded(success);

@@ -43,7 +43,7 @@ function NewPassword() {
             password: data.get("password"),
         };
 
-        postRequest(`/reset/${token}`, json).then((response) => {
+        postRequest(`/auth/reset/${token}`, json).then((response) => {
             const success = response.status === 200;
             setSubmitted(success);
             setResponded(success);
@@ -86,7 +86,7 @@ function ResendEmail() {
         const json = {
             token: token,
         };
-        postRequest("/reset", json).then((response) => {
+        postRequest("/auth/reset", json).then((response) => {
             showResponse(response);
         });
     };

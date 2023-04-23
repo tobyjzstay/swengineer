@@ -6,7 +6,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../App";
 import { Logo } from "./Logo";
-import { getRequest, postRequest, showResponse } from "./Request";
+import { postRequest } from "./Request";
 
 export function Appbar() {
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -22,8 +22,18 @@ export function Appbar() {
 
     const [user, setUser] = React.useContext(UserContext);
 
+    // React.useEffect(() => {
+    //     getRequest("/auth").then(async (response) => {
+    //         const json = await response.json();
+    //         const { user } = json;
+    //         setUser(user);
+    //     });
+    // }, []);
+
     React.useEffect(() => {
-        getRequest("auth").then(async (response) => {
+        fetch(`/api/auth`, {
+            method: "GET",
+        }).then(async (response) => {
             const json = await response.json();
             const { user } = json;
             setUser(user);
@@ -68,9 +78,8 @@ export function Appbar() {
                             <MenuItem
                                 key="logout"
                                 onClick={() => {
-                                    postRequest("/logout", null).then((response) => {
+                                    postRequest("/auth/logout", {}).then(() => {
                                         navigate(0);
-                                        showResponse(response);
                                     });
                                 }}
                             >

@@ -8,8 +8,10 @@ declare module "notistack" {
     }
 }
 
+const API_SERVER_URL = "/api";
+
 export async function getRequest(input: RequestInfo | URL) {
-    return fetch("http://localhost:8080/api" + input, {
+    return fetch(API_SERVER_URL + input, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -18,7 +20,7 @@ export async function getRequest(input: RequestInfo | URL) {
 }
 
 export async function postRequest(input: RequestInfo | URL, body: any) {
-    return fetch("http://localhost:8080/api" + input, {
+    return fetch(API_SERVER_URL + input, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -28,9 +30,9 @@ export async function postRequest(input: RequestInfo | URL, body: any) {
 }
 
 export async function showResponse(response: Response) {
+    const clone = response.clone();
     const json = await response.json();
     let severity: AlertColor = "info";
-
     switch (~~(response.status / 100)) {
         default:
         case 1:
@@ -60,13 +62,13 @@ export async function showResponse(response: Response) {
         })
     );
 
-    return response;
+    return clone;
 }
 
 function isJsonString(str: string) {
     try {
         JSON.parse(str);
-    } catch (e) {
+    } catch {
         return false;
     }
     return true;

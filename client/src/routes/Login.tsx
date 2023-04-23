@@ -36,7 +36,7 @@ export function Login() {
             email: data.get("email"),
             password: data.get("password"),
         };
-        postRequest("/login" + redirect ? `?redirect=${redirect}` : "", json).then(async (response) => {
+        postRequest("/auth/login" + (redirect ? `?redirect=${redirect}` : ""), json).then(async (response) => {
             const success = response.status === 200;
             setSubmitted(success);
             setResponded(success);

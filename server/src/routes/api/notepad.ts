@@ -1,13 +1,13 @@
 import express from "express";
-import { app } from "..";
-import { verifyToken } from "../middleware";
-import { Notepad } from "../models/Notepad";
-import { User } from "../models/User";
-import { internalServerError } from "./api";
+import { internalServerError } from ".";
+import { app } from "../..";
+import { auth } from "../../middleware";
+import { Notepad } from "../../models/Notepad";
+import { User } from "../../models/User";
 
 const router = express.Router();
 
-router.get("/", verifyToken, (req, res) => {
+router.get("/", auth, (req, res) => {
     const user = app.locals.user as User;
 
     if (!user) {
@@ -37,7 +37,7 @@ router.get("/", verifyToken, (req, res) => {
         });
 });
 
-router.get("/create", verifyToken, (req, res) => {
+router.get("/create", auth, (req, res) => {
     const user = app.locals.user as User;
 
     if (!user) {
@@ -60,7 +60,7 @@ router.get("/create", verifyToken, (req, res) => {
     });
 });
 
-router.post("/delete", verifyToken, (req, res) => {
+router.post("/delete", auth, (req, res) => {
     const { id } = req.body;
 
     const user = app.locals.user as User;
@@ -87,7 +87,7 @@ router.post("/delete", verifyToken, (req, res) => {
     });
 });
 
-router.post("/edit", verifyToken, (req, res) => {
+router.post("/edit", auth, (req, res) => {
     const { id, title, content } = req.body;
 
     const user = app.locals.user as User;

@@ -9,7 +9,6 @@ router.get("/ping", (_req, res) => {
 });
 
 router.use("/auth", require("./auth"));
-router.use("/", require("./login")); // TODO: prefix
 router.use("/notepad", require("./notepad"));
 
 router.use((_req, res) => {

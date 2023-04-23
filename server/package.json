@@ -42,7 +42,7 @@
     "scripts": {
         "build": "tsc",
         "dev": "DEBUG='*' pnpm run start",
-        "test": "ENVIRONMENT='test' HTTP_PORT=8888 MULTI_THREADED=false mocha --recursive --exit --timeout 10000",
+        "test": "PORT=0 TEST=true mocha --recursive --exit --timeout 10000",
         "start": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node --transpileOnly src/index.ts\""
     },
     "type": "commonjs"

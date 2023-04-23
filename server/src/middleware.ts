@@ -1,43 +1,33 @@
 import { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import { Types } from "mongoose";
+import log4js from "log4js";
 import { app } from ".";
 import { User } from "./models/User";
-import { internalServerError } from "./routes/api";
 
-export const verifyToken = (req: Request, res: Response, next: () => void) => {
-    const token = req.body.token || req.query.token || req.headers["x-access-token"] || req.cookies.token;
+const logger = log4js.getLogger();
 
-    if (token)
-        jwt.verify(token, process.env.API_SECRET, (err: NodeJS.ErrnoException, decode: { id: Types.ObjectId }) => {
-            if (!decode) {
-                loginRedirect(req, res);
-                return;
-            } else if (err) {
-                internalServerError(res, err);
-                return;
-            } else {
-                const { id } = decode;
-                User.findOne({
-                    _id: id,
-                }).exec((err, user) => {
-                    if (err) internalServerError(res, err);
-                    else {
-                        app.locals.user = user;
-                        next();
-                    }
-                });
+export const auth = (req: Request, res: Response, next: () => void) => {
+    const token = req.cookies.access_token;
+
+    if (!token) return res.status(401).json({});
+
+    try {
+        const data = jwt.verify(token, process.env.API_SECRET);
+        if (!data) return res.status(403).json({});
+        const { id } = data as { id: string };
+        User.findOne({
+            _id: id,
+        }).exec((err, user) => {
+            if (err) {
+                logger.error(err);
+                return res.status(500).json({});
             }
+            if (!user) return res.sendStatus(403);
+            app.locals.user = user;
+            return next();
         });
-    else loginRedirect(req, res);
+    } catch (error: unknown) {
+        logger.error(error);
+        return res.status(403).json({});
+    }
 };
-
-function loginRedirect(req: Request, res: Response) {
-    const referer = req.headers.referer;
-    const path = referer?.split("/").slice(3).join("/");
-
-    res.status(401).json({
-        message: "Login required",
-        redirect: "/login" + (path ? `?redirect=/${path}` : ""),
-    });
-}

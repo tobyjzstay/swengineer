@@ -4,16 +4,56 @@ import jwt from "jsonwebtoken";
 import log4js from "log4js";
 import crypto from "node:crypto";
 import nodemailer from "nodemailer";
-import { app } from "..";
-import { verifyToken } from "../middleware";
-import { User } from "../models/User";
-import { internalServerError } from "./api";
+import passport from "passport";
+import { internalServerError } from ".";
+import { app } from "../..";
+import { auth } from "../../middleware";
+import { User } from "../../models/User";
 
 const router = express.Router();
 const logger = log4js.getLogger();
 
 const cryptoSize = Number(process.env.CRYPTO_SIZE);
 const saltRounds = Number(process.env.SALT_ROUNDS);
+
+router.get("/", auth, (_req, res) => {
+    const user = app.locals.user as User;
+
+    const userData = user
+        ? {
+              id: user._id,
+              email: user.email,
+              created: user.created,
+          }
+        : undefined;
+
+    res.status(200).json({ user: userData });
+});
+
+router.get(
+    "/google",
+    passport.authenticate("google", {
+        scope: ["profile", "email"],
+    })
+);
+
+// redirect to home page after successful login
+router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
+    const user = req.user as User;
+
+    const token = jwt.sign(
+        {
+            id: user.id,
+        },
+        process.env.API_SECRET,
+        {
+            expiresIn: 86400,
+        }
+    );
+
+    // responding to client request success message and access token
+    res.cookie("token", token).redirect("/");
+});
 
 router.post("/register", (req, res) => {
     const { email, password } = req.body;
@@ -124,14 +164,14 @@ router.post("/login", (req, res) => {
 
         // checking if password was valid and send response accordingly
         if (!passwordIsValid) {
-            res.status(401).send({
+            res.status(401).json({
                 message: "Invalid password",
             });
             return;
         }
 
         if (!user.verified) {
-            res.status(403).send({
+            res.status(403).json({
                 message: "Email address not verified",
             });
             return;
@@ -148,20 +188,22 @@ router.post("/login", (req, res) => {
             }
         );
 
-        res.cookie("token", token)
+        // send token as cookie
+        return res
+            .cookie("access_token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+            })
             .status(200)
-            .send({
-                message: "Login successful",
-                redirect: redirect && req.headers.referer + redirect,
-            });
+            .json({ message: "Logged in successfully" });
     });
 });
 
-router.post("/logout", verifyToken, (_req, res) => {
-    app.locals.user = undefined;
+router.post("/logout", auth, (_req, res) => {
+    // delete app.locals.user;
 
-    res.clearCookie("token").status(200).send({
-        message: "Logout successful",
+    res.clearCookie("access_token").status(200).json({
+        message: "Logged out successfully",
     });
 });
 
@@ -312,7 +354,7 @@ router.post("/reset/:token", (req, res) => {
     });
 });
 
-router.post("/delete", verifyToken, (req, res) => {
+router.post("/delete", auth, (req, res) => {
     const user = req.user as User;
 
     User.findByIdAndDelete(user.id, (err: NodeJS.ErrnoException) => {
@@ -342,7 +384,7 @@ function sendVerificationEmail(host: string, token: string, email: string): Node
         text:
             `Verify your email address to finish registering your swengineer account.\n` +
             `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
-            `${host}/${token}\n\n`,
+            `${host}auth/register/${token}\n\n`,
     };
     smtpTransport.sendMail(mailOptions, (err) => {
         return err;
@@ -365,7 +407,7 @@ function sendResetEmail(host: string, token: string, email: string, ip: string):
         text:
             `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n` +
             `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
-            `${host}/${token}\n\n` +
+            `${host}auth/reset/${token}\n\n` +
             `If you did not request this, please ignore this email and your password will remain unchanged.\n\n` +
             `Email: ${email}\n` +
             `IP Address: ${ip}\n` +

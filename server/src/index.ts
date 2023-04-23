@@ -7,7 +7,6 @@ import session from "express-session";
 import log4js from "log4js";
 import mongoose from "mongoose";
 import cluster from "node:cluster";
-import http from "node:http";
 import os from "node:os";
 import path from "node:path";
 import passport from "passport";
@@ -20,13 +19,15 @@ require("./passport");
 
 const ENVIRONMENT = process.env.ENVIRONMENT;
 const SECRET = process.env.PASSPORT_SECRET;
+const TEST = process.env.TEST;
 
-const DATABASE_URI = "mongodb://127.0.0.1:27017/" + ENVIRONMENT;
-const HTTP_PORT = 8080;
+const LOCALHOST = "127.0.0.1";
+const DATABASE_URI = "mongodb://" + LOCALHOST + ":27017/" + ENVIRONMENT;
+const PORT = parseInt(process.env.PORT) || 0;
 
 export const app = express();
 
-if (cluster.isPrimary) {
+if (cluster.isPrimary && !TEST) {
     const cpusLength = os.cpus().length;
     for (let i = 0; i < cpusLength; i++) {
         cluster.fork();
@@ -62,7 +63,11 @@ if (cluster.isPrimary) {
     app.use(passport.initialize());
     app.use(session({ secret: SECRET, resave: true, saveUninitialized: true }));
 
-    app.use(cors());
+    app.use(
+        cors({
+            credentials: true,
+        })
+    );
     app.use(cookieParser());
 
     app.use((req, _res, next) => {
@@ -72,11 +77,17 @@ if (cluster.isPrimary) {
 
     app.use(express.static(path.join(__dirname, "../../client/build")));
     app.use("/public", express.static("public"), serveIndex("public", { icons: true, view: "details", hidden: true }));
-    app.use("/api", require("./routes/api"));
     app.use(require("./routes/index"));
 
-    const httpServer = http.createServer(app);
-    httpServer.listen(HTTP_PORT, () => {
-        logger.info(`HTTP server listening at http://localhost:${HTTP_PORT}/`);
+    app.use((_req, res) => {
+        res.sendStatus(404);
+    });
+
+    const server = app.listen(PORT, LOCALHOST, () => {
+        const address = server.address();
+        const uri = typeof address === "string" ? address : "http://" + address?.address + ":" + address?.port + "/";
+        logger.info("HTTP server listening at " + uri);
     });
 }
+
+module.exports.mongoose = mongoose;

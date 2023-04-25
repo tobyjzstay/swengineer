@@ -1,7 +1,4 @@
-import Login from "@mui/icons-material/Login";
-import Logout from "@mui/icons-material/Logout";
-import Person from "@mui/icons-material/Person";
-import { AppBar, Avatar, Box, IconButton, ListItemIcon, Menu, MenuItem, Toolbar } from "@mui/material";
+import { AppBar, Avatar, Box, Icon, IconButton, ListItemIcon, Menu, MenuItem, Toolbar } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../App";
@@ -72,7 +69,7 @@ function Header() {
                                 }}
                             >
                                 <ListItemIcon>
-                                    <Person fontSize="small" />
+                                    <Icon fontSize="small">logout</Icon>
                                 </ListItemIcon>
                                 Profile
                             </MenuItem>,
@@ -85,7 +82,7 @@ function Header() {
                                 }}
                             >
                                 <ListItemIcon>
-                                    <Logout fontSize="small" />
+                                    <Icon fontSize="small">logout</Icon>
                                 </ListItemIcon>
                                 Logout
                             </MenuItem>,
@@ -93,7 +90,7 @@ function Header() {
                     ) : (
                         <MenuItem onClick={() => navigate("/login")}>
                             <ListItemIcon>
-                                <Login fontSize="small" />
+                                <Icon fontSize="small">login</Icon>
                             </ListItemIcon>
                             Login
                         </MenuItem>

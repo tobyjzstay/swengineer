@@ -10,12 +10,12 @@ dependencies:
   '@fontsource/cascadia-mono':
     specifier: ^4.2.1
     version: 4.2.1
+  '@fontsource/material-icons':
+    specifier: ^4.5.4
+    version: 4.5.4
   '@fontsource/roboto':
     specifier: ^4.5.7
     version: 4.5.8
-  '@mui/icons-material':
-    specifier: ^5.10.9
-    version: 5.10.9(@mui/material@5.10.2)(@types/react@18.0.17)(react@18.2.0)
   '@mui/material':
     specifier: ^5.9.3
     version: 5.10.2(@emotion/react@11.10.0)(@emotion/styled@11.10.0)(@types/react@18.0.17)(react-dom@18.2.0)(react@18.2.0)
@@ -1772,6 +1772,10 @@ packages:
     deprecated: Deprecated
     dev: false
 
+  /@fontsource/material-icons@4.5.4:
+    resolution: {integrity: sha512-YGmXkkEdu6EIgpFKNmB/nIXzZocwSmbI01Ninpmml8x8BT0M6RR++V1KqOfpzZ6Cw/FQ2/KYonQ3x4IY/4VRRA==}
+    dev: false
+
   /@fontsource/roboto@4.5.8:
     resolution: {integrity: sha512-CnD7zLItIzt86q4Sj3kZUiLcBk1dSk81qcqgMGaZe7SQ1P8hFNxhMl5AZthK1zrDM5m74VVhaOpuMGIL4gagaA==}
     dev: false
@@ -2119,23 +2123,6 @@ packages:
 
   /@mui/core-downloads-tracker@5.10.2:
     resolution: {integrity: sha512-1guoGvL3QZ7VjA3y9zye9Rpm+jz18rVZIo3AauTGyW5ntDMxr/cR0M18nuc/NH2KqpMt+coh4NwPEO1uPuKM5w==}
-    dev: false
-
-  /@mui/icons-material@5.10.9(@mui/material@5.10.2)(@types/react@18.0.17)(react@18.2.0):
-    resolution: {integrity: sha512-sqClXdEM39WKQJOQ0ZCPTptaZgqwibhj2EFV9N0v7BU1PO8y4OcX/a2wIQHn4fNuDjIZktJIBrmU23h7aqlGgg==}
-    engines: {node: '>=12.0.0'}
-    peerDependencies:
-      '@mui/material': ^5.0.0
-      '@types/react': ^17.0.0 || ^18.0.0
-      react: ^17.0.0 || ^18.0.0
-    peerDependenciesMeta:
-      '@types/react':
-        optional: true
-    dependencies:
-      '@babel/runtime': 7.19.4
-      '@mui/material': 5.10.2(@emotion/react@11.10.0)(@emotion/styled@11.10.0)(@types/react@18.0.17)(react-dom@18.2.0)(react@18.2.0)
-      '@types/react': 18.0.17
-      react: 18.2.0
     dev: false
 
   /@mui/material@5.10.2(@emotion/react@11.10.0)(@emotion/styled@11.10.0)(@types/react@18.0.17)(react-dom@18.2.0)(react@18.2.0):

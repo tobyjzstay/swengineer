@@ -1,5 +1,4 @@
-import SquareIcon from "@mui/icons-material/Square";
-import { Box, Button, Fade, IconButton, MenuItem, Paper, Select, Slider } from "@mui/material";
+import { Box, Button, Fade, Icon, IconButton, MenuItem, Paper, Select, Slider } from "@mui/material";
 import React from "react";
 
 const enum Shape {
@@ -214,18 +213,24 @@ export function Draw() {
                             return (
                                 <Box key={i} display="flex" flexDirection="column">
                                     <IconButton size="small" onClick={() => handleColorChange(color1)}>
-                                        <SquareIcon
+                                        <Icon
+                                            fontSize="small"
                                             sx={{
                                                 color: color1,
                                             }}
-                                        />
+                                        >
+                                            square
+                                        </Icon>
                                     </IconButton>
                                     <IconButton size="small" onClick={() => handleColorChange(color2)}>
-                                        <SquareIcon
+                                        <Icon
+                                            fontSize="small"
                                             sx={{
                                                 color: color2,
                                             }}
-                                        />
+                                        >
+                                            square
+                                        </Icon>
                                     </IconButton>
                                 </Box>
                             );

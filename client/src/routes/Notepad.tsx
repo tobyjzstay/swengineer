@@ -1,5 +1,3 @@
-import Add from "@mui/icons-material/Add";
-import Delete from "@mui/icons-material/Delete";
 import {
     Box,
     Card,
@@ -12,6 +10,7 @@ import {
     DialogTitle,
     Fab,
     Grid,
+    Icon,
     IconButton,
     TextField,
     Typography,
@@ -174,7 +173,7 @@ export function Notepad() {
                                                     size="small"
                                                     onClick={(e) => handleDelete(e, i)}
                                                 >
-                                                    <Delete />
+                                                    <Icon fontSize="small">delete</Icon>
                                                 </IconButton>
                                             </CardActions>
                                         </CardActionArea>
@@ -222,7 +221,7 @@ export function Notepad() {
                     right: 16,
                 }}
             >
-                <Add />
+                <Icon fontSize="small">add</Icon>
             </Fab>
         </>
     );

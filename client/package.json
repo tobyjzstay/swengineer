@@ -10,6 +10,7 @@
         "@fontsource/cascadia-mono": "^4.2.1",
         "@fontsource/material-icons": "^4.5.4",
         "@fontsource/roboto": "^4.5.7",
+        "@mui/lab": "5.0.0-alpha.127",
         "@mui/material": "^5.9.3",
         "notistack": "3.0.0-alpha.11",
         "react": "^18.2.0",

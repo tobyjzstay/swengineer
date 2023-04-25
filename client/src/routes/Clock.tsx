@@ -1,5 +1,6 @@
-import { Container, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import React from "react";
+import PageLayout from "../components/PageLayout";
 
 const MICROSECOND = 1 / 1000;
 const SECOND = 1000;
@@ -21,19 +22,20 @@ export function Clock() {
     }, []);
 
     return (
-        <Container
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                textAlign: "center",
-                minHeight: "100vh",
-            }}
-        >
-            <Typography ref={timeRef} component="h1" variant="h1" />
-            <Typography variant="subtitle1">{"have passed on Miller's planet"}</Typography>
-        </Container>
+        <PageLayout>
+            <Box
+                sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    width: "100%",
+                }}
+            >
+                <Typography ref={timeRef} variant="h2" />
+                <Typography variant="subtitle1">{"have passed on Miller's planet"}</Typography>
+            </Box>
+        </PageLayout>
     );
 }
 

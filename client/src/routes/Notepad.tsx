@@ -19,7 +19,7 @@ import {
 import { useSnackbar } from "notistack";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Appbar } from "../components/Appbar";
+import Header from "../components/Header";
 import { getRequest, postRequest, showResponse } from "../components/Request";
 
 interface Notepad {
@@ -133,7 +133,7 @@ export function Notepad() {
 
     return (
         <>
-            <Appbar />
+            <Header />
             <Container maxWidth="sm">
                 <Box
                     sx={{

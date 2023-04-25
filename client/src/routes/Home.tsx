@@ -1,8 +1,7 @@
 import { Box, Collapse, Container, Fade, Typography } from "@mui/material";
+import { ThemeProvider, createTheme, responsiveFontSizes } from "@mui/material/styles";
 import React from "react";
-
-import { createTheme, responsiveFontSizes, ThemeProvider } from "@mui/material/styles";
-import { Appbar } from "../components/Appbar";
+import Header from "../components/Header";
 
 const DELAY = 3500;
 const COLOUR_DELAY = DELAY + 800;
@@ -48,22 +47,26 @@ export function Home() {
     }
 
     return (
-        <Box ref={pageRef}>
+        <Box
+            display="flex"
+            flexDirection="column"
+            ref={pageRef}
+            flexGrow={1}
+            sx={{
+                display: "flex",
+                flexDirection: "column",
+                minHeight: "100vh",
+            }}
+        >
             <Fade in={header}>
                 <Box>
-                    <Appbar />
+                    <Header />
                 </Box>
             </Fade>
             <Container
                 component="main"
                 maxWidth="md"
-                sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    textAlign: "left",
-                    minHeight: "100vh",
-                }}
+                sx={{ display: "flex", justifyContent: "center", alignItems: "center", flexGrow: 1, marginY: 2 }}
             >
                 <ThemeProvider theme={theme}>
                     <Typography component="h1" variant="h1">

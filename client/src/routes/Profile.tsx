@@ -2,8 +2,8 @@ import { Box, Button, CircularProgress, Container, TextField, Typography } from 
 import { useSnackbar } from "notistack";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../App";
-import { Appbar } from "../components/Appbar";
+import { AppContext } from "../App";
+import Header from "../components/Header";
 import { postRequest } from "../components/Request";
 
 export function Profile() {
@@ -14,7 +14,7 @@ export function Profile() {
     const [responded, setResponded] = React.useState(false);
     const [value, setValue] = React.useState("");
 
-    const [user] = React.useContext(UserContext);
+    const user = React.useContext(AppContext)?.user;
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -34,7 +34,7 @@ export function Profile() {
     };
     return (
         <>
-            <Appbar />
+            <Header />
             <Container component="main" maxWidth="xs">
                 <Box
                     sx={{

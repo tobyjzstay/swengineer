@@ -10,7 +10,7 @@ import { Clock } from "./routes/Clock";
 import { Draw } from "./routes/Draw";
 import { Home } from "./routes/Home";
 import { Login } from "./routes/Login";
-import { Music } from "./routes/Music";
+import Music from "./routes/Music";
 import { Notepad } from "./routes/Notepad";
 import { PageNotFound } from "./routes/PageNotFound";
 import { Profile } from "./routes/Profile";
@@ -26,10 +26,7 @@ interface User {
     created: string;
 }
 
-export const UserContext = React.createContext<[User, React.Dispatch<React.SetStateAction<User>>]>([
-    Object.create(null),
-    () => undefined,
-]);
+export const AppContext = React.createContext<App | null>(null);
 
 const darkTheme = createTheme({
     palette: {
@@ -43,95 +40,54 @@ const darkTheme = createTheme({
     },
 });
 
-function App() {
-    const user = React.useState(Object.create(null));
+class App extends React.Component {
+    user: User | null = null;
+    loading = 0;
 
-    return (
-        <ThemeProvider theme={darkTheme}>
-            <SnackbarProvider
-                Components={{
-                    alert: SnackbarAlert,
-                }}
-                transitionDuration={{ enter: 50, exit: 150 }}
-            >
-                <UserContext.Provider value={user}>
-                    <CssBaseline />
-                    <BrowserRouter>
-                        <Routes>
-                            <Route index element={<Home />} />
-                            <Route path="login" element={<Login />} />
-                            <Route path="register" element={<Register />} />
-                            <Route path="register/:token" element={<Verify />} />
-                            <Route path="reset" element={<Reset />} />
-                            <Route path="reset/:token" element={<ChangePassword />} />
-                            <Route path="profile" element={<Profile />} />
-                            <Route path="clock" element={<Clock />} />
-                            <Route path="draw" element={<Draw />} />
-                            <Route path="notepad" element={<Notepad />} />
-                            <Route path="music" element={<Music />} />
-                            <Route path="*" element={<PageNotFound />} />
-                        </Routes>
-                    </BrowserRouter>
-                </UserContext.Provider>
-            </SnackbarProvider>
-        </ThemeProvider>
-    );
+    startLoading() {
+        this.loading++;
+    }
+
+    stopLoading() {
+        this.loading--;
+    }
+
+    setUser(user: User) {
+        this.user = user;
+    }
+
+    render() {
+        return (
+            <ThemeProvider theme={darkTheme}>
+                <CssBaseline />
+                <SnackbarProvider
+                    Components={{
+                        alert: SnackbarAlert,
+                    }}
+                    transitionDuration={{ enter: 50, exit: 150 }}
+                >
+                    <AppContext.Provider value={this}>
+                        <BrowserRouter>
+                            <Routes>
+                                <Route index element={<Home />} />
+                                <Route path="login" element={<Login />} />
+                                <Route path="register" element={<Register />} />
+                                <Route path="register/:token" element={<Verify />} />
+                                <Route path="reset" element={<Reset />} />
+                                <Route path="reset/:token" element={<ChangePassword />} />
+                                <Route path="profile" element={<Profile />} />
+                                <Route path="clock" element={<Clock />} />
+                                <Route path="draw" element={<Draw />} />
+                                <Route path="notepad" element={<Notepad />} />
+                                <Route path="music" element={<Music />} />
+                                <Route path="*" element={<PageNotFound />} />
+                            </Routes>
+                        </BrowserRouter>
+                    </AppContext.Provider>
+                </SnackbarProvider>
+            </ThemeProvider>
+        );
+    }
 }
 
 export default App;
-
-// export async function showResponse(
-//     response: Response,
-//     enqueueSnackbar: ProviderContext["enqueueSnackbar"],
-//     closeSnackbar: ProviderContext["closeSnackbar"],
-//     navigate?: NavigateFunction
-// ) {
-//     const json = await response.json();
-//     let severity: AlertColor = "info";
-//     // if (navigate && json?.redirect) navigate(json.redirect, { replace: true });
-//     switch (~~(response.status / 100)) {
-//         default:
-//         case 1:
-//             severity = "info";
-//             break;
-//         case 2:
-//             severity = "success";
-//             break;
-//         case 3:
-//             severity = "info";
-//             break;
-//         case 4:
-//             severity = "error";
-//             break;
-//         case 5:
-//             severity = "warning";
-//             break;
-//     }
-
-//     snackbars.push(
-//         enqueueSnackbar(isJsonString(json) ? json.message : json, {
-//             variant: "alert",
-//             severity: severity,
-//             status: response.status,
-//             statusText: response.statusText,
-//         })
-//     );
-
-//     snackbars.length > 3 && closeSnackbar(snackbars.shift());
-//     return json;
-// }
-
-// declare module "notistack" {
-//     interface VariantOverrides {
-//         alert: { severity: AlertColor; status: number; statusText: string };
-//     }
-// }
-
-function isJsonString(str: string) {
-    try {
-        JSON.parse(str);
-    } catch (e) {
-        return false;
-    }
-    return true;
-}

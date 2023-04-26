@@ -1,26 +1,30 @@
-import { Box, Container, Typography } from "@mui/material";
-import { Logo } from "../components/Logo";
+import { Box, Typography } from "@mui/material";
+import PageLayout from "../components/PageLayout";
 import { getRequest } from "../components/Request";
 
+const ERROR_MESSAGES = [
+    'Exception in thread "main" java.lang.StackOverflowError',
+    "Program terminated with signal 11, Segmentation fault.",
+    "Uncaught TypeError: Cannot read property 'length' of undefined",
+];
+
 export function PageNotFound() {
-    
     getRequest(window.location.pathname);
     return (
-        <Container component="main" maxWidth="xs">
-            <Box
-                sx={{
-                    marginTop: 8,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                }}
-            >
-                <Box sx={{ m: 3 }}>
-                    <Logo />
-                </Box>
-                <PageNotFoundContent />
+        <PageLayout>
+            <Box display="flex" flexDirection="column" alignItems="center" flexGrow={1} marginTop={8}>
+                <Typography
+                    component="h1"
+                    variant="h4"
+                    color="white"
+                    fontFamily="Cascadia Mono"
+                    sx={{ overflowWrap: "anywhere" }}
+                    textAlign="center"
+                >
+                    {ERROR_MESSAGES[Math.floor(Math.random() * ERROR_MESSAGES.length)]}
+                </Typography>
             </Box>
-        </Container>
+        </PageLayout>
     );
 }
 

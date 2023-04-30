@@ -3,7 +3,7 @@ import React from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 
-function PageLayout({ children }: { children: React.ReactNode }) {
+function PageLayout({ children }: { children?: React.ReactNode }) {
     return (
         <Box
             sx={{

@@ -3,16 +3,21 @@ import PageLayout from "../components/PageLayout";
 import { getRequest } from "../components/Request";
 
 const ERROR_MESSAGES = [
-    'Exception in thread "main" java.lang.StackOverflowError',
-    "Program terminated with signal 11, Segmentation fault.",
-    "Uncaught TypeError: Cannot read property 'length' of undefined",
+    'Exception in thread "main" java.lang.NullPointerException', // Java
+    "Error: ENOENT: no such file or directory, open '/dev/null'", // Node.js
+    "Program terminated with signal 11, Segmentation fault.", // C
+    "Uncaught TypeError: Cannot read properties of null (reading 'render')", // JavaScript
 ];
 
-export function PageNotFound() {
+function PageNotFound() {
     getRequest(window.location.pathname);
+    return <PageNotFoundComponent />;
+}
+
+export function PageNotFoundComponent() {
     return (
         <PageLayout>
-            <Box display="flex" flexDirection="column" alignItems="center" flexGrow={1} marginTop={8}>
+            <Box alignItems="center" display="flex" flexDirection="column" flexGrow={1} justifyContent="center">
                 <Typography
                     component="h1"
                     variant="h4"
@@ -28,11 +33,4 @@ export function PageNotFound() {
     );
 }
 
-export function PageNotFoundContent() {
-    return (
-        // display the path the user tried to access
-        <Typography component="h1" variant="h5">
-            Page not found for path: {window.location.pathname}
-        </Typography>
-    );
-}
+export default PageNotFound;

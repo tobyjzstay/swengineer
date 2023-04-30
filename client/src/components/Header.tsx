@@ -69,7 +69,7 @@ function Header() {
                                 }}
                             >
                                 <ListItemIcon>
-                                    <Icon fontSize="small">logout</Icon>
+                                    <Icon fontSize="small">person</Icon>
                                 </ListItemIcon>
                                 Profile
                             </MenuItem>,
@@ -84,7 +84,7 @@ function Header() {
                                 <ListItemIcon>
                                     <Icon fontSize="small">logout</Icon>
                                 </ListItemIcon>
-                                Logout
+                                Log out
                             </MenuItem>,
                         ]
                     ) : (

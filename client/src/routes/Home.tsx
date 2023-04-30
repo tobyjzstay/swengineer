@@ -12,7 +12,7 @@ theme = responsiveFontSizes(theme, {
     factor: 5,
 });
 
-export function Home() {
+function Home() {
     const [header, setHeader] = React.useState(false);
     const [expanded, setExpanded] = React.useState(true);
     const [colour, setColour] = React.useState(false);
@@ -125,3 +125,5 @@ export function Home() {
         </Box>
     );
 }
+
+export default Home;

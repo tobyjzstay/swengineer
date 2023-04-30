@@ -1,80 +1,96 @@
-import { Box, Button, CircularProgress, Container, TextField, Typography } from "@mui/material";
-import { useSnackbar } from "notistack";
+import { LoadingButton } from "@mui/lab";
+import { Backdrop, Box, Icon, TextField, Typography } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../App";
-import Header from "../components/Header";
-import { postRequest } from "../components/Request";
+import AuthLayout from "../components/AuthLayout";
+import LoadingLayout from "../components/LoadingLayout";
+import { getRequest, postRequest } from "../components/Request";
 
-export function Profile() {
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+function Profile() {
+    const appContext = React.useContext(AppContext);
+    const [componentToRender, setComponentToRender] = React.useState(<LoadingLayout />);
     const navigate = useNavigate();
 
-    const [submitted, setSubmitted] = React.useState(false);
-    const [responded, setResponded] = React.useState(false);
-    const [value, setValue] = React.useState("");
-
-    const user = React.useContext(AppContext)?.user;
-
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setSubmitted(true);
-
-        const data = new FormData(event.currentTarget);
-        const json = {
-            email: data.get("email"),
-            password: data.get("password"),
-        };
-        postRequest("/delete", json).then(async (response) => {
-            const success = response.status === 200;
-            setSubmitted(success);
-            setResponded(success);
-            if (success) navigate("/");
+    React.useMemo(() => {
+        getRequest("/auth").then(async (response) => {
+            if (response.ok) {
+                const json = await response.json();
+                const { user } = json;
+                appContext?.setUser(user);
+                setComponentToRender(<ProfileComponent />);
+            } else navigate("/login?redirect=" + window.location.pathname, { replace: true });
         });
-    };
-    return (
-        <>
-            <Header />
-            <Container component="main" maxWidth="xs">
+    }, []);
+
+    function ProfileComponent() {
+        const [loading, setLoading] = React.useState(false);
+        const [value, setValue] = React.useState("");
+
+        const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            setLoading(true);
+            appContext?.startLoading();
+
+            postRequest("/auth/delete", {}).then(async (response) => {
+                appContext?.stopLoading();
+                setLoading(false);
+                if (response.ok) {
+                    postRequest("/auth/logout", {}).then(() => {
+                        navigate("/");
+                    });
+                }
+            });
+        };
+
+        return (
+            <AuthLayout name="Profile">
                 <Box
-                    sx={{
-                        marginTop: 8,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                    }}
+                    component="form"
+                    display="flex"
+                    flexDirection="column"
+                    flexGrow={1}
+                    marginTop={1}
+                    noValidate
+                    onSubmit={handleSubmit}
+                    width="100%"
                 >
-                    <Typography component="h1" variant="h5" sx={{ mb: 2 }}>
-                        Profile
-                    </Typography>
                     <Typography>
                         To confirm your account deletion, enter your email associated with your account.
                     </Typography>
-                    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: "100%" }}>
-                        <TextField
-                            disabled={submitted}
-                            margin="normal"
-                            required
-                            fullWidth
-                            id="email"
-                            label="Email Address"
-                            name="email"
-                            value={value}
-                            onChange={(event) => setValue(event.target.value)}
-                        />
-                        <Button
-                            disabled={submitted || value !== user?.email}
-                            fullWidth
-                            sx={{ mt: 3, mb: 2 }}
-                            type="submit"
-                            variant="contained"
-                            color="error"
-                        >
-                            {submitted && !responded ? <CircularProgress size={24.5} /> : "Delete account"}
-                        </Button>
-                    </Box>
+                    <TextField
+                        disabled={loading}
+                        fullWidth
+                        id="email"
+                        label="Email Address"
+                        margin="normal"
+                        name="email"
+                        onChange={(event) => {
+                            setValue(event.target.value);
+                        }}
+                        required
+                        value={value}
+                    />
+                    <LoadingButton
+                        color="error"
+                        disabled={value !== appContext?.user?.email}
+                        fullWidth
+                        loading={loading}
+                        loadingPosition="start"
+                        startIcon={<Icon>delete</Icon>}
+                        sx={{ mt: 3, mb: 2 }}
+                        type="submit"
+                        variant="contained"
+                    >
+                        Delete account
+                    </LoadingButton>
+                    <Backdrop open={loading} />
                 </Box>
-            </Container>
-        </>
-    );
+            </AuthLayout>
+        );
+    }
+
+    return componentToRender;
 }
+
+export default Profile;

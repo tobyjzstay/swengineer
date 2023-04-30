@@ -5,18 +5,18 @@ import { SnackbarKey, SnackbarProvider } from "notistack";
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { SnackbarAlert } from "./components/SnackbarAlert";
-import { ChangePassword } from "./routes/ChangePassword";
-import { Clock } from "./routes/Clock";
+import ChangePassword from "./routes/ChangePassword";
+import Clock from "./routes/Clock";
 import { Draw } from "./routes/Draw";
-import { Home } from "./routes/Home";
-import { Login } from "./routes/Login";
+import Home from "./routes/Home";
+import Login from "./routes/Login";
 import Music from "./routes/Music";
 import { Notepad } from "./routes/Notepad";
-import { PageNotFound } from "./routes/PageNotFound";
-import { Profile } from "./routes/Profile";
-import { Register } from "./routes/Register";
-import { Reset } from "./routes/Reset";
-import { Verify } from "./routes/Verify";
+import PageNotFound from "./routes/PageNotFound";
+import Profile from "./routes/Profile";
+import Register from "./routes/Register";
+import Reset from "./routes/Reset";
+import Verify from "./routes/Verify";
 
 export const snackbars: SnackbarKey[] = [];
 

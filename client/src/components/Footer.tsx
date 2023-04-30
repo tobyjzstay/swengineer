@@ -4,10 +4,14 @@ import { AppContext } from "../App";
 
 function Footer() {
     const appContext = React.useContext(AppContext);
-    const loading = (appContext?.loading || 0) > 0;
+    const [loading, setLoading] = React.useState(false);
+
+    React.useEffect(() => {
+        setLoading((appContext?.loading || 0) > 0);
+    }, [appContext?.loading]);
 
     return (
-        <Box position="sticky" component="footer" height={4}>
+        <Box position="sticky" marginTop="auto" component="footer" height={4}>
             <Fade in={loading} unmountOnExit>
                 <LinearProgress />
             </Fade>

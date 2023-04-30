@@ -13,7 +13,7 @@ const START_TIME = new Date("November 11, 2014").getTime();
 const TIME_DILATION = (7 * YEAR) / HOUR;
 const UPDATE_RATE = Math.floor(minUnit(1 / TIME_DILATION));
 
-export function Clock() {
+function Clock() {
     const timeRef = React.useRef<HTMLDivElement>(null);
 
     React.useEffect(() => {
@@ -24,13 +24,12 @@ export function Clock() {
     return (
         <PageLayout>
             <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: "100%",
-                }}
+                alignItems="center"
+                display="flex"
+                flexDirection="column"
+                flexGrow={1}
+                justifyContent="center"
+                textAlign="center"
             >
                 <Typography ref={timeRef} variant="h2" />
                 <Typography variant="subtitle1">{"have passed on Miller's planet"}</Typography>
@@ -74,3 +73,5 @@ function padLeadingZeros(num: number, size: number) {
     while (s.length < size) s = "0" + s;
     return s;
 }
+
+export default Clock;

@@ -1,59 +1,69 @@
-import { Box, Button, CircularProgress, Container, Grid, Link, TextField, Typography } from "@mui/material";
+import { LoadingButton } from "@mui/lab";
+import { Backdrop, Box, Grid, Icon, Link, TextField, Typography } from "@mui/material";
 import * as React from "react";
-import { Logo } from "../components/Logo";
-import { postRequest } from "../components/Request";
+import { useNavigate } from "react-router-dom";
+import { AppContext } from "../App";
+import AuthLayout from "../components/AuthLayout";
+import LoadingLayout from "../components/LoadingLayout";
+import { getRequest, postRequest } from "../components/Request";
 
-export function Reset() {
-    const [submitted, setSubmitted] = React.useState(false);
-    const [responded, setResponded] = React.useState(false);
+function Reset() {
+    const [componentToRender, setComponentToRender] = React.useState(<LoadingLayout />);
+    const navigate = useNavigate();
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-        setSubmitted(true);
+    React.useMemo(() => {
+        getRequest("/auth").then(async (response) => {
+            if (response.ok) navigate("/", { replace: true });
+            else setComponentToRender(<ResetComponent />);
+        });
+    }, []);
 
-        const data = new FormData(event.currentTarget);
-        const json = {
-            email: data.get("email"),
+    function ResetComponent() {
+        const appContext = React.useContext(AppContext);
+        const [loading, setLoading] = React.useState(false);
+
+        const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+            event.preventDefault();
+            setLoading(true);
+            appContext?.startLoading();
+
+            const data = new FormData(event.currentTarget);
+            const json = {
+                email: data.get("email"),
+            };
+
+            postRequest("/auth/reset", json).then((response) => {
+                appContext?.stopLoading();
+                setLoading(false);
+                if (response.ok) setComponentToRender(<ResetEmail />);
+            });
         };
 
-        postRequest("/auth/reset", json).then((response) => {
-            const success = response.status === 200;
-            setSubmitted(success);
-            setResponded(success);
-        });
-    };
-
-    return (
-        <Container component="main" maxWidth="xs">
-            <Box
-                sx={{
-                    marginTop: 8,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                }}
-            >
-                <Box sx={{ m: 3 }}>
-                    <Logo />
-                </Box>
-                <Typography component="h1" variant="h5">
-                    Reset password
-                </Typography>
+        return (
+            <AuthLayout name={"Reset password"}>
                 <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: "100%" }}>
                     <TextField
-                        disabled={submitted}
-                        margin="normal"
-                        required
+                        autoComplete="email"
+                        autoFocus
+                        disabled={loading}
                         fullWidth
                         id="email"
                         label="Email Address"
+                        margin="normal"
                         name="email"
-                        autoComplete="email"
-                        autoFocus
+                        required
                     />
-                    <Button disabled={submitted} fullWidth sx={{ mt: 3, mb: 2 }} type="submit" variant="contained">
-                        {submitted ? responded ? "Reset email sent" : <CircularProgress size={24.5} /> : "Send email"}
-                    </Button>
+                    <LoadingButton
+                        fullWidth
+                        loading={loading}
+                        loadingPosition="start"
+                        startIcon={<Icon>send</Icon>}
+                        sx={{ mt: 3, mb: 2 }}
+                        type="submit"
+                        variant="contained"
+                    >
+                        Send email
+                    </LoadingButton>
                     <Grid container>
                         <Grid item xs>
                             <Link href="/login" variant="body2">
@@ -66,8 +76,23 @@ export function Reset() {
                             </Link>
                         </Grid>
                     </Grid>
+                    <Backdrop open={loading} />
                 </Box>
+            </AuthLayout>
+        );
+    }
+
+    return componentToRender;
+}
+
+export function ResetEmail() {
+    return (
+        <AuthLayout name={"Reset password"}>
+            <Box display="flex" flexDirection="column" flexGrow={1} marginTop={1} width="100%">
+                <Typography textAlign="center">Please check your email for a reset password link.</Typography>
             </Box>
-        </Container>
+        </AuthLayout>
     );
 }
+
+export default Reset;

@@ -22,7 +22,7 @@ export const auth = (req: Request, res: Response, next: () => void) => {
                 logger.error(err);
                 return res.status(500).json({});
             }
-            if (!user) return res.sendStatus(403);
+            if (!user) return res.status(403).json({});
             app.locals.user = user;
             return next();
         });

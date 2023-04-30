@@ -112,7 +112,7 @@ router.post("/register", (req, res) => {
     });
 });
 
-router.get("/register/:token", (req, res) => {
+router.get("/register/:token", (req, res, next) => {
     const token = req.params.token;
 
     User.findOne({ verificationToken: token }, (err: NodeJS.ErrnoException, user: User) => {
@@ -120,9 +120,7 @@ router.get("/register/:token", (req, res) => {
             internalServerError(res, err);
             return;
         } else if (!user) {
-            res.status(404).json({
-                message: "Invalid token",
-            });
+            next();
             return;
         }
 
@@ -200,7 +198,7 @@ router.post("/login", (req, res) => {
 });
 
 router.post("/logout", auth, (_req, res) => {
-    // delete app.locals.user;
+    delete app.locals.user;
 
     res.clearCookie("access_token").status(200).json({
         message: "Logged out successfully",
@@ -289,7 +287,7 @@ router.post("/reset", (req, res) => {
         });
 });
 
-router.get("/reset/:token", (req, res) => {
+router.get("/reset/:token", (req, res, next) => {
     const token = req.params.token;
 
     User.findOne({ resetPasswordToken: token }, (err: NodeJS.ErrnoException, user: User) => {
@@ -297,9 +295,7 @@ router.get("/reset/:token", (req, res) => {
             internalServerError(res, err);
             return;
         } else if (!user) {
-            res.status(404).json({
-                message: "Invalid token",
-            });
+            next();
             return;
         } else if (user.resetPasswordExpires.getTime() < new Date().getTime()) {
             res.status(401).json({
@@ -314,7 +310,7 @@ router.get("/reset/:token", (req, res) => {
     });
 });
 
-router.post("/reset/:token", (req, res) => {
+router.post("/reset/:token", (req, res, next) => {
     const { password } = req.body;
     const token = req.params.token;
 
@@ -323,9 +319,7 @@ router.post("/reset/:token", (req, res) => {
             internalServerError(res, err);
             return;
         } else if (!user) {
-            res.status(404).json({
-                message: "Invalid token",
-            });
+            next();
             return;
         } else if (user.resetPasswordExpires.getTime() < new Date().getTime()) {
             res.status(401).json({
@@ -355,14 +349,23 @@ router.post("/reset/:token", (req, res) => {
 });
 
 router.post("/delete", auth, (req, res) => {
-    const user = req.user as User;
+    const user = app.locals.user as User;
+
+    if (!user) {
+        res.status(404).json({
+            message: "User not found",
+        });
+        return;
+    }
 
     User.findByIdAndDelete(user.id, (err: NodeJS.ErrnoException) => {
         if (err) {
             internalServerError(res, err);
             return;
         } else {
-            res.status(200).json({
+            delete app.locals.user;
+
+            res.clearCookie("access_token").status(200).json({
                 message: "Account deleted",
             });
         }
@@ -384,7 +387,7 @@ function sendVerificationEmail(host: string, token: string, email: string): Node
         text:
             `Verify your email address to finish registering your swengineer account.\n` +
             `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
-            `${host}auth/register/${token}\n\n`,
+            `${host}/${token}\n\n`,
     };
     smtpTransport.sendMail(mailOptions, (err) => {
         return err;
@@ -407,7 +410,7 @@ function sendResetEmail(host: string, token: string, email: string, ip: string):
         text:
             `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n` +
             `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
-            `${host}auth/reset/${token}\n\n` +
+            `${host}/${token}\n\n` +
             `If you did not request this, please ignore this email and your password will remain unchanged.\n\n` +
             `Email: ${email}\n` +
             `IP Address: ${ip}\n` +

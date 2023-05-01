@@ -7,7 +7,7 @@ import AuthLayout from "../components/AuthLayout";
 import LoadingLayout from "../components/LoadingLayout";
 import { getRequest, postRequest } from "../components/Request";
 import { PageNotFoundComponent } from "./PageNotFound";
-import { ResetEmail } from "./Reset";
+import { ResetPasswordEmail } from "./ResetPassword";
 
 function ChangePassword() {
     const [componentToRender, setComponentToRender] = React.useState(<LoadingLayout />);
@@ -99,7 +99,7 @@ function ChangePassword() {
             postRequest("/auth/reset", json).then((response) => {
                 appContext?.stopLoading();
                 setLoading(false);
-                if (response.ok) setComponentToRender(<ResetEmail />);
+                if (response.ok) setComponentToRender(<ResetPasswordEmail />);
             });
         };
 

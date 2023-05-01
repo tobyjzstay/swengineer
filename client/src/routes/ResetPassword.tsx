@@ -7,18 +7,18 @@ import AuthLayout from "../components/AuthLayout";
 import LoadingLayout from "../components/LoadingLayout";
 import { getRequest, postRequest } from "../components/Request";
 
-function Reset() {
+function ResetPassword() {
     const [componentToRender, setComponentToRender] = React.useState(<LoadingLayout />);
     const navigate = useNavigate();
 
     React.useMemo(() => {
         getRequest("/auth").then(async (response) => {
             if (response.ok) navigate("/", { replace: true });
-            else setComponentToRender(<ResetComponent />);
+            else setComponentToRender(<ResetPasswordComponent />);
         });
     }, []);
-
-    function ResetComponent() {
+    
+    function ResetPasswordComponent() {
         const appContext = React.useContext(AppContext);
         const [loading, setLoading] = React.useState(false);
 
@@ -35,7 +35,7 @@ function Reset() {
             postRequest("/auth/reset", json).then((response) => {
                 appContext?.stopLoading();
                 setLoading(false);
-                if (response.ok) setComponentToRender(<ResetEmail />);
+                if (response.ok) setComponentToRender(<ResetPasswordEmail />);
             });
         };
 
@@ -85,7 +85,7 @@ function Reset() {
     return componentToRender;
 }
 
-export function ResetEmail() {
+export function ResetPasswordEmail() {
     return (
         <AuthLayout name={"Reset password"}>
             <Box display="flex" flexDirection="column" flexGrow={1} marginTop={1} width="100%">
@@ -95,4 +95,4 @@ export function ResetEmail() {
     );
 }
 
-export default Reset;
+export default ResetPassword;

@@ -15,7 +15,7 @@ import { Notepad } from "./routes/Notepad";
 import PageNotFound from "./routes/PageNotFound";
 import Profile from "./routes/Profile";
 import Register from "./routes/Register";
-import Reset from "./routes/Reset";
+import ResetPassword from "./routes/ResetPassword";
 import Verify from "./routes/Verify";
 
 export const snackbars: SnackbarKey[] = [];
@@ -73,7 +73,7 @@ class App extends React.Component {
                                 <Route path="login" element={<Login />} />
                                 <Route path="register" element={<Register />} />
                                 <Route path="register/:token" element={<Verify />} />
-                                <Route path="reset" element={<Reset />} />
+                                <Route path="reset" element={<ResetPassword />} />
                                 <Route path="reset/:token" element={<ChangePassword />} />
                                 <Route path="profile" element={<Profile />} />
                                 <Route path="clock" element={<Clock />} />

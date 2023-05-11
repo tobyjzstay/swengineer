@@ -13,8 +13,7 @@
     "homepage": "https://swengineer.dev/",
     "author": "Toby Stayner <toby@swengineer.dev>",
     "devDependencies": {
-        "concurrently": "^7.6.0",
-        "nodemon": "^2.0.22"
+        "concurrently": "^7.6.0"
     },
     "scripts": {
         "install": "pnpm --prefix ./client/ install && pnpm --prefix ./server/ install",

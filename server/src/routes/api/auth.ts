@@ -1,4 +1,4 @@
-import bcrypt from "bcrypt";
+import bcryptjs from "bcryptjs";
 import express from "express";
 import jwt from "jsonwebtoken";
 import log4js from "log4js";
@@ -79,7 +79,7 @@ router.post("/register", (req, res) => {
 
         const newUser = new User({
             email,
-            password: bcrypt.hashSync(password, saltRounds),
+            password: bcryptjs.hashSync(password, saltRounds),
             verificationToken,
         });
 
@@ -158,7 +158,7 @@ router.post("/login", (req, res) => {
         }
 
         // comparing passwords
-        const passwordIsValid = password && bcrypt.compareSync(password, user.password);
+        const passwordIsValid = password && bcryptjs.compareSync(password, user.password);
 
         // checking if password was valid and send response accordingly
         if (!passwordIsValid) {
@@ -331,7 +331,7 @@ router.post("/reset/:token", (req, res, next) => {
             return;
         }
 
-        user.password = bcrypt.hashSync(password, saltRounds);
+        user.password = bcryptjs.hashSync(password, saltRounds);
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
 

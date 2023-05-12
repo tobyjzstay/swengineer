@@ -17,10 +17,10 @@ jobs:
                 node-version: [18.x]
                 # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
         steps:
+            - uses: actions/checkout@v3
             - name: 'Create env file'
               run: |
-                echo "${{ secrets.ENV_FILE }}" | base64 -d > .env
-            - uses: actions/checkout@v3
+                echo "${{ secrets.ENV_FILE }}" | base64 -d > ./server/.env
             - name: Use Node.js ${{ matrix.node-version }}
               uses: pnpm/action-setup@v2.2.4
               with:

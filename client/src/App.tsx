@@ -5,18 +5,10 @@ import { SnackbarKey, SnackbarProvider } from "notistack";
 import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { SnackbarAlert } from "./components/SnackbarAlert";
-import ChangePassword from "./routes/ChangePassword";
 import Clock from "./routes/Clock";
-import { Draw } from "./routes/Draw";
 import Home from "./routes/Home";
-import Login from "./routes/Login";
 import Music from "./routes/Music";
-import { Notepad } from "./routes/Notepad";
 import PageNotFound from "./routes/PageNotFound";
-import Profile from "./routes/Profile";
-import Register from "./routes/Register";
-import ResetPassword from "./routes/ResetPassword";
-import Verify from "./routes/Verify";
 
 export const snackbars: SnackbarKey[] = [];
 
@@ -33,9 +25,6 @@ const darkTheme = createTheme({
         mode: "dark",
         primary: {
             main: "#fdd835",
-        },
-        secondary: {
-            main: "#1565c0",
         },
     },
 });
@@ -70,15 +59,7 @@ class App extends React.Component {
                         <BrowserRouter>
                             <Routes>
                                 <Route index element={<Home />} />
-                                <Route path="login" element={<Login />} />
-                                <Route path="register" element={<Register />} />
-                                <Route path="register/:token" element={<Verify />} />
-                                <Route path="reset" element={<ResetPassword />} />
-                                <Route path="reset/:token" element={<ChangePassword />} />
-                                <Route path="profile" element={<Profile />} />
                                 <Route path="clock" element={<Clock />} />
-                                <Route path="draw" element={<Draw />} />
-                                <Route path="notepad" element={<Notepad />} />
                                 <Route path="music" element={<Music />} />
                                 <Route path="*" element={<PageNotFound />} />
                             </Routes>

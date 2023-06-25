@@ -24,7 +24,7 @@ describe("POST /register", () => {
             request(app)
                 .post("/api/auth/register")
                 .send({ email: "alice@example.com", password: "alice" })
-                .expect(400, done);
+                .expect(409, done);
         });
     });
 });

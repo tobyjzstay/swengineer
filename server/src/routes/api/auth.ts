@@ -56,12 +56,12 @@ router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
 });
 
 router.post("/register", (req, res) => {
-    const { email, password } = req.body;
+    const { email, password, verify } = req.body;
 
     if (!email) {
         res.status(400).json({ message: "Invalid email address" });
         return;
-    } else if (!password) {
+    } else if (verify && !password) {
         res.status(400).json({ message: "Invalid password" });
         return;
     }
@@ -70,12 +70,34 @@ router.post("/register", (req, res) => {
         if (err) {
             internalServerError(res, err);
             return;
-        } else if (user) {
-            res.status(400).json({ message: "User already exists" });
+        }
+        const verificationToken = crypto.randomBytes(cryptoSize).toString("hex");
+        if (user) {
+            if (verify) {
+                user.verificationToken = verificationToken;
+                // TODO: shouldn't use save?
+                user.save((error: NodeJS.ErrnoException) => {
+                    if (error) {
+                        switch (error.code) {
+                            default:
+                                internalServerError(res, error);
+                                return;
+                        }
+                    }
+                    const host = req.headers.referer; // domain
+                    const err = sendVerificationEmail(host, verificationToken, email);
+                    if (err) {
+                        internalServerError(res, err);
+                        return;
+                    } else {
+                        res.status(200).json({
+                            message: "Verification email sent",
+                        });
+                    }
+                });
+            } else res.status(409).json({ message: "User already exists" });
             return;
         }
-
-        const verificationToken = crypto.randomBytes(cryptoSize).toString("hex");
 
         const newUser = new User({
             email,

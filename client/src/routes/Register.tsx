@@ -28,6 +28,7 @@ function Register() {
             appContext?.startLoading();
 
             const data = new FormData(event.currentTarget);
+            const email = data.get("email")?.toString();
             const json = {
                 email: data.get("email"),
                 password: data.get("password"),
@@ -36,7 +37,8 @@ function Register() {
             postRequest("/auth/register", json).then((response) => {
                 appContext?.stopLoading();
                 setLoading(false);
-                if (response.ok) setComponentToRender(<VerificationEmail />);
+                if (email && (response.ok || response.status === 409))
+                    setComponentToRender(<VerificationEmail email={email} />);
             });
         };
 
@@ -102,17 +104,55 @@ function Register() {
         );
     }
 
-    function VerificationEmail() {
-        return (
-            <AuthLayout name={"Register"}>
-                <Box display="flex" flexDirection="column" flexGrow={1} marginTop={1} width="100%">
-                    <Typography textAlign="center">Please check your email for a verification link.</Typography>
-                </Box>
-            </AuthLayout>
-        );
-    }
-
     return componentToRender;
+}
+
+function VerificationEmail({ email }: { email: string }) {
+    const appContext = React.useContext(AppContext);
+    const [loading, setLoading] = React.useState(false);
+
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setLoading(true);
+        appContext?.startLoading();
+
+        const json = {
+            email: email,
+            verify: true,
+        };
+
+        postRequest("/auth/register", json).then(() => {
+            appContext?.stopLoading();
+            setLoading(false);
+        });
+    };
+
+    return (
+        <AuthLayout name={"Register"}>
+            <Box
+                component="form"
+                display="flex"
+                flexDirection="column"
+                flexGrow={1}
+                noValidate
+                onSubmit={handleSubmit}
+                width="100%"
+            >
+                <Typography textAlign="center">Please check your email for a verification link.</Typography>
+                <LoadingButton
+                    fullWidth
+                    loading={loading}
+                    loadingPosition="start"
+                    startIcon={<Icon>send</Icon>}
+                    sx={{ mt: 3, mb: 2 }}
+                    type="submit"
+                    variant="contained"
+                >
+                    Resend email
+                </LoadingButton>
+            </Box>
+        </AuthLayout>
+    );
 }
 
 export default Register;

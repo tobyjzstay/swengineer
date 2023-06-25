@@ -2,8 +2,9 @@ version: "3"
 
 services:
   mongo:
-    image: mongo:latest
+    image: arm7/mongo:latest
     network_mode: host
+    command: mongod
   server:
     build: server/
     command: npm start

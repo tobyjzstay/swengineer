@@ -64,6 +64,7 @@ export function Draw() {
     const [lineWidth, setLineWidth] = React.useState(3);
     const [color, setColor] = React.useState(Color.BLACK);
     const position = React.useRef([0, 0]);
+    const save = React.useRef<ImageData>();
 
     React.useEffect(() => {
         if (canvasRef) {
@@ -115,52 +116,54 @@ export function Draw() {
 
         setIsDrawing(true);
         ctx.beginPath();
-        if (shape !== Shape.STROKE) return;
-        ctx.lineTo(x, y);
-        ctx.stroke();
+        const canvas = ctx.canvas;
+        save.current = ctx.getImageData(0, 0, canvas.width, canvas.height);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
-        if (!ctx) return;
+        if (!ctx || !save?.current) return;
         if (!isDrawing) return;
-
-        if (shape !== Shape.STROKE) return;
 
         const px = position.current[0];
         const py = position.current[1];
         const x = e.offsetX;
         const y = e.offsetY;
-        position.current = [x, y];
+        const cx = (px + x) / 2;
+        const cy = (py + y) / 2;
 
-        if (shape === Shape.STROKE) {
-            ctx.beginPath();
-            ctx.moveTo(px, py);
-            ctx.lineTo(x, y);
-            ctx.stroke();
+        const width = px - x;
+        const height = py - y;
+
+        const radiusWidth = Math.abs(width / 2);
+        const radiusHeight = Math.abs(height / 2);
+
+        ctx.beginPath();
+        if (shape !== Shape.STROKE) ctx.putImageData(save.current, 0, 0);
+        switch (shape) {
+            case Shape.STROKE:
+                ctx.moveTo(px, py);
+                ctx.lineTo(x, y);
+                position.current = [x, y];
+                break;
+            case Shape.LINE:
+                ctx.moveTo(px, py);
+                ctx.lineTo(x, y);
+                break;
+            case Shape.RECTANGLE:
+                ctx.rect(x, y, width, height);
+                break;
+            case Shape.ELLIPSE:
+                ctx.ellipse(cx, cy, radiusWidth, radiusHeight, 0, 0, 2 * Math.PI);
+                break;
+            default:
+                break;
         }
+        ctx.stroke();
     };
 
     const handleMouseUp = (e: MouseEvent) => {
-        if (!ctx) return;
+        if (!ctx || !save?.current) return;
         if (!isDrawing) return;
-
-        const px = position.current[0];
-        const py = position.current[1];
-        const x = e.offsetX;
-        const y = e.offsetY;
-        position.current = [x, y];
-
-        if (shape === Shape.ELLIPSE) {
-            ctx.ellipse((x + px) / 2, (y + py) / 2, Math.abs(x - px) / 2, Math.abs(y - py) / 2, 0, 0, 2 * Math.PI);
-            ctx.stroke();
-        } else if (shape === Shape.RECTANGLE) {
-            ctx.strokeRect(px, py, x - px, y - py);
-        } else {
-            if (shape === Shape.STROKE) ctx.beginPath();
-            ctx.moveTo(px, py);
-            ctx.lineTo(x, y);
-            ctx.stroke();
-        }
         setIsDrawing(false);
     };
 

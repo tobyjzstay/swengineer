@@ -20,9 +20,11 @@ require("./passport");
 const ENVIRONMENT = process.env.ENVIRONMENT;
 const SECRET = process.env.PASSPORT_SECRET;
 const TEST = process.env.TEST;
+const MONGODB_PASSWORD = process.env.MONGODB_PASSWORD;
 
 const LOCALHOST = "127.0.0.1";
-const DATABASE_URI = "mongodb://" + LOCALHOST + ":27017/" + ENVIRONMENT;
+// const DATABASE_URI = "mongodb://" + LOCALHOST + ":27017/" + ENVIRONMENT;
+const DATABASE_URI = `mongodb+srv://admin:${MONGODB_PASSWORD}@cluster0.0ywr222.mongodb.net/${ENVIRONMENT}?retryWrites=true&w=majority`;
 const PORT = parseInt(process.env.PORT) || 0;
 
 export const app = express();

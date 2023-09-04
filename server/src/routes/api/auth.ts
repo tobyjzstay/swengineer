@@ -3,12 +3,12 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import log4js from "log4js";
 import crypto from "node:crypto";
-import nodemailer from "nodemailer";
 import passport from "passport";
 import { internalServerError } from ".";
 import { app } from "../..";
 import { auth } from "../../middleware";
 import { User } from "../../models/User";
+import { sendMail } from "../../nodemailer";
 
 const router = express.Router();
 const logger = log4js.getLogger();
@@ -85,14 +85,15 @@ router.post("/register", (req, res) => {
                         }
                     }
                     const host = req.headers.referer; // domain
-                    const err = sendVerificationEmail(host, verificationToken, email);
-                    if (err) {
-                        internalServerError(res, err);
-                        return;
-                    } else {
+                    const success = sendVerificationEmail(host, verificationToken, email);
+                    if (success) {
                         res.status(200).json({
                             message: "Verification email sent",
                         });
+                        return;
+                    } else {
+                        // TODO: improve this
+                        internalServerError(res, null);
                     }
                 });
             } else res.status(409).json({ message: "User already exists" });
@@ -120,14 +121,14 @@ router.post("/register", (req, res) => {
                 }
             } else {
                 const host = req.headers.referer; // domain
-                const err = sendVerificationEmail(host, verificationToken, email);
-                if (err) {
-                    internalServerError(res, err);
-                    return;
-                } else {
+                const success = sendVerificationEmail(host, verificationToken, email);
+                if (success) {
                     res.status(200).json({
                         message: "Verification email sent",
                     });
+                } else {
+                    internalServerError(res, err);
+                    return;
                 }
             }
         });
@@ -257,14 +258,14 @@ router.post("/reset", (req, res) => {
                 } else {
                     const host = req.headers?.referer?.split("reset")[0] + "reset"; // TODO: fix this undefined error
                     const ip = req.ip;
-                    const err = sendResetEmail(host, token, email, ip);
-                    if (err) {
-                        internalServerError(res, err);
-                        return;
-                    } else {
+                    const success = sendResetEmail(host, token, email, ip);
+                    if (success) {
                         res.status(200).json({
                             message: "Reset email sent",
                         });
+                    } else {
+                        internalServerError(res, err);
+                        return;
                     }
                 }
             });
@@ -297,7 +298,8 @@ router.post("/reset", (req, res) => {
                     const ip = req.ip;
                     const err = sendResetEmail(host, token, email, ip);
                     if (err) {
-                        internalServerError(res, err);
+                        // TODO: improve this
+                        internalServerError(res, null);
                         return;
                     } else {
                         res.status(200).json({
@@ -394,41 +396,21 @@ router.post("/delete", auth, (req, res) => {
     });
 });
 
-function sendVerificationEmail(host: string, token: string, email: string): NodeJS.ErrnoException {
-    const smtpTransport = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: process.env.GMAIL_EMAIL,
-            pass: process.env.GMAIL_PASSWORD,
-        },
-    });
-    const mailOptions = {
-        from: `"swengineer" <${process.env.GMAIL_EMAIL}>`, // sender address
-        to: email, // list of receivers
-        subject: "Email Verification", // subject line
+function sendVerificationEmail(host: string, token: string, email: string) {
+    return sendMail({
+        to: email,
+        subject: "Email Verification",
         text:
             `Verify your email address to finish registering your swengineer account.\n` +
             `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
             `${host}/${token}\n\n`,
-    };
-    smtpTransport.sendMail(mailOptions, (err) => {
-        return err;
     });
-    return null;
 }
 
-function sendResetEmail(host: string, token: string, email: string, ip: string): NodeJS.ErrnoException {
-    const smtpTransport = nodemailer.createTransport({
-        service: "gmail",
-        auth: {
-            user: process.env.GMAIL_EMAIL,
-            pass: process.env.GMAIL_PASSWORD,
-        },
-    });
-    const mailOptions = {
-        from: `"swengineer" <${process.env.GMAIL_EMAIL}>`, // sender address
-        to: email, // list of receivers
-        subject: "Password Reset", // subject line
+function sendResetEmail(host: string, token: string, email: string, ip: string) {
+    return sendMail({
+        to: email,
+        subject: "Password Reset",
         text:
             `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n` +
             `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
@@ -437,11 +419,7 @@ function sendResetEmail(host: string, token: string, email: string, ip: string):
             `Email: ${email}\n` +
             `IP Address: ${ip}\n` +
             `Created: ${new Date().toString()}\n`,
-    };
-    smtpTransport.sendMail(mailOptions, (err) => {
-        return err;
     });
-    return null;
 }
 
 module.exports = router;

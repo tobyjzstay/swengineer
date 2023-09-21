@@ -30,16 +30,14 @@ router.get("/", auth, (_req, res) => {
     res.status(200).json({ user: userData });
 });
 
-router.get(
-    "/google",
-    passport.authenticate("google", {
-        scope: ["profile", "email"],
-    })
-);
+router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
 // redirect to home page after successful login
 router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
     const user = req.user as User;
+    const redirect = app.locals.redirect;
+
+    console.log("user", user)
 
     const token = jwt.sign(
         {
@@ -52,7 +50,8 @@ router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
     );
 
     // responding to client request success message and access token
-    res.cookie("token", token).redirect("/");
+    res.cookie("token", token).redirect(redirect || "/");
+    console.log("cookie", token)
 });
 
 router.post("/register", (req, res) => {

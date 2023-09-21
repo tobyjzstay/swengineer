@@ -7,7 +7,7 @@ import { User } from "./models/User";
 const logger = log4js.getLogger();
 
 export const auth = (req: Request, res: Response, next: () => void) => {
-    const token = req.cookies.access_token;
+    const token = req.cookies.token;
 
     if (!token) return res.status(401).json({});
 

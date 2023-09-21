@@ -77,9 +77,14 @@ if (cluster.isPrimary && !TEST) {
         next();
     });
 
-    app.use(express.static(path.join(__dirname, "../../client/build")));
     app.use("/public", express.static("public"), serveIndex("public", { icons: true, view: "details", hidden: true }));
     app.use(require("./routes/index"));
+
+    const root = path.join(__dirname, "../../client/build");
+    app.use(express.static(root));
+    app.get("*", function (req, res) {
+        res.sendFile("index.html", { root });
+    });
 
     app.use((_req, res) => {
         res.sendStatus(404);

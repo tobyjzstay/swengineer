@@ -4,16 +4,11 @@ import log4js from "log4js";
 const router = express.Router();
 const logger = log4js.getLogger(process.pid.toString());
 
-router.get("/ping", (_req, res) => {
-    res.status(200).json({ message: "Pong!" });
-});
-
 router.use("/auth", require("./auth"));
 router.use("/notepad", require("./notepad"));
+router.use("/ping", require("./ping"));
 
-router.use((_req, res) => {
-    res.status(404).json("Not found");
-});
+router.use(require("./404"));
 
 export function internalServerError(res: Response, err: NodeJS.ErrnoException) {
     logger.error(err, new Error().stack);

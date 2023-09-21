@@ -3,9 +3,11 @@ import { ThemeProvider, createTheme, responsiveFontSizes } from "@mui/material/s
 import React from "react";
 import Header from "../components/Header";
 
-const DELAY = 3500;
-const COLOUR_DELAY = DELAY + 800;
-const HEADER_DELAY = DELAY + 1000;
+const TRANSITION_DURATION = 750;
+const TRANSITION_DELAY = 3000;
+const COLOUR_DURATION = 500;
+const COLOUR_DELAY = TRANSITION_DELAY + COLOUR_DURATION;
+const HEADER_DELAY = TRANSITION_DELAY + 1000;
 
 let theme = createTheme();
 theme = responsiveFontSizes(theme, {
@@ -20,25 +22,20 @@ function Home() {
     const pageRef = React.useRef<HTMLDivElement>(null);
 
     React.useLayoutEffect(() => {
-        if (pageRef?.current) {
-            pageRef.current.tabIndex = 0;
-            pageRef.current.onclick = () => {
-                handleInteraction();
-            };
-            pageRef.current.onkeydown = () => {
-                handleInteraction();
-            };
-        }
+        if (!pageRef.current) return;
+        pageRef.current.focus();
+        pageRef.current.onclick = handleInteraction;
+        pageRef.current.onkeydown = handleInteraction;
         setTimeout(function () {
             setExpanded(false);
-        }, DELAY);
+        }, TRANSITION_DELAY);
         setTimeout(function () {
             setColour(true);
         }, COLOUR_DELAY);
         setTimeout(function () {
             setHeader(true);
         }, HEADER_DELAY);
-    }, []);
+    }, [pageRef.current]);
 
     function handleInteraction() {
         setHeader(true);
@@ -50,13 +47,15 @@ function Home() {
         <Box
             display="flex"
             flexDirection="column"
-            ref={pageRef}
             flexGrow={1}
+            ref={pageRef}
             sx={{
                 display: "flex",
                 flexDirection: "column",
                 minHeight: "100vh",
+                outline: "none",
             }}
+            tabIndex={0}
         >
             <Fade in={header}>
                 <Box>
@@ -81,7 +80,7 @@ function Home() {
                                     display: "flex",
                                     flexDirection: "row",
                                     color: colour ? "#fdd835" : "#fff",
-                                    transition: "color 0.5s",
+                                    transition: "color 500ms",
                                 }}
                             >
                                 <strong>s</strong>
@@ -90,8 +89,7 @@ function Home() {
                                     in={expanded}
                                     unmountOnExit
                                     timeout={{
-                                        enter: 250,
-                                        exit: 750,
+                                        exit: TRANSITION_DURATION,
                                     }}
                                 >
                                     <Fade in={expanded}>
@@ -105,8 +103,7 @@ function Home() {
                                     orientation="horizontal"
                                     in={expanded}
                                     timeout={{
-                                        enter: 400,
-                                        exit: 800,
+                                        exit: TRANSITION_DURATION,
                                     }}
                                 >
                                     <Fade in={expanded}>

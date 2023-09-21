@@ -7,7 +7,8 @@ function Footer() {
     const [loading, setLoading] = React.useState(false);
 
     React.useEffect(() => {
-        setLoading((appContext?.loading || 0) > 0);
+        if (!appContext) return;
+        setLoading(appContext.loading > 0);
     }, [appContext?.loading]);
 
     return (

@@ -20,11 +20,11 @@ import Verify from "./routes/Verify";
 
 export const snackbars: SnackbarKey[] = [];
 
-interface User {
+export type User = {
     id: string;
     email: string;
     created: string;
-}
+};
 
 export const AppContext = React.createContext<App | null>(null);
 
@@ -35,7 +35,7 @@ const darkTheme = createTheme({
             main: "#fdd835",
         },
         secondary: {
-            main: "##536ee4",
+            main: "#0078d4",
         },
     },
 });

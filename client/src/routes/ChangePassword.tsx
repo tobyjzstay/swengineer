@@ -4,13 +4,13 @@ import * as React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../App";
 import AuthLayout from "../components/AuthLayout";
-import LoadingLayout from "../components/LoadingLayout";
+import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest } from "../components/Request";
 import { PageNotFoundComponent } from "./PageNotFound";
 import { ResetPasswordEmail } from "./ResetPassword";
 
 function ChangePassword() {
-    const [componentToRender, setComponentToRender] = React.useState(<LoadingLayout />);
+    const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
     const navigate = useNavigate();
     const token = useParams().token;
 

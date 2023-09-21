@@ -4,12 +4,12 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../App";
 import AuthLayout from "../components/AuthLayout";
-import LoadingLayout from "../components/LoadingLayout";
+import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest } from "../components/Request";
 
 function Profile() {
     const appContext = React.useContext(AppContext);
-    const [componentToRender, setComponentToRender] = React.useState(<LoadingLayout />);
+    const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
     const navigate = useNavigate();
 
     React.useMemo(() => {

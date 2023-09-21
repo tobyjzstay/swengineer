@@ -1,25 +1,25 @@
 import { LoadingButton } from "@mui/lab";
 import { Backdrop, Box, Button, Grid, Icon, Link, TextField } from "@mui/material";
 import * as React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AppContext } from "../App";
 import AuthLayout from "../components/AuthLayout";
-import LoadingLayout from "../components/LoadingLayout";
-import { getRequest, postRequest } from "../components/Request";
+import PlaceholderLayout from "../components/PlaceholderLayout";
+import { getRequest, postRequest, useQuery } from "../components/Request";
 
 function Login() {
     const navigate = useNavigate();
     const query = useQuery();
     const redirect = query.get("redirect") || "/";
 
-    const [componentToRender, setComponentToRender] = React.useState(<LoadingLayout />);
+    const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
 
     React.useMemo(() => {
-        getRequest("/auth").then(async (response) => {
+        getRequest("/auth", true).then(async (response) => {
             if (response.ok) navigate(redirect, { replace: true });
             else setComponentToRender(<LoginComponent />);
         });
-    }, []);
+    }, [navigate, redirect]);
 
     function LoginComponent() {
         const appContext = React.useContext(AppContext);
@@ -27,8 +27,10 @@ function Login() {
 
         const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
+            if (!appContext) return;
             setLoading(true);
-            appContext?.startLoading();
+
+            appContext.startLoading();
 
             const data = new FormData(event.currentTarget);
             const json = {
@@ -37,14 +39,14 @@ function Login() {
             };
 
             postRequest("/auth/login", json).then((response) => {
-                appContext?.stopLoading();
+                appContext.stopLoading();
                 setLoading(false);
                 if (response.ok) navigate(redirect || "/", { replace: true });
             });
         };
 
         return (
-            <AuthLayout name={"Log in"}>
+            <AuthLayout name="Log in">
                 <Box
                     component="form"
                     display="flex"
@@ -103,7 +105,7 @@ function Login() {
                         color="secondary"
                         disabled={loading}
                         fullWidth
-                        href="api/auth/google"
+                        href="/api/auth/google"
                         sx={{ mt: 3, mb: 2 }}
                         variant="contained"
                     >
@@ -116,11 +118,6 @@ function Login() {
     }
 
     return componentToRender;
-}
-
-function useQuery() {
-    const { search } = useLocation();
-    return React.useMemo(() => new URLSearchParams(search), [search]);
 }
 
 export default Login;

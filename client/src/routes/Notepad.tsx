@@ -15,10 +15,11 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
-import { useSnackbar } from "notistack";
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { AppContext } from "../App";
 import Header from "../components/Header";
+import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest, showResponse } from "../components/Request";
 
 interface Notepad {
@@ -30,8 +31,25 @@ interface Notepad {
 }
 
 export function Notepad() {
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+    const appContext = React.useContext(AppContext);
+    const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
     const navigate = useNavigate();
+
+    React.useMemo(() => {
+        getRequest("/auth").then(async (response) => {
+            if (response.ok) {
+                const json = await response.json();
+                const { user } = json;
+                appContext?.setUser(user);
+                setComponentToRender(<NotepadComponent />);
+            } else navigate("/login?redirect=" + window.location.pathname, { replace: true });
+        });
+    }, []);
+
+    return componentToRender;
+}
+
+function NotepadComponent() {
     const forceUpdate = useForceUpdate();
 
     const [refresh, setRefresh] = React.useState(true);

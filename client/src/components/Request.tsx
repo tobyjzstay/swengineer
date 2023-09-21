@@ -1,5 +1,7 @@
 import { AlertColor } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
+import React from "react";
+import { useLocation } from "react-router-dom";
 import { snackbars } from "../App";
 
 declare module "notistack" {
@@ -10,23 +12,23 @@ declare module "notistack" {
 
 const API_SERVER_URL = "/api";
 
-export async function getRequest(input: RequestInfo | URL) {
+export async function getRequest(input: RequestInfo | URL, quiet?: boolean) {
     return fetch(API_SERVER_URL + input, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
         },
-    }).then(showResponse);
+    }).then((response) => (quiet ? response : showResponse(response)));
 }
 
-export async function postRequest(input: RequestInfo | URL, body: any) {
+export async function postRequest(input: RequestInfo | URL, body: any, quiet?: boolean) {
     return fetch(API_SERVER_URL + input, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
         body: JSON.stringify(body),
-    }).then(showResponse);
+    }).then((response) => (quiet ? response : showResponse(response)));
 }
 
 export async function showResponse(response: Response) {
@@ -72,4 +74,9 @@ function isJsonString(str: string) {
         return false;
     }
     return true;
+}
+
+export function useQuery() {
+    const { search } = useLocation();
+    return React.useMemo(() => new URLSearchParams(search), [search]);
 }

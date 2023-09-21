@@ -1,11 +1,11 @@
 import * as React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import LoadingLayout from "../components/LoadingLayout";
+import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest } from "../components/Request";
 import { PageNotFoundComponent } from "./PageNotFound";
 
 function Verify() {
-    const [componentToRender, setComponentToRender] = React.useState(<LoadingLayout />);
+    const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
     const navigate = useNavigate();
     const token = useParams().token;
 

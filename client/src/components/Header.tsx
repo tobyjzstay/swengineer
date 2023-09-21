@@ -6,37 +6,29 @@ import { Logo } from "./Logo";
 import { postRequest } from "./Request";
 
 function Header() {
+    const appContext = React.useContext(AppContext);
+    const navigate = useNavigate();
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
+
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget);
     };
+
     const handleClose = () => {
         setAnchorEl(null);
     };
 
-    const navigate = useNavigate();
-
-    const appContext = React.useContext(AppContext);
-    const user = appContext?.user;
-
-    // React.useEffect(() => {
-    //     getRequest("/auth").then(async (response) => {
-    //         const json = await response.json();
-    //         const { user } = json;
-    //         setUser(user);
-    //     });
-    // }, []);
-
     React.useEffect(() => {
-        fetch(`/api/auth`, {
+        if (!appContext) return;
+        fetch("/api/auth", {
             method: "GET",
         }).then(async (response) => {
             const json = await response.json();
             const { user } = json;
-            appContext?.setUser(user);
+            appContext.setUser(user);
         });
-    }, []);
+    }, [appContext]);
 
     return (
         <AppBar position="sticky" style={{ background: "transparent", boxShadow: "none" }}>
@@ -44,24 +36,24 @@ function Header() {
                 <Box display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
                     <Logo scale={0.6} />
                 </Box>
-                <IconButton onClick={handleClick}>
-                    <Avatar sx={{ width: 24, height: 24 }} />
-                </IconButton>
-                <Menu
-                    anchorEl={anchorEl}
-                    open={open}
-                    onClose={handleClose}
-                    PaperProps={{
-                        sx: {
-                            minWidth: 120,
-                        },
-                    }}
-                >
-                    {user?.email ? (
-                        [
+                {appContext?.user && (
+                    <>
+                        <IconButton onClick={handleClick}>
+                            <Avatar sx={{ width: 24, height: 24 }} />
+                        </IconButton>
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={open}
+                            onClose={handleClose}
+                            PaperProps={{
+                                sx: {
+                                    minWidth: 120,
+                                },
+                            }}
+                        >
                             <MenuItem key="email" disabled divider>
-                                {user.email}
-                            </MenuItem>,
+                                {appContext.user.email}
+                            </MenuItem>
                             <MenuItem
                                 key="profile"
                                 onClick={() => {
@@ -72,7 +64,7 @@ function Header() {
                                     <Icon fontSize="small">person</Icon>
                                 </ListItemIcon>
                                 Profile
-                            </MenuItem>,
+                            </MenuItem>
                             <MenuItem
                                 key="logout"
                                 onClick={() => {
@@ -85,17 +77,10 @@ function Header() {
                                     <Icon fontSize="small">logout</Icon>
                                 </ListItemIcon>
                                 Log out
-                            </MenuItem>,
-                        ]
-                    ) : (
-                        <MenuItem onClick={() => navigate("/login")}>
-                            <ListItemIcon>
-                                <Icon fontSize="small">login</Icon>
-                            </ListItemIcon>
-                            Login
-                        </MenuItem>
-                    )}
-                </Menu>
+                            </MenuItem>
+                        </Menu>
+                    </>
+                )}
             </Toolbar>
         </AppBar>
     );

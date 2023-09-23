@@ -210,7 +210,7 @@ router.post("/login", (req, res) => {
 
         // send token as cookie
         return res
-            .cookie("access_token", token, {
+            .cookie("token", token, {
                 httpOnly: true,
                 secure: process.env.NODE_ENV === "production",
             })
@@ -222,7 +222,7 @@ router.post("/login", (req, res) => {
 router.post("/logout", auth, (_req, res) => {
     delete app.locals.user;
 
-    res.clearCookie("access_token").status(200).json({
+    res.clearCookie("token").status(200).json({
         message: "Logged out successfully",
     });
 });
@@ -388,7 +388,7 @@ router.post("/delete", auth, (req, res) => {
         } else {
             delete app.locals.user;
 
-            res.clearCookie("access_token").status(200).json({
+            res.clearCookie("token").status(200).json({
                 message: "Account deleted",
             });
         }

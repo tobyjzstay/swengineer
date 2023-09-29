@@ -5,18 +5,21 @@ import { useNavigate } from "react-router-dom";
 import { AppContext } from "../App";
 import AuthLayout from "../components/AuthLayout";
 import PlaceholderLayout from "../components/PlaceholderLayout";
-import { getRequest, postRequest } from "../components/Request";
+import { getRequest, postRequest, useQuery } from "../components/Request";
 
 function Register() {
-    const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
     const navigate = useNavigate();
+    const query = useQuery();
+    const redirect = query.get("redirect") || "/";
+
+    const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
 
     React.useMemo(() => {
-        getRequest("/auth").then(async (response) => {
-            if (response.ok) navigate("/", { replace: true });
+        getRequest("/auth", true).then(async (response) => {
+            if (response.ok) navigate(redirect, { replace: true });
             else setComponentToRender(<RegisterComponent />);
         });
-    }, []);
+    }, [navigate, redirect]);
 
     function RegisterComponent() {
         const appContext = React.useContext(AppContext);

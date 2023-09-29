@@ -1,23 +1,13 @@
 import { LoadingButton } from "@mui/lab";
 import { Backdrop, Box, Grid, Icon, Link, TextField, Typography } from "@mui/material";
 import * as React from "react";
-import { useNavigate } from "react-router-dom";
 import { AppContext } from "../App";
 import AuthLayout from "../components/AuthLayout";
-import PlaceholderLayout from "../components/PlaceholderLayout";
-import { getRequest, postRequest } from "../components/Request";
+import { postRequest } from "../components/Request";
 
 function ResetPassword() {
-    const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
-    const navigate = useNavigate();
+    const [componentToRender, setComponentToRender] = React.useState(<ResetPasswordComponent />);
 
-    React.useMemo(() => {
-        getRequest("/auth").then(async (response) => {
-            if (response.ok) navigate("/", { replace: true });
-            else setComponentToRender(<ResetPasswordComponent />);
-        });
-    }, []);
-    
     function ResetPasswordComponent() {
         const appContext = React.useContext(AppContext);
         const [loading, setLoading] = React.useState(false);

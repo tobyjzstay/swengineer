@@ -15,7 +15,7 @@ function ChangePassword() {
     const token = useParams().token;
 
     React.useMemo(() => {
-        getRequest(`/auth/reset/${token}`).then((response) => {
+        getRequest(`/auth/reset/${token}`, true).then((response) => {
             if (response.ok) setComponentToRender(<ChangePasswordComponent />);
             else if (response.status === 401) setComponentToRender(<ResendEmail />);
             else setComponentToRender(<PageNotFoundComponent />);

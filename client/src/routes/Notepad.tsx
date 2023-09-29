@@ -36,7 +36,7 @@ export function Notepad() {
     const navigate = useNavigate();
 
     React.useMemo(() => {
-        getRequest("/auth").then(async (response) => {
+        getRequest("/auth", true).then(async (response) => {
             if (response.ok) {
                 const json = await response.json();
                 const { user } = json;
@@ -44,7 +44,7 @@ export function Notepad() {
                 setComponentToRender(<NotepadComponent />);
             } else navigate("/login?redirect=" + window.location.pathname, { replace: true });
         });
-    }, []);
+    }, [navigate]);
 
     return componentToRender;
 }

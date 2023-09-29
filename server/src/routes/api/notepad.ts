@@ -61,7 +61,7 @@ router.get("/create", auth, (req, res) => {
 });
 
 router.post("/delete", auth, (req, res) => {
-    const { id } = req.body;
+    const { id } = req.body || {};
 
     const user = app.locals.user as User;
 
@@ -88,7 +88,7 @@ router.post("/delete", auth, (req, res) => {
 });
 
 router.post("/edit", auth, (req, res) => {
-    const { id, title, content } = req.body;
+    const { id, title, content } = req.body || {};
 
     const user = app.locals.user as User;
 

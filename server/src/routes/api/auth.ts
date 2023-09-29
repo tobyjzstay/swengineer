@@ -37,8 +37,6 @@ router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
     const user = req.user as User;
     const redirect = app.locals.redirect;
 
-    console.log("user", user)
-
     const token = jwt.sign(
         {
             id: user.id,
@@ -51,11 +49,10 @@ router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
 
     // responding to client request success message and access token
     res.cookie("token", token).redirect(redirect || "/");
-    console.log("cookie", token)
 });
 
 router.post("/register", (req, res) => {
-    const { email, password, verify } = req.body;
+    const { email, password, verify } = req.body || {};
 
     if (!email) {
         res.status(400).json({ message: "Invalid email address" });
@@ -163,7 +160,7 @@ router.get("/register/:token", (req, res, next) => {
 });
 
 router.post("/login", (req, res) => {
-    const { email, password } = req.body;
+    const { email, password } = req.body || {};
     const redirect = req.query.redirect;
 
     User.findOne({
@@ -228,7 +225,7 @@ router.post("/logout", auth, (_req, res) => {
 });
 
 router.post("/reset", (req, res) => {
-    const { email, token } = req.body;
+    const { email, token } = req.body || {};
 
     if (email) {
         User.findOne({
@@ -334,7 +331,7 @@ router.get("/reset/:token", (req, res, next) => {
 });
 
 router.post("/reset/:token", (req, res, next) => {
-    const { password } = req.body;
+    const { password } = req.body || {};
     const token = req.params.token;
 
     User.findOne({ resetPasswordToken: token }, (err: NodeJS.ErrnoException, user: User) => {

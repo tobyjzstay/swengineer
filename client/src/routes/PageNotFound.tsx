@@ -1,20 +1,23 @@
 import { Box, Typography } from "@mui/material";
+import React from "react";
 import PageLayout from "../components/PageLayout";
+import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest } from "../components/Request";
 
-const ERROR_MESSAGES = [
-    'Exception in thread "main" java.lang.NullPointerException', // Java
-    "Error: ENOENT: no such file or directory, open '/dev/null'", // Node.js
-    "Program terminated with signal 11, Segmentation fault.", // C
-    "Uncaught TypeError: Cannot read properties of null (reading 'render')", // JavaScript
-];
-
 function PageNotFound() {
-    getRequest(window.location.pathname);
-    return <PageNotFoundComponent />;
+    const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
+
+    React.useMemo(() => {
+        getRequest(window.location.pathname).then(async (response) => {
+            const json = await response.json();
+            setComponentToRender(<PageNotFoundComponent message={json?.message || response.text()} />);
+        });
+    }, []);
+
+    return componentToRender;
 }
 
-export function PageNotFoundComponent() {
+export function PageNotFoundComponent({ message }: { message?: string }) {
     return (
         <PageLayout>
             <Box alignItems="center" display="flex" flexDirection="column" flexGrow={1} justifyContent="center">
@@ -26,7 +29,7 @@ export function PageNotFoundComponent() {
                     sx={{ overflowWrap: "anywhere" }}
                     textAlign="center"
                 >
-                    {ERROR_MESSAGES[Math.floor(Math.random() * ERROR_MESSAGES.length)]}
+                    {message}
                 </Typography>
             </Box>
         </PageLayout>

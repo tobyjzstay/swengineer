@@ -27,7 +27,21 @@ export const auth = (req: Request, res: Response, next: () => void) => {
             return next();
         });
     } catch (error: unknown) {
-        logger.error(error);
-        return res.status(403).json({});
+        if (error instanceof jwt.JsonWebTokenError) {
+            return res.status(401).json({
+                message: error.message,
+            });
+        } else if (error instanceof jwt.TokenExpiredError) {
+            return res.status(401).json({
+                message: error.message,
+            });
+        } else if (error instanceof jwt.NotBeforeError) {
+            return res.status(401).json({
+                message: error.message,
+            });
+        } else {
+            logger.error(error);
+            return res.status(403).json({});
+        }
     }
 };

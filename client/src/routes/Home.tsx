@@ -1,5 +1,5 @@
 import { Box, Collapse, Container, Fade, Typography } from "@mui/material";
-import { ThemeProvider, createTheme, responsiveFontSizes } from "@mui/material/styles";
+import { ThemeProvider, responsiveFontSizes, useTheme } from "@mui/material/styles";
 import React from "react";
 import Header from "../components/Header";
 
@@ -9,17 +9,16 @@ const COLOUR_DURATION = 500;
 const COLOUR_DELAY = TRANSITION_DELAY + COLOUR_DURATION;
 const HEADER_DELAY = TRANSITION_DELAY + 1000;
 
-let theme = createTheme();
-theme = responsiveFontSizes(theme, {
-    factor: 5,
-});
-
 function Home() {
     const [header, setHeader] = React.useState(false);
     const [expanded, setExpanded] = React.useState(true);
     const [colour, setColour] = React.useState(false);
 
     const pageRef = React.useRef<HTMLDivElement>(null);
+
+    const theme = responsiveFontSizes(useTheme(), {
+        factor: 5,
+    });
 
     React.useLayoutEffect(() => {
         if (!pageRef.current) return;
@@ -79,7 +78,7 @@ function Home() {
                                 style={{
                                     display: "flex",
                                     flexDirection: "row",
-                                    color: colour ? "#fdd835" : "#fff",
+                                    color: colour ? theme.palette.primary.main : theme.palette.text.primary,
                                     transition: "color 500ms",
                                 }}
                             >

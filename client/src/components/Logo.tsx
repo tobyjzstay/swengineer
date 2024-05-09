@@ -9,7 +9,7 @@ export function Logo({ scale: s }: { scale?: number }) {
                 <Typography
                     component="h1"
                     variant="h4"
-                    color="white"
+                    color={(theme) => theme.palette.text.primary}
                     fontFamily="Cascadia Mono"
                     fontSize={2.125 * scale + "rem"}
                 >

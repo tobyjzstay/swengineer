@@ -1,0 +1,36 @@
+{
+    "short_name": "swengineer",
+    "name": "swengineer",
+    "icons": [
+        {
+            "purpose": "any",
+            "src": "/logo192.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "purpose": "any",
+            "src": "/logo512.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        },
+        {
+            "purpose": "maskable",
+            "src": "/logo192_maskable.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "purpose": "maskable",
+            "src": "/logo512_maskable.png",
+            "sizes": "512x512",
+            "type": "image/png"
+        }
+    ],
+    "background_color": "#121212",
+    "theme_color": "#fdd835",
+    "display": "standalone",
+    "scope": "/",
+    "id": "/",
+    "start_url": "/"
+}

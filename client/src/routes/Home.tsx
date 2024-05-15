@@ -67,14 +67,12 @@ function Home() {
                 sx={{ display: "flex", justifyContent: "center", alignItems: "center", flexGrow: 1, marginY: 2 }}
             >
                 <ThemeProvider theme={theme}>
-                    <Typography component="h1" variant="h1">
+                    <Typography component="h1" variant="h1" style={{ whiteSpace: "pre" }}>
                         Hi, I&apos;m <strong>Toby</strong>,
                         <br />
-                        <div style={{ display: "flex", flexDirection: "row" }}>
-                            <Typography component="h1" variant="h1" style={{ whiteSpace: "pre" }}>
-                                a{" "}
-                            </Typography>
-                            <div
+                        <span style={{ display: "flex", flexDirection: "row" }}>
+                            <span>a </span>
+                            <span
                                 style={{
                                     display: "flex",
                                     flexDirection: "row",
@@ -92,9 +90,7 @@ function Home() {
                                     }}
                                 >
                                     <Fade in={expanded}>
-                                        <Typography component="h1" variant="h1">
-                                            oft
-                                        </Typography>
+                                        <span>oft</span>
                                     </Fade>
                                 </Collapse>
                                 <strong>w</strong>
@@ -106,15 +102,13 @@ function Home() {
                                     }}
                                 >
                                     <Fade in={expanded}>
-                                        <Typography component="h1" variant="h1" style={{ whiteSpace: "pre" }}>
-                                            are{" "}
-                                        </Typography>
+                                        <span>are </span>
                                     </Fade>
                                 </Collapse>
                                 <strong>engineer</strong>
-                            </div>
+                            </span>
                             .
-                        </div>
+                        </span>
                     </Typography>
                 </ThemeProvider>
             </Container>

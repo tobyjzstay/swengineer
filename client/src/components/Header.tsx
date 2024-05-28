@@ -3,7 +3,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../App";
 import { Logo } from "./Logo";
-import { postRequest } from "./Request";
+import { getRequest, postRequest } from "./Request";
 
 function Header() {
     const appContext = React.useContext(AppContext);
@@ -21,9 +21,8 @@ function Header() {
 
     React.useEffect(() => {
         if (!appContext) return;
-        fetch("/api/auth", {
-            method: "GET",
-        }).then(async (response) => {
+        getRequest("/auth", true).then(async (response) => {
+            if (!response.ok) return;
             const json = await response.json();
             const { user } = json;
             appContext.setUser(user);

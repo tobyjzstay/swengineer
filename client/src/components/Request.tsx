@@ -33,7 +33,14 @@ export async function postRequest(input: RequestInfo | URL, body: any, quiet?: b
 
 export async function showResponse(response: Response) {
     const clone = response.clone();
-    const json = await response.json();
+
+    let json;
+    try {
+        json = await response.json();
+    } catch {
+        json = null;
+    }
+
     let severity: AlertColor = "info";
     switch (~~(response.status / 100)) {
         default:

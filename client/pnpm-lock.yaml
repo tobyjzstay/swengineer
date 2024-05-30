@@ -151,7 +151,7 @@ dependencies:
     version: 4.0.0
   sass-loader:
     specifier: ^12.3.0
-    version: 12.6.0(webpack@5.91.0)
+    version: 12.6.0(sass@1.77.3)(webpack@5.91.0)
   semver:
     specifier: ^7.3.5
     version: 7.6.2
@@ -214,6 +214,9 @@ devDependencies:
   eslint-plugin-react:
     specifier: ^7.34.1
     version: 7.34.1(eslint@8.57.0)
+  sass:
+    specifier: ^1.77.3
+    version: 1.77.3
   typescript:
     specifier: ^4.9.5
     version: 4.9.5
@@ -3634,7 +3637,6 @@ packages:
     dependencies:
       normalize-path: 3.0.0
       picomatch: 2.3.1
-    dev: false
 
   /arg@5.0.2:
     resolution: {integrity: sha512-PYjyFOLKQ9y57JvQ6QLo8dAgNqswh8M1RMJYdQduT6xbWSgK36P/Z/v+p888pM69jMMfS8Xd8F6I1kQ/I9HUGg==}
@@ -4018,7 +4020,6 @@ packages:
   /binary-extensions@2.3.0:
     resolution: {integrity: sha512-Ceh+7ox5qe7LJuLHoY0feh3pHuUDHAcRUeyL2VYghZwfpkNIy/+8Ocg0a3UuSoYzavmylwuLWQOf3hl0jjMMIw==}
     engines: {node: '>=8'}
-    dev: false
 
   /bluebird@3.7.2:
     resolution: {integrity: sha512-XpNj6GDQzdfW+r2Wnn7xiSAd7TM3jzkxGXBGTtWKuSXv1xUV+azxAm8jdWZN06QTQk+2N2XB9jRDkvbmQmcRtg==}
@@ -4217,7 +4218,6 @@ packages:
       readdirp: 3.6.0
     optionalDependencies:
       fsevents: 2.3.3
-    dev: false
 
   /chrome-trace-event@1.0.3:
     resolution: {integrity: sha512-p3KULyQg4S7NIHixdwbGX+nFHkoBiA4YQmyWtjb8XngSKV124nJmRysgAeujbUVb15vh+RvFUfCPqU7rXk+hZg==}
@@ -5931,7 +5931,6 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
-    dev: false
     optional: true
 
   /function-bind@1.1.2:
@@ -6355,6 +6354,9 @@ packages:
     resolution: {integrity: sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==}
     dev: false
 
+  /immutable@4.3.6:
+    resolution: {integrity: sha512-Ju0+lEMyzMVZarkTn/gqRpdqd5dOPaz1mCZ0SH3JV6iFw81PldE/PEB1hWVEA288HPt4WXW8O7AWxB10M+03QQ==}
+
   /import-fresh@3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
     engines: {node: '>=6'}
@@ -6450,7 +6452,6 @@ packages:
     engines: {node: '>=8'}
     dependencies:
       binary-extensions: 2.3.0
-    dev: false
 
   /is-boolean-object@1.1.2:
     resolution: {integrity: sha512-gDYaKHJmnj4aWxyj6YHyXVpdQawtVLHU5cb+eztPGczf6cjuTdwve5ZIEfgXqH4e57An1D1AKf8CZ3kYrQRqYA==}
@@ -7782,7 +7783,6 @@ packages:
   /normalize-path@3.0.0:
     resolution: {integrity: sha512-6eZs5Ls3WtCisHWp9S2GUy8dqkpGi4BVSz3GaqiE6ezub0512ESztXUwUB6C6IKbQkY2Pnb/mD4WYojCRwcwLA==}
     engines: {node: '>=0.10.0'}
-    dev: false
 
   /normalize-range@0.1.2:
     resolution: {integrity: sha512-bdok/XvKII3nUpklnV6P2hxtMNrCboOjAcyBuQnWEhO665FwrSNRxU+AqpsyvO6LgGYPspN+lu5CLtw4jPRKNA==}
@@ -9204,7 +9204,6 @@ packages:
     engines: {node: '>=8.10.0'}
     dependencies:
       picomatch: 2.3.1
-    dev: false
 
   /recursive-readdir@2.2.3:
     resolution: {integrity: sha512-8HrF5ZsXk5FAH9dgsx3BlUer73nIhuj+9OrQwEbLTPOBzGkL1lsFCR01am+v+0m2Cmbs1nP12hLDl5FA7EszKA==}
@@ -9449,7 +9448,7 @@ packages:
     resolution: {integrity: sha512-ZRwKbh/eQ6w9vmTjkuG0Ioi3HBwPFce0O+v//ve+aOq1oeCy7jMV2qzzAlpsNuqpqCBjjriM1lbtZbF/Q8jVyA==}
     dev: false
 
-  /sass-loader@12.6.0(webpack@5.91.0):
+  /sass-loader@12.6.0(sass@1.77.3)(webpack@5.91.0):
     resolution: {integrity: sha512-oLTaH0YCtX4cfnJZxKSLAyglED0naiYfNG1iXfU5w1LNZ+ukoA5DtyDIN5zmKVZwYNJP4KRc5Y3hkWga+7tYfA==}
     engines: {node: '>= 12.13.0'}
     peerDependencies:
@@ -9470,8 +9469,18 @@ packages:
     dependencies:
       klona: 2.0.6
       neo-async: 2.6.2
+      sass: 1.77.3
       webpack: 5.91.0
     dev: false
+
+  /sass@1.77.3:
+    resolution: {integrity: sha512-WJHo+jmFp0dwRuymPmIovuxHaBntcCyja5hCB0yYY9wWrViEp4kF5Cdai98P72v6FzroPuABqu+ddLMbQWmwzA==}
+    engines: {node: '>=14.0.0'}
+    hasBin: true
+    dependencies:
+      chokidar: 3.6.0
+      immutable: 4.3.6
+      source-map-js: 1.2.0
 
   /sax@1.2.4:
     resolution: {integrity: sha512-NqVDv9TpANUjFm0N8uM5GxL36UgKi9/atZw+x7YFnQ8ckwFGKrl4xX4yWtrey3UJm5nP1kUbnYgLopqWNSRhWw==}
@@ -9695,7 +9704,6 @@ packages:
   /source-map-js@1.2.0:
     resolution: {integrity: sha512-itJW8lvSA0TXEphiRoawsCksnlf8SyvmFzIhltqAHluXd88pkCd+cXJVHTDwdCr0IzwptSm035IHQktUu1QUMg==}
     engines: {node: '>=0.10.0'}
-    dev: false
 
   /source-map-loader@3.0.2(webpack@5.91.0):
     resolution: {integrity: sha512-BokxPoLjyl3iOrgkWaakaxqnelAJSS+0V+De0kKIq6lyWrXuiPgYTGp6z3iHmqljKAaLXwZa+ctD8GccRJeVvg==}

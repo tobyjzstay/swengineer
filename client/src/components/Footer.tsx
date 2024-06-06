@@ -1,6 +1,7 @@
 import { Box, Fade, LinearProgress } from "@mui/material";
 import React from "react";
 import { AppContext } from "../App";
+import "./Footer.scss";
 
 function Footer() {
     const appContext = React.useContext(AppContext);
@@ -12,7 +13,7 @@ function Footer() {
     }, [appContext?.loading]);
 
     return (
-        <Box position="sticky" marginTop="auto" component="footer" height={4}>
+        <Box className="footer-layout" component="footer">
             <Fade in={loading} unmountOnExit>
                 <LinearProgress />
             </Fade>

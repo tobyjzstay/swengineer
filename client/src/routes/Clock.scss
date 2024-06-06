@@ -1,0 +1,10 @@
+:not(.\9) {
+    .clock-layout {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        justify-content: center;
+        text-align: center;
+    }
+}

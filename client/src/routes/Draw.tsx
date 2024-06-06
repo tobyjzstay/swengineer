@@ -1,5 +1,6 @@
 import { Box, Button, Fade, Icon, IconButton, MenuItem, Paper, Select, Slider } from "@mui/material";
 import React from "react";
+import "./Draw.scss";
 
 const enum Shape {
     STROKE = "Stroke",
@@ -188,34 +189,34 @@ export function Draw() {
     return (
         <>
             <canvas ref={setCanvasRef} />
-            <Fade in={!isDrawing} appear={false}>
-                <Paper sx={{ position: "absolute", bottom: 0, left: 0, p: 2, m: 2 }}>
-                    <Button variant="contained" onClick={() => handleClear(ctx)}>
+            <Fade appear={false} in={!isDrawing}>
+                <Paper className="draw-layout">
+                    <Button onClick={() => handleClear(ctx)} variant="contained">
                         Clear
                     </Button>
                     <Slider
                         min={1}
                         max={20}
-                        value={lineWidth}
                         onChange={(e, v) => {
                             setLineWidth(v as number);
                         }}
+                        value={lineWidth}
                     />
-                    <Select value={shape} size="small">
+                    <Select size="small" value={shape}>
                         {shapes.map((shape, i) => (
-                            <MenuItem key={i} value={shape} onClick={() => handleShapeClick(shape)}>
+                            <MenuItem key={i} onClick={() => handleShapeClick(shape)} value={shape}>
                                 {shape}
                             </MenuItem>
                         ))}
                     </Select>
-                    <Box display="flex">
+                    <Box className="draw-color-container">
                         {colors.map((_color, i) => {
                             if (i % 2 !== 0) return;
                             const color1 = colors[i];
                             const color2 = colors[i + 1];
                             return (
-                                <Box key={i} display="flex" flexDirection="column">
-                                    <IconButton size="small" onClick={() => handleColorChange(color1)}>
+                                <Box className="draw-color-column" key={i}>
+                                    <IconButton onClick={() => handleColorChange(color1)} size="small">
                                         <Icon
                                             fontSize="small"
                                             sx={{
@@ -225,7 +226,7 @@ export function Draw() {
                                             square
                                         </Icon>
                                     </IconButton>
-                                    <IconButton size="small" onClick={() => handleColorChange(color2)}>
+                                    <IconButton onClick={() => handleColorChange(color2)} size="small">
                                         <Icon
                                             fontSize="small"
                                             sx={{

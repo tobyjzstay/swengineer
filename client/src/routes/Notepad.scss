@@ -1,0 +1,26 @@
+:not(.\9) {
+    .notepad-container {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        margin-top: 8px;
+    }
+    .notepad-card {
+        margin-top: 16px;
+        width: 100%;
+    }
+    .notepad-card-text {
+        font-size: 12px;
+    }
+    .notepad-dialog {
+        width: 100%;
+    }
+    .notepad-text-field {
+        width: 100%;
+    }
+    .notepad-fab {
+        bottom: 16px;
+        position: absolute;
+        right: 16px;
+    }
+}

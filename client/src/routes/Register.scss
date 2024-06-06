@@ -1,0 +1,28 @@
+:not(.\9) {
+    .register-container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        width: 100%;
+    }
+    .register-text-field {
+        width: 100%;
+    }
+    .register-button {
+        margin: 24px 0 16px;
+        width: 100%;
+    }
+    .verification-email-container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        width: 100%;
+    }
+    .verification-email-text {
+        text-align: center;
+    }
+    .verification-email-button {
+        margin: 24px 0 16px;
+        width: 100%;
+    }
+}

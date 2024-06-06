@@ -2,6 +2,7 @@ import { AppBar, Avatar, Box, Icon, IconButton, ListItemIcon, Menu, MenuItem, To
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../App";
+import "./Header.scss";
 import { Logo } from "./Logo";
 import { getRequest, postRequest } from "./Request";
 
@@ -30,24 +31,22 @@ function Header() {
     }, [appContext]);
 
     return (
-        <AppBar position="sticky" style={{ background: "transparent", boxShadow: "none" }}>
+        <AppBar className="header-app-bar">
             <Toolbar variant="dense">
-                <Box display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
+                <Box className="header-logo">
                     <Logo scale={0.6} />
                 </Box>
                 {appContext?.user && (
                     <>
                         <IconButton onClick={handleClick}>
-                            <Avatar sx={{ width: 24, height: 24 }} />
+                            <Avatar className="header-avatar" />
                         </IconButton>
                         <Menu
                             anchorEl={anchorEl}
                             open={open}
                             onClose={handleClose}
                             PaperProps={{
-                                sx: {
-                                    minWidth: 120,
-                                },
+                                className: "header-menu-paper",
                             }}
                         >
                             <MenuItem key="email" disabled divider>

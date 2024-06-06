@@ -1,8 +1,9 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import React from "react";
 import PageLayout from "../components/PageLayout";
 import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest } from "../components/Request";
+import "./PageNotFound.scss";
 
 function PageNotFound() {
     const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
@@ -18,16 +19,16 @@ function PageNotFound() {
 }
 
 export function PageNotFoundComponent({ message }: { message?: string }) {
+    const theme = useTheme();
+
     return (
         <PageLayout>
-            <Box alignItems="center" display="flex" flexDirection="column" flexGrow={1} justifyContent="center">
+            <Box className="page-not-found-container">
                 <Typography
+                    className="page-not-found-text"
+                    color={theme.palette.primary.main}
                     component="h1"
                     variant="h4"
-                    color="white"
-                    fontFamily="Cascadia Mono"
-                    sx={{ overflowWrap: "anywhere" }}
-                    textAlign="center"
                 >
                     {message}
                 </Typography>

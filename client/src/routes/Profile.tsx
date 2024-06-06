@@ -6,6 +6,7 @@ import { AppContext } from "../App";
 import AuthLayout from "../components/AuthLayout";
 import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest } from "../components/Request";
+import "./Profile.scss";
 
 function Profile() {
     const appContext = React.useContext(AppContext);
@@ -45,22 +46,13 @@ function Profile() {
 
         return (
             <AuthLayout name="Profile">
-                <Box
-                    component="form"
-                    display="flex"
-                    flexDirection="column"
-                    flexGrow={1}
-                    marginTop={1}
-                    noValidate
-                    onSubmit={handleSubmit}
-                    width="100%"
-                >
+                <Box className="profile-container" component="form" noValidate onSubmit={handleSubmit}>
                     <Typography>
                         To confirm your account deletion, enter your email associated with your account.
                     </Typography>
                     <TextField
+                        className="profile-text-field"
                         disabled={loading}
-                        fullWidth
                         id="email"
                         label="Email Address"
                         margin="normal"
@@ -72,13 +64,12 @@ function Profile() {
                         value={value}
                     />
                     <LoadingButton
+                        className="profile-button"
                         color="error"
                         disabled={value !== appContext?.user?.email}
-                        fullWidth
                         loading={loading}
                         loadingPosition="start"
                         startIcon={<Icon>delete</Icon>}
-                        sx={{ mt: 3, mb: 2 }}
                         type="submit"
                         variant="contained"
                     >

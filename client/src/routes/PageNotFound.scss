@@ -1,0 +1,14 @@
+:not(.\9) {
+    .page-not-found-container {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        justify-content: center;
+    }
+    .page-not-found-text {
+        font-family: "Cascadia Mono";
+        overflow-wrap: anywhere;
+        text-align: center;
+    }
+}

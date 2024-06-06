@@ -6,6 +6,7 @@ import { AppContext } from "../App";
 import AuthLayout from "../components/AuthLayout";
 import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest } from "../components/Request";
+import "./ChangePassword.scss";
 import { PageNotFoundComponent } from "./PageNotFound";
 import { ResetPasswordEmail } from "./ResetPassword";
 
@@ -45,20 +46,12 @@ function ChangePassword() {
 
         return (
             <AuthLayout name="Reset password">
-                <Box
-                    component="form"
-                    display="flex"
-                    flexDirection="column"
-                    flexGrow={1}
-                    noValidate
-                    onSubmit={handleSubmit}
-                    width="100%"
-                >
+                <Box className="change-password-layout" component="form" noValidate onSubmit={handleSubmit}>
                     <TextField
                         autoComplete="new-password"
                         autoFocus
+                        className="change-password-text-field"
                         disabled={loading}
-                        fullWidth
                         id="password"
                         label="New password"
                         margin="normal"
@@ -67,11 +60,10 @@ function ChangePassword() {
                         type="password"
                     />
                     <LoadingButton
-                        fullWidth
+                        className="change-password-button"
                         loading={loading}
                         loadingPosition="start"
                         startIcon={<Icon>lock_reset</Icon>}
-                        sx={{ mt: 3, mb: 2 }}
                         type="submit"
                         variant="contained"
                     >
@@ -105,23 +97,13 @@ function ChangePassword() {
 
         return (
             <AuthLayout name="Reset password">
-                <Box
-                    component="form"
-                    display="flex"
-                    flexDirection="column"
-                    flexGrow={1}
-                    marginTop={1}
-                    noValidate
-                    onSubmit={handleSubmit}
-                    width="100%"
-                >
+                <Box className="change-password-resend-layout" component="form" noValidate onSubmit={handleSubmit}>
                     <Typography textAlign="center">The token has expired. Please request a new one.</Typography>
                     <LoadingButton
-                        fullWidth
+                        className="change-password-button"
                         loading={loading}
                         loadingPosition="start"
                         startIcon={<Icon>send</Icon>}
-                        sx={{ mt: 3, mb: 2 }}
                         type="submit"
                         variant="contained"
                     >

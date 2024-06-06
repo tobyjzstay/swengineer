@@ -1,0 +1,20 @@
+// increase specificity to override MUI styles
+:not(.\9) {
+    .header-app-bar {
+        background: transparent;
+        box-shadow: none;
+        position: sticky;
+    }
+    .header-logo {
+        display: flex;
+        align-items: center;
+        flex-grow: 1;
+    }
+    .header-avatar {
+        width: 24px;
+        height: 24px;
+    }
+    .header-menu-paper {
+        min-width: 120px;
+    }
+}

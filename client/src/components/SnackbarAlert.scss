@@ -1,0 +1,7 @@
+// increase specificity to override MUI styles
+:not(.\9) {
+    .snackbar-alert {
+        min-width: 228px;
+        width: 100%;
+    }
+}

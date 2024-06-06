@@ -30,13 +30,13 @@ function ResetPassword() {
         };
 
         return (
-            <AuthLayout name={"Reset password"}>
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1, width: "100%" }}>
+            <AuthLayout name="Reset password">
+                <Box className="reset-password-container" component="form" noValidate onSubmit={handleSubmit}>
                     <TextField
                         autoComplete="email"
                         autoFocus
+                        className="reset-password-text-field"
                         disabled={loading}
-                        fullWidth
                         id="email"
                         label="Email Address"
                         margin="normal"
@@ -44,11 +44,10 @@ function ResetPassword() {
                         required
                     />
                     <LoadingButton
-                        fullWidth
+                        className="reset-password-button"
                         loading={loading}
                         loadingPosition="start"
                         startIcon={<Icon>send</Icon>}
-                        sx={{ mt: 3, mb: 2 }}
                         type="submit"
                         variant="contained"
                     >
@@ -77,9 +76,11 @@ function ResetPassword() {
 
 export function ResetPasswordEmail() {
     return (
-        <AuthLayout name={"Reset password"}>
-            <Box display="flex" flexDirection="column" flexGrow={1} marginTop={1} width="100%">
-                <Typography textAlign="center">Please check your email for a reset password link.</Typography>
+        <AuthLayout name="Reset password">
+            <Box className="reset-password-email-container">
+                <Typography className="reset-password-email-text">
+                    Please check your email for a reset password link.
+                </Typography>
             </Box>
         </AuthLayout>
     );

@@ -1,0 +1,18 @@
+// increase specificity to override MUI styles
+:not(.\9) {
+    .auth-layout {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+    }
+    .auth-container {
+        align-items: center;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        margin-top: 64px;
+    }
+    .auth-logo-layout {
+        margin: 24px;
+    }
+}

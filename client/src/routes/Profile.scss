@@ -1,0 +1,16 @@
+:not(.\9) {
+    .profile-container {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        margin-top: 8px;
+        width: 100%;
+    }
+    .profile-text-field {
+        width: 100%;
+    }
+    .profile-button {
+        margin: 24px 0 16px;
+        width: 100%;
+    }
+}

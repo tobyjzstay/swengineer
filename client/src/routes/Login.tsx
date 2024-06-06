@@ -6,6 +6,7 @@ import { AppContext } from "../App";
 import AuthLayout from "../components/AuthLayout";
 import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest, useQuery } from "../components/Request";
+import "./Login.scss";
 
 function Login() {
     const navigate = useNavigate();
@@ -47,20 +48,12 @@ function Login() {
 
         return (
             <AuthLayout name="Log in">
-                <Box
-                    component="form"
-                    display="flex"
-                    flexDirection="column"
-                    flexGrow={1}
-                    noValidate
-                    onSubmit={handleSubmit}
-                    width="100%"
-                >
+                <Box className="login-layout" component="form" noValidate onSubmit={handleSubmit}>
                     <TextField
                         autoComplete="email"
                         autoFocus
+                        className="login-email-text-field"
                         disabled={loading}
-                        fullWidth
                         id="email"
                         label="Email Address"
                         margin="normal"
@@ -69,8 +62,8 @@ function Login() {
                     />
                     <TextField
                         autoComplete="current-password"
+                        className="login-password-text-field"
                         disabled={loading}
-                        fullWidth
                         id="password"
                         label="Password"
                         margin="normal"
@@ -79,11 +72,10 @@ function Login() {
                         type="password"
                     />
                     <LoadingButton
-                        fullWidth
+                        className="login-button"
                         loading={loading}
                         loadingPosition="start"
                         startIcon={<Icon>login</Icon>}
-                        sx={{ mt: 3, mb: 2 }}
                         type="submit"
                         variant="contained"
                     >
@@ -102,11 +94,10 @@ function Login() {
                         </Grid>
                     </Grid>
                     <Button
+                        className="login-button"
                         color="secondary"
                         disabled={loading}
-                        fullWidth
                         href="/api/auth/google"
-                        sx={{ mt: 3, mb: 2 }}
                         variant="contained"
                     >
                         Log in with Google

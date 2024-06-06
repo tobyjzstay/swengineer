@@ -1,15 +1,10 @@
 import { Box } from "@mui/material";
 import Footer from "./Footer";
+import "./PlaceholderLayout.scss";
 
 function PlaceholderLayout() {
     return (
-        <Box
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                minHeight: "100vh",
-            }}
-        >
+        <Box className="placeholder-layout">
             <Footer />
         </Box>
     );

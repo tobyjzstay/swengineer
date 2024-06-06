@@ -21,6 +21,7 @@ import { AppContext } from "../App";
 import Header from "../components/Header";
 import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest, showResponse } from "../components/Request";
+import "./Notepad.scss";
 
 interface Notepad {
     id: string;
@@ -152,20 +153,13 @@ function NotepadComponent() {
         <>
             <Header />
             <Container maxWidth="sm">
-                <Box
-                    sx={{
-                        marginTop: 8,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                    }}
-                >
+                <Box className="notepad-container">
                     <Grid container spacing={2}>
                         {notepads
                             .sort((a, b) => b.modified.getTime() - a.modified.getTime())
                             .map((notepad, i) => (
-                                <Grid key={notepad.id} item xs={12}>
-                                    <Card sx={{ width: "100%", marginTop: 2 }}>
+                                <Grid item key={notepad.id} xs={12}>
+                                    <Card className="notepad-card">
                                         <CardActionArea onClick={() => handleClick(i)}>
                                             <CardContent>
                                                 {notepad.title && (
@@ -174,22 +168,22 @@ function NotepadComponent() {
                                                     </Typography>
                                                 )}
                                                 {notepad.content && (
-                                                    <Typography gutterBottom noWrap sx={{ fontSize: 12 }}>
+                                                    <Typography className="notepad-card-text" gutterBottom noWrap>
                                                         {notepad.content}
                                                     </Typography>
                                                 )}
-                                                <Typography sx={{ fontSize: 12 }} color="text.secondary">
+                                                <Typography className="notepad-card-text" color="text.secondary">
                                                     Created {notepad.created.toISOString()}
                                                 </Typography>
-                                                <Typography sx={{ fontSize: 12 }} color="text.secondary">
+                                                <Typography className="notepad-card-text" color="text.secondary">
                                                     Modified {notepad.modified.toISOString()}
                                                 </Typography>
                                             </CardContent>
                                             <CardActions>
                                                 <IconButton
                                                     component="span"
-                                                    size="small"
                                                     onClick={(e) => handleDelete(e, i)}
+                                                    size="small"
                                                 >
                                                     <Icon fontSize="small">delete</Icon>
                                                 </IconButton>
@@ -202,7 +196,7 @@ function NotepadComponent() {
                 </Box>
             </Container>
             <Dialog
-                fullWidth
+                className="notepad-dialog"
                 maxWidth="sm"
                 open={notepadIndex >= 0}
                 onClose={() => {
@@ -212,33 +206,26 @@ function NotepadComponent() {
             >
                 <DialogTitle>
                     <TextField
-                        fullWidth
+                        className="notepad-text-field"
+                        defaultValue={notepadIndex >= 0 ? notepads[notepadIndex].title : ""}
                         label="Title"
                         margin="dense"
                         onChange={onTitleChange}
-                        defaultValue={notepadIndex >= 0 ? notepads[notepadIndex].title : ""}
                     />
                 </DialogTitle>
                 <DialogContent>
                     <TextField
+                        className="notepad-text-field"
+                        defaultValue={notepadIndex >= 0 ? notepads[notepadIndex].content : ""}
                         fullWidth
                         label="Content"
                         margin="dense"
                         multiline
                         onChange={onContentChange}
-                        defaultValue={notepadIndex >= 0 ? notepads[notepadIndex].content : ""}
                     />
                 </DialogContent>
             </Dialog>
-            <Fab
-                color="primary"
-                onClick={handleCreate}
-                sx={{
-                    position: "absolute",
-                    bottom: 16,
-                    right: 16,
-                }}
-            >
+            <Fab className="notepad-fab" color="primary" onClick={handleCreate}>
                 <Icon fontSize="small">add</Icon>
             </Fab>
         </>

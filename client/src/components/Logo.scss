@@ -1,0 +1,14 @@
+// increase specificity to override MUI styles
+:not(.\9) {
+    .logo-link {
+        text-decoration: none;
+    }
+    .logo-container {
+        align-items: center;
+        display: flex;
+        flex-direction: row;
+    }
+    .logo-text {
+        font-family: "Cascadia Mono";
+    }
+}

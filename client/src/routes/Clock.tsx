@@ -1,6 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import React from "react";
 import PageLayout from "../components/PageLayout";
+import "./Clock.scss";
 
 const MICROSECOND = 1 / 1000;
 const SECOND = 1000;
@@ -23,14 +24,7 @@ function Clock() {
 
     return (
         <PageLayout>
-            <Box
-                alignItems="center"
-                display="flex"
-                flexDirection="column"
-                flexGrow={1}
-                justifyContent="center"
-                textAlign="center"
-            >
+            <Box className="clock-layout">
                 <Typography ref={timeRef} variant="h2" />
                 <Typography variant="subtitle1">{"have passed on Miller's planet"}</Typography>
             </Box>

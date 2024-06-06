@@ -2,6 +2,7 @@ import { Box, Collapse, Container, Fade, Typography } from "@mui/material";
 import { ThemeProvider, responsiveFontSizes, useTheme } from "@mui/material/styles";
 import React from "react";
 import Header from "../components/Header";
+import "./Home.scss";
 
 const TRANSITION_DURATION = 750;
 const TRANSITION_DELAY = 3000;
@@ -43,51 +44,33 @@ function Home() {
     }
 
     return (
-        <Box
-            display="flex"
-            flexDirection="column"
-            flexGrow={1}
-            ref={pageRef}
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                minHeight: "100vh",
-                outline: "none",
-            }}
-            tabIndex={0}
-        >
+        <Box className="home-layout" ref={pageRef}>
             <Fade in={header}>
-                <Box>
+                <Box className="home-header-container">
                     <Header />
                 </Box>
             </Fade>
-            <Container
-                component="main"
-                maxWidth="md"
-                sx={{ display: "flex", justifyContent: "center", alignItems: "center", flexGrow: 1, marginY: 2 }}
-            >
+            <Container className="home-container" component="main" maxWidth="md">
                 <ThemeProvider theme={theme}>
-                    <Typography component="h1" variant="h1" style={{ whiteSpace: "pre" }}>
+                    <Typography className="home-text" component="h1" variant="h1">
                         Hi, I&apos;m <strong>Toby</strong>,
                         <br />
-                        <span style={{ display: "flex", flexDirection: "row" }}>
+                        <span className="home-text-line">
                             <span>a </span>
                             <span
+                                className="home-text-word"
                                 style={{
-                                    display: "flex",
-                                    flexDirection: "row",
                                     color: colour ? theme.palette.primary.main : theme.palette.text.primary,
-                                    transition: "color 500ms",
                                 }}
                             >
                                 <strong>s</strong>
                                 <Collapse
-                                    orientation="horizontal"
                                     in={expanded}
-                                    unmountOnExit
+                                    orientation="horizontal"
                                     timeout={{
                                         exit: TRANSITION_DURATION,
                                     }}
+                                    unmountOnExit
                                 >
                                     <Fade in={expanded}>
                                         <span>oft</span>
@@ -95,8 +78,8 @@ function Home() {
                                 </Collapse>
                                 <strong>w</strong>
                                 <Collapse
-                                    orientation="horizontal"
                                     in={expanded}
+                                    orientation="horizontal"
                                     timeout={{
                                         exit: TRANSITION_DURATION,
                                     }}

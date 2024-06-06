@@ -6,6 +6,7 @@ import { AppContext } from "../App";
 import AuthLayout from "../components/AuthLayout";
 import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest, useQuery } from "../components/Request";
+import "./Register.scss";
 
 function Register() {
     const navigate = useNavigate();
@@ -47,20 +48,12 @@ function Register() {
 
         return (
             <AuthLayout name={"Register"}>
-                <Box
-                    component="form"
-                    display="flex"
-                    flexDirection="column"
-                    flexGrow={1}
-                    noValidate
-                    onSubmit={handleSubmit}
-                    width="100%"
-                >
+                <Box className="register-container" component="form" noValidate onSubmit={handleSubmit}>
                     <TextField
                         autoComplete="email"
                         autoFocus
+                        className="register-text-field"
                         disabled={loading}
-                        fullWidth
                         id="email"
                         label="Email Address"
                         margin="normal"
@@ -69,8 +62,8 @@ function Register() {
                     />
                     <TextField
                         autoComplete="new-password"
+                        className="register-text-field"
                         disabled={loading}
-                        fullWidth
                         id="password"
                         label="Password"
                         margin="normal"
@@ -79,11 +72,10 @@ function Register() {
                         type="password"
                     />
                     <LoadingButton
-                        fullWidth
+                        className="register-button"
                         loading={loading}
                         loadingPosition="start"
                         startIcon={<Icon>send</Icon>}
-                        sx={{ mt: 3, mb: 2 }}
                         type="submit"
                         variant="contained"
                     >
@@ -131,23 +123,16 @@ function VerificationEmail({ email }: { email: string }) {
     };
 
     return (
-        <AuthLayout name={"Register"}>
-            <Box
-                component="form"
-                display="flex"
-                flexDirection="column"
-                flexGrow={1}
-                noValidate
-                onSubmit={handleSubmit}
-                width="100%"
-            >
-                <Typography textAlign="center">Please check your email for a verification link.</Typography>
+        <AuthLayout name="Register">
+            <Box className="verification-email-container" component="form" noValidate onSubmit={handleSubmit}>
+                <Typography className="verification-email-text">
+                    Please check your email for a verification link.
+                </Typography>
                 <LoadingButton
-                    fullWidth
+                    className="verification-email-button"
                     loading={loading}
                     loadingPosition="start"
                     startIcon={<Icon>send</Icon>}
-                    sx={{ mt: 3, mb: 2 }}
                     type="submit"
                     variant="contained"
                 >

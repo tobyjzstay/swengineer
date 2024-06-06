@@ -1,6 +1,7 @@
 import { Alert, AlertColor, AlertTitle } from "@mui/material";
 import { CustomContentProps, SnackbarContent, useSnackbar } from "notistack";
 import { forwardRef, useCallback } from "react";
+import "./SnackbarAlert.scss";
 
 export type Severity = AlertColor;
 
@@ -26,7 +27,7 @@ export const SnackbarAlert = forwardRef<HTMLDivElement, SnackbarAlertProps>(({ i
 
     return (
         <SnackbarContent ref={ref}>
-            <Alert onClose={handleClose} severity={severity} sx={{ minWidth: 228, width: "100%" }}>
+            <Alert className="snackbar-alert" onClose={handleClose} severity={severity}>
                 <AlertTitle>
                     {status && statusText
                         ? status + " - " + statusText

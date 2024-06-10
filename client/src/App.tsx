@@ -10,7 +10,6 @@ import Clock from "./routes/Clock";
 import { Draw } from "./routes/Draw";
 import Home from "./routes/Home";
 import Login from "./routes/Login";
-import Music from "./routes/Music";
 import { Notepad } from "./routes/Notepad";
 import PageNotFound from "./routes/PageNotFound";
 import Profile from "./routes/Profile";
@@ -79,7 +78,6 @@ class App extends React.Component {
                                 <Route path="clock" element={<Clock />} />
                                 <Route path="draw" element={<Draw />} />
                                 <Route path="notepad" element={<Notepad />} />
-                                <Route path="music" element={<Music />} />
                                 <Route path="*" element={<PageNotFound />} />
                             </Routes>
                         </BrowserRouter>

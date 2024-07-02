@@ -82,7 +82,8 @@
     "main": "index.js",
     "scripts": {
         "build": "DISABLE_ESLINT_PLUGIN=true node scripts/build.js",
-        "dev": "DEBUG='*' pnpm run start ",
+        "clean": "rm -rf build dist node_modules",
+        "dev": "DEBUG='*' pnpm run start",
         "start": "node scripts/start.js",
         "test": "node scripts/test.js --passWithNoTests --watchAll=false"
     },

@@ -1,17 +1,16 @@
 {
-    "name": "swengineer-app",
-    "version": "1.0.1",
-    "description": "A simple Node.js application",
+    "name": "swengineer",
+    "version": "2.2.0",
+    "author": "Toby Stayner <toby@swengineer.dev>",
     "private": true,
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/tobyjzstay/swengineer-app.git"
+        "url": "https://github.com/tobyjzstay/swengineer.git"
     },
     "bugs": {
-        "url": "https://github.com/tobyjzstay/swengineer-app/issues"
+        "url": "https://github.com/tobyjzstay/swengineer/issues"
     },
     "homepage": "https://swengineer.dev/",
-    "author": "Toby Stayner <toby@swengineer.dev>",
     "devDependencies": {
         "concurrently": "^7.6.0"
     },

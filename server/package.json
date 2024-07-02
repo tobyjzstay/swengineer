@@ -1,7 +1,6 @@
 {
-    "name": "swengineer-app-server",
-    "version": "1.0.0",
-    "description": "Server side for swengineer",
+    "name": "swengineer-server",
+    "version": "2.2.0",
     "author": "Toby Stayner <toby@swengineer.dev>",
     "private": true,
     "dependencies": {
@@ -44,8 +43,8 @@
     "scripts": {
         "build": "tsc",
         "dev": "DEBUG='*' pnpm run start",
-        "test": "PORT=0 TEST=true mocha --recursive --exit --timeout 10000",
-        "start": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node --transpileOnly src/index.ts\""
+        "start": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node --transpileOnly src/index.ts\"",
+        "test": "PORT=0 TEST=true mocha --recursive --exit --timeout 10000"
     },
     "type": "commonjs"
 }

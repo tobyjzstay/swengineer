@@ -2,39 +2,44 @@
 
 # swengineer
 
-## Install
+## Prerequisites
 
+-   [Node.js](https://nodejs.org/en/)
+-   [pnpm](https://pnpm.io/)
+
+```bash
+npm install -g pnpm
 ```
+
+## Installation
+
+```bash
 pnpm install
 ```
 
 ## Build
 
-```
-pnpm run build
-```
-
 ### Development
 
-Uses files under `client/src/`.
+```bash
+pnpm run start
+```
 
-http://localhost:3000/
+Uses files created for build under [`client/src/`](client/src/). Hosted at http://localhost:3000/ by default.
 
 #### Debug
 
-```
+```bash
 pnpm run dev
 ```
 
 ### Production
 
-Uses files created for build under `client/build/`.
+```bash
+pnpm run build
+```
 
-http://localhost:8080/
-
-#### public/ directory
-
-http://localhost:8080/public/
+Uses files created for build under [`client/build/`](client/build/). Hosted at http://localhost:8080/ by default.
 
 ## Test
 

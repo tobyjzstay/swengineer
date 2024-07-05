@@ -34,6 +34,7 @@
         "eslint-plugin-only-warn": "^1.1.0",
         "mocha": "^10.4.0",
         "nodemon": "^2.0.22",
+        "nyc": "^17.0.0",
         "serve-index": "^1.9.1",
         "supertest": "^6.3.4",
         "ts-node": "^10.9.2",
@@ -45,7 +46,8 @@
         "dev": "DEBUG='*' pnpm run start",
         "clean": "rm -rf dist node_modules",
         "start": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node --transpileOnly src/index.ts\"",
-        "test": "PORT=0 TEST=true mocha --recursive --exit --timeout 10000"
+        "test": "PORT=0 TEST=true mocha --recursive --exit --timeout 10000",
+        "coverage": "nyc --reporter=html --reporter=text-summary pnpm test"
     },
     "type": "commonjs"
 }

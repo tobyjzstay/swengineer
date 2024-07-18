@@ -1,7 +1,7 @@
 FROM node:latest
-WORKDIR /
+WORKDIR /server
 COPY . .
-RUN npm install
-RUN npm run build
+RUN npm install -g pnpm
+RUN pnpm install
 EXPOSE 8080
-CMD ["npm", "start"]
+CMD ["pnpm", "start"]

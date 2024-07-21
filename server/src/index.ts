@@ -1,4 +1,5 @@
 require("dotenv").config();
+require("./passport");
 
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -13,31 +14,19 @@ import passport from "passport";
 import serveIndex from "serve-index";
 
 const logger = log4js.getLogger();
-logger.level = "all";
-
-require("./passport");
-
-const ENVIRONMENT = process.env.ENVIRONMENT;
-const SECRET = process.env.PASSPORT_SECRET;
-const TEST = process.env.TEST;
-const MONGODB_PASSWORD = process.env.MONGODB_PASSWORD;
-
-const LOCALHOST = "0.0.0.0";
-// const DATABASE_URI = "mongodb://" + LOCALHOST + ":27017/" + ENVIRONMENT;
-const DATABASE_URI = `mongodb+srv://admin:${MONGODB_PASSWORD}@cluster0.0ywr222.mongodb.net/${ENVIRONMENT}?retryWrites=true&w=majority`;
-const PORT = parseInt(process.env.PORT) || 0;
+logger.level = log4js.levels.ALL;
 
 export const app = express();
 
-if (cluster.isPrimary && !TEST) {
-    const cpusLength = os.cpus().length;
-    for (let i = 0; i < cpusLength; i++) {
+if (cluster.isPrimary && process.env.PARALLEL) {
+    for (let i = 0; i < os.cpus().length; i++) {
         cluster.fork();
     }
 
     cluster.on("online", (worker) => {
         logger.info("Worker " + worker.process.pid + " is online");
     });
+
     cluster.on("exit", (worker) => {
         logger.warn("Worker " + worker.process.pid + " died");
         cluster.fork();
@@ -45,12 +34,13 @@ if (cluster.isPrimary && !TEST) {
 } else {
     const logger = log4js.getLogger(process.pid.toString());
 
-    mongoose.connect(DATABASE_URI).catch((error) => {
+    mongoose.set("strictQuery", false);
+    mongoose.connect(process.env.MONGODB_URI).catch((error) => {
         logger.error(error);
     });
 
     mongoose.connection.on("connected", () => {
-        logger.info("Connected to MongoDB at " + DATABASE_URI);
+        logger.info("Connected to MongoDB");
     });
 
     mongoose.connection.on("error", (error) => {
@@ -63,13 +53,9 @@ if (cluster.isPrimary && !TEST) {
 
     // initialize passport
     app.use(passport.initialize());
-    app.use(session({ secret: SECRET, resave: true, saveUninitialized: true }));
+    app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true }));
 
-    app.use(
-        cors({
-            credentials: true,
-        })
-    );
+    app.use(cors({ credentials: true }));
     app.use(cookieParser());
 
     app.use((req, _res, next) => {
@@ -90,7 +76,8 @@ if (cluster.isPrimary && !TEST) {
         res.sendStatus(404);
     });
 
-    const server = app.listen(PORT, LOCALHOST, () => {
+    const port = parseInt(process.env.PORT) || 0;
+    const server = app.listen(port, process.env.HOSTNAME, () => {
         const address = server.address();
         const uri = typeof address === "string" ? address : "http://" + address?.address + ":" + address?.port + "/";
         logger.info("HTTP server listening at " + uri);

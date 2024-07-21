@@ -16,9 +16,9 @@
     },
     "scripts": {
         "install": "pnpm --prefix ./client/ install && pnpm --prefix ./server/ install",
-        "build": "pnpm --prefix ./client/ run build && pnpm --prefix ./server/ run build",
-        "clean": "rm -rf node_modules && pnpm --prefix ./client/ run clean && pnpm --prefix ./server/ run clean",
-        "dev": "DEBUG='*' pnpm run start",
+        "build": "pnpm --prefix ./client/ build && pnpm --prefix ./server/ build",
+        "clean": "rm -rf node_modules && pnpm --prefix ./client/ clean && pnpm --prefix ./server/ clean",
+        "dev": "pnpm --prefix ./client/ dev && pnpm --prefix ./server/ dev",
         "start": "concurrently \"pnpm --prefix ./server/ start\" \"pnpm --prefix ./client/ start\" -n \"server,client\" -c \"bgBlue.bold,bgMagenta.bold\"",
         "test": "pnpm --prefix ./server/ test && pnpm --prefix ./client/ test",
         "coverage": "pnpm --prefix ./server/ coverage && pnpm --prefix ./client/ coverage"

@@ -43,10 +43,10 @@
     "main": "dist/index.js",
     "scripts": {
         "build": "tsc",
-        "dev": "DEBUG='*' pnpm run start",
+        "dev": "DEBUG='*' pnpm start",
         "clean": "rm -rf dist node_modules",
-        "start": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node --transpileOnly src/index.ts\"",
-        "test": "PORT=0 TEST=true mocha --recursive --exit --timeout 10000",
+        "start": "PARALLEL=true nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node --transpileOnly src/index.ts\"",
+        "test": "PORT=0 mocha --recursive --exit --timeout 10000",
         "coverage": "nyc --reporter=html --reporter=text-summary pnpm test"
     },
     "type": "commonjs"

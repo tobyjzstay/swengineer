@@ -1,8 +1,8 @@
-FROM node:latest
+FROM node:lts
 WORKDIR /
 COPY . .
 RUN npm install -g pnpm
 RUN pnpm install
-RUN pnpm run build
+RUN pnpm build
 EXPOSE 3000
 CMD ["pnpm", "start"]

@@ -1,4 +1,4 @@
-FROM node:latest
+FROM node:lts
 WORKDIR /server
 COPY . .
 RUN npm install -g pnpm

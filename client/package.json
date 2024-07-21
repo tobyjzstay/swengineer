@@ -84,7 +84,7 @@
     "scripts": {
         "build": "DISABLE_ESLINT_PLUGIN=true node scripts/build.js",
         "clean": "rm -rf build dist node_modules",
-        "dev": "DEBUG='*' pnpm run start",
+        "dev": "DEBUG='*' pnpm start",
         "start": "node scripts/start.js",
         "test": "node scripts/test.js --passWithNoTests --watchAll=false",
         "coverage": "nyc --reporter=html --reporter=text-summary pnpm test"

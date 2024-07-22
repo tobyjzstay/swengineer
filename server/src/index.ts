@@ -11,7 +11,6 @@ import cluster from "node:cluster";
 import os from "node:os";
 import path from "node:path";
 import passport from "passport";
-import serveIndex from "serve-index";
 
 const logger = log4js.getLogger();
 logger.level = log4js.levels.ALL;
@@ -63,7 +62,6 @@ if (cluster.isPrimary && process.env.PARALLEL) {
         next();
     });
 
-    app.use("/public", express.static("public"), serveIndex("public", { icons: true, view: "details", hidden: true }));
     app.use(require("./routes/index"));
 
     const root = path.join(__dirname, "../../client/build");

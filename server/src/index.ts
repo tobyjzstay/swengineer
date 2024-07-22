@@ -66,12 +66,8 @@ if (cluster.isPrimary && process.env.PARALLEL) {
 
     const root = path.join(__dirname, "../../client/build");
     app.use(express.static(root));
-    app.get("*", function (req, res) {
+    app.get("*", function (_req, res) {
         res.sendFile("index.html", { root });
-    });
-
-    app.use((_req, res) => {
-        res.sendStatus(404);
     });
 
     const port = parseInt(process.env.PORT) || 0;

@@ -8,6 +8,7 @@
         "cookie-parser": "^1.4.6",
         "cors": "^2.8.5",
         "dotenv": "^16.4.5",
+        "dotenv-expand": "^11.0.6",
         "express": "^4.19.2",
         "express-session": "^1.18.0",
         "jsonwebtoken": "^8.5.1",
@@ -41,10 +42,10 @@
     "main": "dist/index.js",
     "scripts": {
         "build": "tsc",
-        "dev": "DEBUG='*' pnpm start",
+        "dev": "NODE_ENV=development DEBUG='*' pnpm start",
         "clean": "rm -rf dist node_modules",
-        "start": "PARALLEL=true nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node --transpileOnly src/index.ts\"",
-        "test": "PORT=0 mocha --recursive --exit --timeout 10000",
+        "start": "nodemon --watch \"src/**\" --ext \"ts,json\" --exec \"ts-node --transpileOnly src/index.ts\"",
+        "test": "NODE_ENV=test mocha --recursive --exit --timeout 10000",
         "coverage": "nyc --reporter=html --reporter=text-summary pnpm test"
     },
     "type": "commonjs"

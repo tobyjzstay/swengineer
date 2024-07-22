@@ -1,4 +1,12 @@
-require("dotenv").config();
+require("dotenv-expand").expand(
+    require("dotenv").config({ path: process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}.local` : ".env" })
+);
+
+if (!process.env.NODE_ENV) {
+    console.error("NODE_ENV is not set");
+    process.exit(1);
+}
+
 require("./passport");
 
 import cookieParser from "cookie-parser";
@@ -17,7 +25,7 @@ logger.level = log4js.levels.ALL;
 
 export const app = express();
 
-if (cluster.isPrimary && process.env.PARALLEL) {
+if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
     for (let i = 0; i < os.cpus().length; i++) {
         cluster.fork();
     }

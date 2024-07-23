@@ -5,7 +5,6 @@ const router = express.Router();
 const logger = log4js.getLogger(process.pid.toString());
 
 router.use("/auth", require("./auth"));
-router.use("/notepad", require("./notepad"));
 router.use("/ping", require("./ping"));
 
 router.use(require("./404"));

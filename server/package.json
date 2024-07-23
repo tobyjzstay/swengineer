@@ -45,7 +45,7 @@
     "scripts": {
         "build": "tsc",
         "dev": "NODE_ENV=development DEBUG='*' pnpm start",
-        "clean": "rm -rf dist node_modules",
+        "clean": "rm -rf .nyc_output coverage dist node_modules",
         "start": "nodemon --watch \"src/**\" --ext \"ts, json\" --exec \"ts-node --transpileOnly src/index.ts\"",
         "test": "NODE_ENV=test mocha --require ts-node/register test/**/*.ts --recursive --exit --timeout 10000",
         "coverage": "nyc --reporter text --reporter html pnpm test"

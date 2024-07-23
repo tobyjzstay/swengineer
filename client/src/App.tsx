@@ -7,7 +7,6 @@ import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { SnackbarAlert } from "./components/SnackbarAlert";
 import ChangePassword from "./routes/ChangePassword";
 import Clock from "./routes/Clock";
-import { Draw } from "./routes/Draw";
 import Home from "./routes/Home";
 import Login from "./routes/Login";
 import PageNotFound from "./routes/PageNotFound";
@@ -75,7 +74,6 @@ class App extends React.Component {
                                 <Route path="reset/:token" element={<ChangePassword />} />
                                 <Route path="profile" element={<Profile />} />
                                 <Route path="clock" element={<Clock />} />
-                                <Route path="draw" element={<Draw />} />
                                 <Route path="*" element={<PageNotFound />} />
                             </Routes>
                         </BrowserRouter>

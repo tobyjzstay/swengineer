@@ -9,16 +9,16 @@ if (!process.env.NODE_ENV) {
 
 require("./passport");
 
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import express from "express";
-import session from "express-session";
-import log4js from "log4js";
-import mongoose from "mongoose";
-import cluster from "node:cluster";
-import os from "node:os";
-import path from "node:path";
-import passport from "passport";
+const cluster = require("cluster");
+const cookieParser = require("cookie-parser");
+const cors = require("cors");
+const express = require("express");
+const session = require("express-session");
+const log4js = require("log4js");
+const mongoose = require("mongoose");
+const os = require("os");
+const passport = require("passport");
+const path = require("path");
 
 const logger = log4js.getLogger();
 logger.level = log4js.levels.ALL;
@@ -86,4 +86,5 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
     });
 }
 
-module.exports.mongoose = mongoose;
+export { mongoose };
+

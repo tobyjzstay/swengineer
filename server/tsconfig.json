@@ -1,10 +1,12 @@
 {
     "compilerOptions": {
+        "rootDir": "./src",
         "outDir": "./dist",
         "allowJs": true,
         "target": "es5",
         "strict": false,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "module": "commonjs"
     },
     "parserOptions": {
         "sourceType": "module"

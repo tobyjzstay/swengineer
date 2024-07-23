@@ -9,16 +9,16 @@ if (!process.env.NODE_ENV) {
 
 require("./passport");
 
-const cluster = require("cluster");
-const cookieParser = require("cookie-parser");
-const cors = require("cors");
-const express = require("express");
-const session = require("express-session");
-const log4js = require("log4js");
-const mongoose = require("mongoose");
-const os = require("os");
-const passport = require("passport");
-const path = require("path");
+import cluster from "cluster";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import express from "express";
+import session from "express-session";
+import log4js from "log4js";
+import mongoose from "mongoose";
+import os from "os";
+import passport from "passport";
+import path from "path";
 
 const logger = log4js.getLogger();
 logger.level = log4js.levels.ALL;

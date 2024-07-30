@@ -2,7 +2,7 @@ import log4js from "log4js";
 import nodemailer from "nodemailer";
 import { Options } from "nodemailer/lib/mailer";
 
-const logger = log4js.getLogger();
+const logger = log4js.getLogger(process.pid.toString());
 
 const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -13,11 +13,12 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendMail(options: Options) {
-    const { from, ..._options } = options;
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { from, ...rest } = options;
     try {
         const info = await transporter.sendMail({
             from: '"swengineer" <' + process.env.GMAIL_EMAIL + ">",
-            ..._options,
+            ...rest,
         });
         logger.info(info.messageId);
         return true;

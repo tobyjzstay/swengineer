@@ -4,7 +4,7 @@ import log4js from "log4js";
 import { app } from ".";
 import { User } from "./models/User";
 
-const logger = log4js.getLogger();
+const logger = log4js.getLogger(process.pid.toString());
 
 export const auth = (req: Request, res: Response, next: () => void) => {
     const token = req.cookies.token;

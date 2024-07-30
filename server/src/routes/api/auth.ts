@@ -11,7 +11,7 @@ import { User } from "../../models/User";
 import { sendMail } from "../../nodemailer";
 
 const router = express.Router();
-const logger = log4js.getLogger();
+const logger = log4js.getLogger(process.pid.toString());
 
 const cryptoSize = Number(process.env.CRYPTO_SIZE);
 const saltRounds = Number(process.env.SALT_ROUNDS);
@@ -161,7 +161,6 @@ router.get("/register/:token", (req, res, next) => {
 
 router.post("/login", (req, res) => {
     const { email, password } = req.body || {};
-    const redirect = req.query.redirect;
 
     User.findOne({
         email: email,

@@ -1,9 +1,12 @@
 import express from "express";
+import log4js from "log4js";
 
 const router = express.Router();
+const logger = log4js.getLogger(process.pid.toString());
 
-router.use((_req, res) => {
-    res.status(404).json({ message: randomMessage(_req.originalUrl) });
+router.use((req, res) => {
+    res.status(404).json({ message: randomMessage(req.url) });
+    logger.warn(`${req.method} ${res.statusCode} ${req.originalUrl}`);
 });
 
 type Message = (path: string) => string;

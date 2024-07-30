@@ -1,9 +1,6 @@
 import passport from "passport";
+import { Strategy } from "passport-google-oauth20";
 import { User } from "./models/User";
-const GoogleStrategy = require("passport-google-oauth20").Strategy;
-
-const clientId = process.env.GOOGLE_CLIENT_ID;
-const clientSecret = process.env.GOOGLE_CLIENT_SECRET;
 
 passport.serializeUser((user: User, done) => {
     done(null, user.id);
@@ -16,14 +13,14 @@ passport.deserializeUser((id: User, done) => {
 });
 
 passport.use(
-    new GoogleStrategy(
+    new Strategy(
         {
             // options for google strategy
-            clientID: clientId,
-            clientSecret: clientSecret,
+            clientID: process.env.GOOGLE_CLIENT_ID,
+            clientSecret: process.env.GOOGLE_CLIENT_SECRET,
             callbackURL: "/api/auth/google/redirect",
         },
-        (accessToken, refreshToken, profile, done) => {
+        (_accessToken, _refreshToken, profile, done) => {
             // check if user already exists in our own db
             User.findOne({ googleId: profile.id }).then((currentUser) => {
                 if (currentUser) {

@@ -20,7 +20,7 @@ import os from "os";
 import passport from "passport";
 import path from "path";
 
-const logger = log4js.getLogger();
+const logger = log4js.getLogger(process.pid.toString());
 logger.level = log4js.levels.ALL;
 
 export const app = express();
@@ -65,8 +65,8 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
     app.use(cors({ credentials: true }));
     app.use(cookieParser());
 
-    app.use((req, _res, next) => {
-        logger.debug(`${req.method} ${req.url}`);
+    app.use((req, res, next) => {
+        logger.debug(`${req.method} ${res.statusCode} ${req.url}`);
         next();
     });
 

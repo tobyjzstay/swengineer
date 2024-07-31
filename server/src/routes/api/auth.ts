@@ -173,6 +173,11 @@ router.post("/login", (req, res) => {
                 message: "User not found",
             });
             return;
+        } else if (!user.password) {
+            res.status(403).json({
+                message: "User has no password",
+            });
+            return;
         }
 
         // comparing passwords

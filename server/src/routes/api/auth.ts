@@ -83,7 +83,7 @@ router.post("/register", (req, res) => {
                     const host = req.headers.referer; // domain
                     const success = sendVerificationEmail(host, verificationToken, email);
                     if (success) {
-                        res.status(200).json({
+                        res.status(201).json({
                             message: "Verification email sent",
                         });
                         return;
@@ -119,7 +119,7 @@ router.post("/register", (req, res) => {
                 const host = req.headers.referer; // domain
                 const success = sendVerificationEmail(host, verificationToken, email);
                 if (success) {
-                    res.status(200).json({
+                    res.status(201).json({
                         message: "Verification email sent",
                     });
                 } else {
@@ -322,7 +322,7 @@ router.get("/reset/:token", (req, res, next) => {
             next();
             return;
         } else if (user.resetPasswordExpires.getTime() < new Date().getTime()) {
-            res.status(401).json({
+            res.status(410).json({
                 message: "Token has expired",
             });
             return;
@@ -346,7 +346,7 @@ router.post("/reset/:token", (req, res, next) => {
             next();
             return;
         } else if (user.resetPasswordExpires.getTime() < new Date().getTime()) {
-            res.status(401).json({
+            res.status(410).json({
                 message: "Token has expired",
             });
             return;

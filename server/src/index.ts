@@ -66,7 +66,14 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
     app.use(cookieParser());
 
     app.use((req, res, next) => {
-        logger.debug(`${req.method} ${res.statusCode} ${req.url}`);
+        const requestUrl = req.url;
+        const responseSend = res.send;
+
+        res.send = function (body): express.Response {
+            logger.debug(`${req.method} ${res.statusCode} ${requestUrl}`);
+            return responseSend.call(this, body);
+        };
+
         next();
     });
 

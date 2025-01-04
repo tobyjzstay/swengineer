@@ -16,6 +16,7 @@ function Home() {
     const [header, setHeader] = React.useState(false);
     const [expanded, setExpanded] = React.useState(true);
     const [colour, setColour] = React.useState(false);
+    const [replaceText, setReplaceText] = React.useState(false);
 
     const pageRef = React.useRef<HTMLDivElement>(null);
 
@@ -44,6 +45,9 @@ function Home() {
         setHeader(true);
         setColour(true);
         setExpanded(false);
+        setTimeout(function () {
+            setReplaceText(true);
+        }, 800);
     }
 
     return (
@@ -72,53 +76,52 @@ function Home() {
                     <Typography component="h1" variant="h1">
                         Hi, I&apos;m <strong>Toby</strong>,
                         <br />
-                        <div style={{ display: "flex", flexDirection: "row" }}>
-                            <Typography component="h1" variant="h1" style={{ whiteSpace: "pre" }}>
-                                a{" "}
+                        <span style={{ display: "flex", flexDirection: "row" }}>
+                            <Typography component="h1" variant="h1">
+                                a&nbsp;
+                                {replaceText ? (
+                                    <strong style={{ color: "#fdd835" }}>swengineer</strong>
+                                ) : (
+                                    <span
+                                        style={{
+                                            color: colour ? "#fdd835" : "#fff",
+                                            display: "inline-flex",
+                                            flexDirection: "row",
+                                            transition: "color 0.5s",
+                                        }}
+                                    >
+                                        <strong>s</strong>
+                                        <Collapse
+                                            in={expanded}
+                                            orientation="horizontal"
+                                            timeout={{
+                                                enter: 250,
+                                                exit: 750,
+                                            }}
+                                        >
+                                            <Fade in={expanded}>
+                                                <Typography variant="h1">oft</Typography>
+                                            </Fade>
+                                        </Collapse>
+                                        <strong>w</strong>
+                                        <Collapse
+                                            in={expanded}
+                                            orientation="horizontal"
+                                            timeout={{
+                                                enter: 400,
+                                                exit: 800,
+                                            }}
+                                        >
+                                            <Fade in={expanded}>
+                                                <Typography variant="h1">are&nbsp;</Typography>
+                                            </Fade>
+                                        </Collapse>
+                                        <strong>engineer</strong>
+                                    </span>
+                                )}
+                                .
                             </Typography>
-                            <div
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    color: colour ? "#fdd835" : "#fff",
-                                    transition: "color 0.5s",
-                                }}
-                            >
-                                <strong>s</strong>
-                                <Collapse
-                                    orientation="horizontal"
-                                    in={expanded}
-                                    unmountOnExit
-                                    timeout={{
-                                        enter: 250,
-                                        exit: 750,
-                                    }}
-                                >
-                                    <Fade in={expanded}>
-                                        <Typography component="h1" variant="h1">
-                                            oft
-                                        </Typography>
-                                    </Fade>
-                                </Collapse>
-                                <strong>w</strong>
-                                <Collapse
-                                    orientation="horizontal"
-                                    in={expanded}
-                                    timeout={{
-                                        enter: 400,
-                                        exit: 800,
-                                    }}
-                                >
-                                    <Fade in={expanded}>
-                                        <Typography component="h1" variant="h1" style={{ whiteSpace: "pre" }}>
-                                            are{" "}
-                                        </Typography>
-                                    </Fade>
-                                </Collapse>
-                                <strong>engineer</strong>
-                            </div>
-                            .
-                        </div>
+                        </span>
                     </Typography>
                 </ThemeProvider>
             </Container>

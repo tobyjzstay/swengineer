@@ -1,16 +1,11 @@
 import { Box, Collapse, Container, Fade, Typography } from "@mui/material";
-import { ThemeProvider, createTheme, responsiveFontSizes } from "@mui/material/styles";
+import { ThemeProvider, createTheme, responsiveFontSizes, useTheme } from "@mui/material/styles";
 import React from "react";
 import Header from "../components/Header";
 
 const DELAY = 3500;
 const COLOUR_DELAY = DELAY + 800;
 const HEADER_DELAY = DELAY + 1000;
-
-let theme = createTheme();
-theme = responsiveFontSizes(theme, {
-    factor: 5,
-});
 
 function Home() {
     const [header, setHeader] = React.useState(false);
@@ -19,6 +14,10 @@ function Home() {
     const [replaceText, setReplaceText] = React.useState(false);
 
     const pageRef = React.useRef<HTMLDivElement>(null);
+
+    const theme = responsiveFontSizes(createTheme(useTheme()), {
+        factor: 5,
+    });
 
     React.useLayoutEffect(() => {
         if (pageRef?.current) {
@@ -80,11 +79,11 @@ function Home() {
                             <Typography component="h1" variant="h1">
                                 a&nbsp;
                                 {replaceText ? (
-                                    <strong style={{ color: "#fdd835" }}>swengineer</strong>
+                                    <strong style={{ color: theme.palette.primary.main }}>swengineer</strong>
                                 ) : (
                                     <span
                                         style={{
-                                            color: colour ? "#fdd835" : "#fff",
+                                            color: colour ? theme.palette.primary.main : theme.palette.text.primary,
                                             display: "inline-flex",
                                             flexDirection: "row",
                                             transition: "color 0.5s",

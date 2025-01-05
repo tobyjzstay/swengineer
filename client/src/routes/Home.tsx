@@ -59,53 +59,49 @@ function Home() {
             </Fade>
             <div className="home-container">
                 <ThemeProvider theme={theme}>
-                    <Typography component="h1" variant="h1">
+                    <Typography variant="h1">
                         Hi, I&apos;m <strong>Toby</strong>,
                         <br />
-                        <div style={{ display: "flex", flexDirection: "row" }}>
-                            <Typography variant="h1">
-                                a&nbsp;
-                                {replaceText ? (
-                                    <strong style={{ color: theme.palette.primary.main }}>swengineer</strong>
-                                ) : (
-                                    <div
-                                        className="home-swengineer"
-                                        style={{
-                                            color: colour ? theme.palette.primary.main : theme.palette.text.primary,
-                                        }}
-                                    >
-                                        <strong>s</strong>
-                                        <Collapse
-                                            in={expanded}
-                                            orientation="horizontal"
-                                            timeout={{
-                                                enter: 250,
-                                                exit: 750,
-                                            }}
-                                        >
-                                            <Fade in={expanded}>
-                                                <Typography variant="h1">oft</Typography>
-                                            </Fade>
-                                        </Collapse>
-                                        <strong>w</strong>
-                                        <Collapse
-                                            in={expanded}
-                                            orientation="horizontal"
-                                            timeout={{
-                                                enter: 400,
-                                                exit: 800,
-                                            }}
-                                        >
-                                            <Fade in={expanded}>
-                                                <Typography variant="h1">are&nbsp;</Typography>
-                                            </Fade>
-                                        </Collapse>
-                                        <strong>engineer</strong>
-                                    </div>
-                                )}
-                                .
-                            </Typography>
-                        </div>
+                        a&nbsp;
+                        {replaceText ? (
+                            <strong style={{ color: theme.palette.primary.main }}>swengineer</strong>
+                        ) : (
+                            <div
+                                className="home-swengineer"
+                                style={{
+                                    color: colour ? theme.palette.primary.main : theme.palette.text.primary,
+                                }}
+                            >
+                                <strong>s</strong>
+                                <Collapse
+                                    in={expanded}
+                                    orientation="horizontal"
+                                    timeout={{
+                                        enter: 250,
+                                        exit: 750,
+                                    }}
+                                >
+                                    <Fade in={expanded}>
+                                        <Typography variant="inherit">oft</Typography>
+                                    </Fade>
+                                </Collapse>
+                                <strong>w</strong>
+                                <Collapse
+                                    in={expanded}
+                                    orientation="horizontal"
+                                    timeout={{
+                                        enter: 400,
+                                        exit: 800,
+                                    }}
+                                >
+                                    <Fade in={expanded}>
+                                        <Typography variant="inherit">are&nbsp;</Typography>
+                                    </Fade>
+                                </Collapse>
+                                <strong>engineer</strong>
+                            </div>
+                        )}
+                        .
                     </Typography>
                 </ThemeProvider>
             </div>

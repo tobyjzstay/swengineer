@@ -1,7 +1,8 @@
-import { Box, Collapse, Container, Fade, Typography } from "@mui/material";
+import { Collapse, Fade, Typography } from "@mui/material";
 import { ThemeProvider, createTheme, responsiveFontSizes, useTheme } from "@mui/material/styles";
 import React from "react";
 import Header from "../components/Header";
+import "./Home.scss";
 
 const DELAY = 3500;
 const COLOUR_DELAY = DELAY + 800;
@@ -50,43 +51,27 @@ function Home() {
     }
 
     return (
-        <Box
-            display="flex"
-            flexDirection="column"
-            ref={pageRef}
-            flexGrow={1}
-            sx={{
-                display: "flex",
-                flexDirection: "column",
-                minHeight: "100vh",
-            }}
-        >
+        <div className="home-page" ref={pageRef}>
             <Fade in={header}>
-                <Box>
+                <div>
                     <Header />
-                </Box>
+                </div>
             </Fade>
-            <Container
-                component="main"
-                maxWidth="md"
-                sx={{ display: "flex", justifyContent: "center", alignItems: "center", flexGrow: 1, marginY: 2 }}
-            >
+            <div className="home-container">
                 <ThemeProvider theme={theme}>
                     <Typography component="h1" variant="h1">
                         Hi, I&apos;m <strong>Toby</strong>,
                         <br />
-                        <span style={{ display: "flex", flexDirection: "row" }}>
-                            <Typography component="h1" variant="h1">
+                        <div style={{ display: "flex", flexDirection: "row" }}>
+                            <Typography variant="h1">
                                 a&nbsp;
                                 {replaceText ? (
                                     <strong style={{ color: theme.palette.primary.main }}>swengineer</strong>
                                 ) : (
-                                    <span
+                                    <div
+                                        className="home-swengineer"
                                         style={{
                                             color: colour ? theme.palette.primary.main : theme.palette.text.primary,
-                                            display: "inline-flex",
-                                            flexDirection: "row",
-                                            transition: "color 0.5s",
                                         }}
                                     >
                                         <strong>s</strong>
@@ -116,15 +101,15 @@ function Home() {
                                             </Fade>
                                         </Collapse>
                                         <strong>engineer</strong>
-                                    </span>
+                                    </div>
                                 )}
                                 .
                             </Typography>
-                        </span>
+                        </div>
                     </Typography>
                 </ThemeProvider>
-            </Container>
-        </Box>
+            </div>
+        </div>
     );
 }
 

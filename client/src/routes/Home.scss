@@ -12,8 +12,9 @@
     padding: 16px;
 }
 
-.home-swengineer {
+.home-swengineer-container {
     display: inline-flex;
     flex-direction: row;
-    transition: color 0.5s;
+    padding: 0.05em 0.1em;
+    transition: background-color 0.5s, color 0.5s;
 }

@@ -1,6 +1,7 @@
 import { Collapse, Fade, Typography } from "@mui/material";
 import { ThemeProvider, createTheme, responsiveFontSizes, useTheme } from "@mui/material/styles";
 import React from "react";
+import { Trans } from "react-i18next";
 import Header from "../components/Header";
 import "./Home.scss";
 
@@ -60,9 +61,7 @@ function Home() {
             <div className="home-container">
                 <ThemeProvider theme={theme}>
                     <Typography variant="h1">
-                        Hi, I&apos;m <strong>Toby</strong>,
-                        <br />
-                        a&nbsp;
+                        <Trans i18nKey="home.greeting" />
                         {replaceText ? (
                             <strong style={{ color: theme.palette.primary.main }}>swengineer</strong>
                         ) : (
@@ -101,7 +100,7 @@ function Home() {
                                 <strong>engineer</strong>
                             </div>
                         )}
-                        .
+                        <Trans i18nKey="home.greetingSuffix" />
                     </Typography>
                 </ThemeProvider>
             </div>

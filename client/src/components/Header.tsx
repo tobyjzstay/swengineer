@@ -1,3 +1,4 @@
+import { DarkMode, LightMode } from "@mui/icons-material";
 import { AppBar, Box, IconButton, Toolbar } from "@mui/material";
 import React from "react";
 import { Context } from "../App";
@@ -12,7 +13,9 @@ function Header() {
                 <Box display="flex" alignItems="center" sx={{ flexGrow: 1 }}>
                     <Logo scale={0.6} />
                 </Box>
-                <IconButton onClick={() => mode[1]((prev) => (prev === "light" ? "dark" : "light"))}>dark</IconButton>
+                <IconButton onClick={() => mode[1]((prev) => (prev === "light" ? "dark" : "light"))}>
+                    {mode[0] === "light" ? <DarkMode /> : <LightMode />}
+                </IconButton>
             </Toolbar>
         </AppBar>
     );

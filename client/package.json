@@ -10,11 +10,15 @@
         "@fontsource/cascadia-mono": "^4.2.1",
         "@fontsource/roboto": "^4.5.8",
         "@mui/material": "^5.12.1",
+        "i18next": "^24.2.0",
+        "i18next-browser-languagedetector": "^8.0.2",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
+        "react-i18next": "^15.4.0",
         "react-router-dom": "^6.10.0"
     },
     "devDependencies": {
+        "@types/i18next": "^13.0.0",
         "@types/node": "^16.18.24",
         "@types/react": "^18.0.38",
         "@types/react-dom": "^18.0.11",

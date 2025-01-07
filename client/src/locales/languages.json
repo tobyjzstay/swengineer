@@ -1,0 +1,26 @@
+{
+    "en-AU": {
+        "name": "English (Australia)",
+        "flag": "🇦🇺"
+    },
+    "en-GB": {
+        "name": "English (United Kingdom)",
+        "flag": "🇬🇧"
+    },
+    "en-NZ": {
+        "name": "English (New Zealand)",
+        "flag": "🇳🇿"
+    },
+    "en-US": {
+        "name": "English (United States)",
+        "flag": "🇺🇸"
+    },
+    "mi-NZ": {
+        "name": "Te Reo Māori",
+        "flag": "🇳🇿"
+    },
+    "zh-CN": {
+        "name": "中文（简体）",
+        "flag": "🇨🇳"
+    }
+}

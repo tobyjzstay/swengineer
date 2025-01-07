@@ -1,6 +1,6 @@
 {
     "home": {
-        "greeting": "G'day I'm <strong>Toby</strong>,<br />a ",
+        "greeting": "G'day, I'm <strong>Toby</strong>,<br />a ",
         "greetingSuffix": "."
     }
 }

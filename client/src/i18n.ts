@@ -10,6 +10,8 @@ import mi_NZ from "./locales/mi-NZ.json";
 import zh_CN from "./locales/zh-CN.json";
 import zh from "./locales/zh.json";
 
+const isQueryLangPresent = new URLSearchParams(window.location.search).has("lang");
+
 i18n.use(LanguageDetector)
     .use(initReactI18next)
     .init({
@@ -41,8 +43,9 @@ i18n.use(LanguageDetector)
         },
         fallbackLng: "en",
         detection: {
-            order: ["querystring", "navigator"],
+            order: [isQueryLangPresent ? "querystring" : "localStorage", "navigator"],
             lookupQuerystring: "lang",
+            caches: isQueryLangPresent ? [] : ["localStorage"],
         },
         interpolation: {
             escapeValue: false,

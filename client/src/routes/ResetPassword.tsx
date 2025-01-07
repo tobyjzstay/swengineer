@@ -1,7 +1,7 @@
 import { LoadingButton } from "@mui/lab";
 import { Backdrop, Box, Grid, Icon, Link, TextField, Typography } from "@mui/material";
 import * as React from "react";
-import { AppContext } from "../App";
+import { Context } from "../App";
 import AuthLayout from "../components/AuthLayout";
 import { postRequest } from "../components/Request";
 
@@ -9,13 +9,13 @@ function ResetPassword() {
     const [componentToRender, setComponentToRender] = React.useState(<ResetPasswordComponent />);
 
     function ResetPasswordComponent() {
-        const appContext = React.useContext(AppContext);
+        const context = React.useContext(Context);
         const [loading, setLoading] = React.useState(false);
 
         const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
             setLoading(true);
-            appContext?.startLoading();
+            context.loading[1]((prev) => prev + 1);
 
             const data = new FormData(event.currentTarget);
             const json = {
@@ -23,7 +23,7 @@ function ResetPassword() {
             };
 
             postRequest("/auth/reset", json).then((response) => {
-                appContext?.stopLoading();
+                context.loading[1]((prev) => prev - 1);
                 setLoading(false);
                 if (response.ok) setComponentToRender(<ResetPasswordEmail />);
             });

@@ -1,35 +1,20 @@
-:not(.\9) {
-    .home-layout {
-        align-items: center;
-        display: flex;
-        flex-direction: column;
-        flex-grow: 1;
-        justify-content: center;
-        min-height: 100vh;
-        nav-index: 0;
-        outline: none;
-        width: 100%;
-    }
-    .home-header-container {
-        width: 100%;
-    }
-    .home-container {
-        align-items: center;
-        display: flex;
-        flex-grow: 1;
-        justify-content: center;
-        margin: 16px 0;
-    }
-    .home-text {
-        white-space: pre;
-    }
-    .home-text-line {
-        display: flex;
-        flex-direction: row;
-    }
-    .home-text-word {
-        display: flex;
-        flex-direction: row;
-        transition: color 0.5s;
-    }
+.home-page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.home-container {
+    align-items: center;
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    padding: 16px;
+}
+
+.home-swengineer-container {
+    display: inline-flex;
+    flex-direction: row;
+    padding: 0.05em 0.1em;
+    transition: background-color 0.5s, color 0.5s;
 }

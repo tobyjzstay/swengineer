@@ -1,23 +1,23 @@
-import { Box, Collapse, Container, Fade, Typography } from "@mui/material";
-import { ThemeProvider, responsiveFontSizes, useTheme } from "@mui/material/styles";
+import { Collapse, Fade, Typography } from "@mui/material";
+import { ThemeProvider, createTheme, responsiveFontSizes, useTheme } from "@mui/material/styles";
 import React from "react";
+import { Trans } from "react-i18next";
 import Header from "../components/Header";
 import "./Home.scss";
 
-const TRANSITION_DURATION = 750;
-const TRANSITION_DELAY = 3000;
-const COLOUR_DURATION = 500;
-const COLOUR_DELAY = TRANSITION_DELAY + COLOUR_DURATION;
-const HEADER_DELAY = TRANSITION_DELAY + 1000;
+const DELAY = 3500;
+const COLOUR_DELAY = DELAY + 800;
+const HEADER_DELAY = DELAY + 1000;
 
 function Home() {
     const [header, setHeader] = React.useState(false);
     const [expanded, setExpanded] = React.useState(true);
     const [colour, setColour] = React.useState(false);
+    const [replace, setReplace] = React.useState(false);
 
     const pageRef = React.useRef<HTMLDivElement>(null);
 
-    const theme = responsiveFontSizes(useTheme(), {
+    const theme = responsiveFontSizes(createTheme(useTheme()), {
         factor: 5,
     });
 
@@ -28,9 +28,10 @@ function Home() {
         pageRef.current.onkeydown = handleInteraction;
         setTimeout(function () {
             setExpanded(false);
-        }, TRANSITION_DELAY);
+        }, DELAY);
         setTimeout(function () {
             setColour(true);
+            setReplace(true);
         }, COLOUR_DELAY);
         setTimeout(function () {
             setHeader(true);
@@ -41,61 +42,70 @@ function Home() {
         setHeader(true);
         setColour(true);
         setExpanded(false);
+        setTimeout(function () {
+            setReplace(true);
+        }, 800);
     }
 
     return (
-        <Box className="home-layout" ref={pageRef}>
+        <div className="home-page" ref={pageRef}>
             <Fade in={header}>
-                <Box className="home-header-container">
+                <div>
                     <Header />
-                </Box>
+                </div>
             </Fade>
-            <Container className="home-container" component="main" maxWidth="md">
+            <div className="home-container">
                 <ThemeProvider theme={theme}>
-                    <Typography className="home-text" component="h1" variant="h1">
-                        Hi, I&apos;m <strong>Toby</strong>,
-                        <br />
-                        <span className="home-text-line">
-                            <span>a </span>
-                            <span
-                                className="home-text-word"
-                                style={{
-                                    color: colour ? theme.palette.primary.main : theme.palette.text.primary,
-                                }}
-                            >
-                                <strong>s</strong>
-                                <Collapse
-                                    in={expanded}
-                                    orientation="horizontal"
-                                    timeout={{
-                                        exit: TRANSITION_DURATION,
-                                    }}
-                                    unmountOnExit
-                                >
-                                    <Fade in={expanded}>
-                                        <span>oft</span>
-                                    </Fade>
-                                </Collapse>
-                                <strong>w</strong>
-                                <Collapse
-                                    in={expanded}
-                                    orientation="horizontal"
-                                    timeout={{
-                                        exit: TRANSITION_DURATION,
-                                    }}
-                                >
-                                    <Fade in={expanded}>
-                                        <span>are </span>
-                                    </Fade>
-                                </Collapse>
-                                <strong>engineer</strong>
-                            </span>
-                            .
-                        </span>
+                    <Typography variant="h1" style={{ lineHeight: 1.25 }}>
+                        <Trans i18nKey="home.greeting" />
+                        <div
+                            className="home-swengineer-container"
+                            style={{
+                                color: colour ? theme.palette.primary.main : theme.palette.text.primary,
+                                backgroundColor: colour ? "#121212" : theme.palette.background.default,
+                            }}
+                        >
+                            {replace ? (
+                                <strong className="home-swengineer-text" style={{ color: theme.palette.primary.main }}>
+                                    swengineer
+                                </strong>
+                            ) : (
+                                <>
+                                    <strong>s</strong>
+                                    <Collapse
+                                        in={expanded}
+                                        orientation="horizontal"
+                                        timeout={{
+                                            enter: 250,
+                                            exit: 750,
+                                        }}
+                                    >
+                                        <Fade in={expanded}>
+                                            <Typography variant="inherit">oft</Typography>
+                                        </Fade>
+                                    </Collapse>
+                                    <strong>w</strong>
+                                    <Collapse
+                                        in={expanded}
+                                        orientation="horizontal"
+                                        timeout={{
+                                            enter: 400,
+                                            exit: 800,
+                                        }}
+                                    >
+                                        <Fade in={expanded}>
+                                            <Typography variant="inherit">are&nbsp;</Typography>
+                                        </Fade>
+                                    </Collapse>
+                                    <strong>engineer</strong>
+                                </>
+                            )}
+                        </div>
+                        <Trans i18nKey="home.greetingSuffix" />
                     </Typography>
                 </ThemeProvider>
-            </Container>
-        </Box>
+            </div>
+        </div>
     );
 }
 

@@ -1,16 +1,16 @@
 import { Box, Fade, LinearProgress } from "@mui/material";
 import React from "react";
-import { AppContext } from "../App";
+import { Context } from "../App";
 import "./Footer.scss";
 
 function Footer() {
-    const appContext = React.useContext(AppContext);
+    const context = React.useContext(Context);
     const [loading, setLoading] = React.useState(false);
 
     React.useEffect(() => {
-        if (!appContext) return;
-        setLoading(appContext.loading > 0);
-    }, [appContext?.loading]);
+        if (!context) return;
+        setLoading(context.loading[0] > 0);
+    }, [context.loading[0]]);
 
     return (
         <Box className="footer-layout" component="footer">

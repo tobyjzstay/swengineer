@@ -2,7 +2,7 @@ import { LoadingButton } from "@mui/lab";
 import { Backdrop, Box, Button, Grid, Icon, Link, TextField } from "@mui/material";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { AppContext } from "../App";
+import { Context } from "../App";
 import AuthLayout from "../components/AuthLayout";
 import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest, useQuery } from "../components/Request";
@@ -23,15 +23,15 @@ function Login() {
     }, [navigate, redirect]);
 
     function LoginComponent() {
-        const appContext = React.useContext(AppContext);
+        const context = React.useContext(Context);
         const [loading, setLoading] = React.useState(false);
 
         const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
-            if (!appContext) return;
+            if (!context) return;
             setLoading(true);
 
-            appContext.startLoading();
+            context.loading[1]((prev) => prev + 1);
 
             const data = new FormData(event.currentTarget);
             const json = {
@@ -40,7 +40,7 @@ function Login() {
             };
 
             postRequest("/auth/login", json).then((response) => {
-                appContext.stopLoading();
+                context.loading[1]((prev) => prev - 1);
                 setLoading(false);
                 if (response.ok) navigate(redirect || "/", { replace: true });
             });

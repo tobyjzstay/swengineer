@@ -2,14 +2,14 @@ import { LoadingButton } from "@mui/lab";
 import { Backdrop, Box, Icon, TextField, Typography } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { AppContext } from "../App";
+import { Context } from "../App";
 import AuthLayout from "../components/AuthLayout";
 import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest } from "../components/Request";
 import "./Profile.scss";
 
 function Profile() {
-    const appContext = React.useContext(AppContext);
+    const context = React.useContext(Context);
     const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
     const navigate = useNavigate();
 
@@ -18,7 +18,7 @@ function Profile() {
             if (response.ok) {
                 const json = await response.json();
                 const { user } = json;
-                appContext?.setUser(user);
+                context.user[1](user);
                 setComponentToRender(<ProfileComponent />);
             } else navigate("/login?redirect=" + window.location.pathname, { replace: true });
         });
@@ -31,10 +31,10 @@ function Profile() {
         const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
             setLoading(true);
-            appContext?.startLoading();
+            context.loading[1]((prev) => prev + 1);
 
             postRequest("/auth/delete", {}).then(async (response) => {
-                appContext?.stopLoading();
+                context.loading[1]((prev) => prev - 1);
                 setLoading(false);
                 if (response.ok) {
                     postRequest("/auth/logout", {}).then(() => {
@@ -66,7 +66,7 @@ function Profile() {
                     <LoadingButton
                         className="profile-button"
                         color="error"
-                        disabled={value !== appContext?.user?.email}
+                        disabled={value !== context.user[0]?.email}
                         loading={loading}
                         loadingPosition="start"
                         startIcon={<Icon>delete</Icon>}

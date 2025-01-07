@@ -1,18 +1,23 @@
-import { Box, Link, Typography } from "@mui/material";
-import "./Logo.scss";
+import { Box, Link, Typography, useTheme } from "@mui/material";
 
 export function Logo({ scale: s }: { scale?: number }) {
     const scale = s || 1;
+    const theme = useTheme();
     return (
-        <Link className="logo-link" href="/">
-            <Box className="logo-container">
-                <img alt="swengineer" src="./logo.svg" style={{ padding: 10 * scale }} width={64 * scale} />
+        <Link href={"/" + window.location.search} style={{ textDecoration: "none" }}>
+            <Box display="flex" flexDirection="row" alignItems="center">
+                <img
+                    src="./logo.svg"
+                    alt="swengineer"
+                    width={64 * scale}
+                    style={{ padding: 5 * scale, backgroundColor: "#121212", margin: 5 * scale }}
+                />
                 <Typography
-                    className="logo-text"
-                    color={(theme) => theme.palette.text.primary}
                     component="h1"
-                    fontSize={2.125 * scale + "rem"}
                     variant="h4"
+                    color={theme.palette.text.primary}
+                    fontFamily="Cascadia Mono"
+                    fontSize={2.125 * scale + "rem"}
                 >
                     swengineer
                 </Typography>

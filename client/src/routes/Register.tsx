@@ -2,7 +2,7 @@ import { LoadingButton } from "@mui/lab";
 import { Backdrop, Box, Grid, Icon, Link, TextField, Typography } from "@mui/material";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
-import { AppContext } from "../App";
+import { Context } from "../App";
 import AuthLayout from "../components/AuthLayout";
 import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest, useQuery } from "../components/Request";
@@ -23,13 +23,13 @@ function Register() {
     }, [navigate, redirect]);
 
     function RegisterComponent() {
-        const appContext = React.useContext(AppContext);
+        const context = React.useContext(Context);
         const [loading, setLoading] = React.useState(false);
 
         const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
             setLoading(true);
-            appContext?.startLoading();
+            context.loading[1]((prev) => prev + 1);
 
             const data = new FormData(event.currentTarget);
             const email = data.get("email")?.toString();
@@ -39,7 +39,7 @@ function Register() {
             };
 
             postRequest("/auth/register", json).then((response) => {
-                appContext?.stopLoading();
+                context.loading[1]((prev) => prev - 1);
                 setLoading(false);
                 if (email && (response.ok || response.status === 409))
                     setComponentToRender(<VerificationEmail email={email} />);
@@ -103,13 +103,13 @@ function Register() {
 }
 
 function VerificationEmail({ email }: { email: string }) {
-    const appContext = React.useContext(AppContext);
+    const context = React.useContext(Context);
     const [loading, setLoading] = React.useState(false);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setLoading(true);
-        appContext?.startLoading();
+        context.loading[1]((prev) => prev + 1);
 
         const json = {
             email: email,
@@ -117,7 +117,7 @@ function VerificationEmail({ email }: { email: string }) {
         };
 
         postRequest("/auth/register", json).then(() => {
-            appContext?.stopLoading();
+            context.loading[1]((prev) => prev - 1);
             setLoading(false);
         });
     };

@@ -1,34 +1,65 @@
-import { AppBar, Avatar, Box, Icon, IconButton, ListItemIcon, Menu, MenuItem, Toolbar } from "@mui/material";
+import { DarkMode, Language, LightMode } from "@mui/icons-material";
+import {
+    AppBar,
+    Avatar,
+    Box,
+    Button,
+    Dialog,
+    DialogContent,
+    Grid,
+    Icon,
+    IconButton,
+    ListItemIcon,
+    Menu,
+    MenuItem,
+    Toolbar,
+    useTheme,
+} from "@mui/material";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { AppContext } from "../App";
+import { Context } from "../App";
+import languages from "../locales/languages.json";
 import "./Header.scss";
 import { Logo } from "./Logo";
-import { getRequest, postRequest } from "./Request";
+import { postRequest } from "./Request";
 
 function Header() {
-    const appContext = React.useContext(AppContext);
-    const navigate = useNavigate();
+    const [open, setOpen] = React.useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
+    const { mode, user } = React.useContext(Context);
 
-    const handleClose = () => {
+    const navigate = useNavigate();
+    const theme = useTheme();
+
+    const { i18n } = useTranslation();
+
+    const handleAvatarClose = () => {
         setAnchorEl(null);
     };
 
+    const handleLanguageClose = () => {
+        setOpen(false);
+    };
+
+    // React.useEffect(() => {
+    //     getRequest("/auth").then(async (response) => {
+    //         const json = await response.json();
+    //         const { user } = json;
+    //         setUser(user);
+    //     });
+    // }, []);
+
     React.useEffect(() => {
-        if (!appContext) return;
-        getRequest("/auth", true).then(async (response) => {
-            if (!response.ok) return;
+        fetch(`/api/auth`, {
+            method: "GET",
+        }).then(async (response) => {
             const json = await response.json();
             const { user } = json;
-            appContext.setUser(user);
+            user[1](user);
         });
-    }, [appContext]);
+    }, []);
 
     return (
         <AppBar className="header-app-bar">
@@ -36,21 +67,55 @@ function Header() {
                 <Box className="header-logo">
                     <Logo scale={0.6} />
                 </Box>
-                {appContext?.user && (
+                <IconButton onClick={() => setOpen(true)}>
+                    <Language />
+                </IconButton>
+                <Dialog onClose={handleLanguageClose} open={open} transitionDuration={{ enter: 300, exit: 0 }}>
+                    <DialogContent>
+                        <Grid container direction="column">
+                            {Object.entries(languages)
+                                .sort((a, b) => a[1].name.localeCompare(b[1].name))
+                                .map(([key, value]) => (
+                                    <Grid item key={key}>
+                                        <Button
+                                            startIcon={<span style={{ fontSize: "2em" }}>{value.flag}</span>}
+                                            onClick={() => {
+                                                i18n.changeLanguage(key);
+                                                handleLanguageClose();
+                                            }}
+                                            variant="text"
+                                            style={{
+                                                color: theme.palette.text.primary,
+                                                lineHeight: 1,
+                                                textTransform: "none",
+                                                whiteSpace: "nowrap",
+                                            }}
+                                        >
+                                            {value.name}
+                                        </Button>
+                                    </Grid>
+                                ))}
+                        </Grid>
+                    </DialogContent>
+                </Dialog>
+                <IconButton onClick={() => mode[1]((prev) => (prev === "light" ? "dark" : "light"))}>
+                    {mode[0] === "light" ? <DarkMode /> : <LightMode />}
+                </IconButton>
+                {user[0] && (
                     <>
-                        <IconButton onClick={handleClick}>
+                        <IconButton onClick={(event) => setAnchorEl(event.currentTarget)}>
                             <Avatar className="header-avatar" />
                         </IconButton>
                         <Menu
                             anchorEl={anchorEl}
                             open={open}
-                            onClose={handleClose}
+                            onClose={handleAvatarClose}
                             PaperProps={{
                                 className: "header-menu-paper",
                             }}
                         >
                             <MenuItem key="email" disabled divider>
-                                {appContext.user.email}
+                                {user[0].email}
                             </MenuItem>
                             <MenuItem
                                 key="profile"

@@ -2,7 +2,7 @@ import { LoadingButton } from "@mui/lab";
 import { Backdrop, Box, Icon, TextField, Typography } from "@mui/material";
 import * as React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { AppContext } from "../App";
+import { Context } from "../App";
 import AuthLayout from "../components/AuthLayout";
 import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest } from "../components/Request";
@@ -24,13 +24,13 @@ function ChangePassword() {
     }, []);
 
     function ChangePasswordComponent() {
-        const appContext = React.useContext(AppContext);
+        const context = React.useContext(Context);
         const [loading, setLoading] = React.useState(false);
 
         const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
             setLoading(true);
-            appContext?.startLoading();
+            context.loading[1]((prev) => prev + 1);
 
             const data = new FormData(event.currentTarget);
             const json = {
@@ -38,7 +38,7 @@ function ChangePassword() {
             };
 
             postRequest(`/auth/reset/${token}`, json).then((response) => {
-                appContext?.stopLoading();
+                context.loading[1]((prev) => prev - 1);
                 setLoading(false);
                 if (response.ok) navigate("/login", { replace: true });
             });
@@ -75,13 +75,13 @@ function ChangePassword() {
     }
 
     function ResendEmail() {
-        const appContext = React.useContext(AppContext);
+        const context = React.useContext(Context);
         const [loading, setLoading] = React.useState(false);
 
         const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
             event.preventDefault();
             setLoading(true);
-            appContext?.startLoading();
+            context.loading[1]((prev) => prev + 1);
 
             const data = new FormData(event.currentTarget);
             const json = {
@@ -89,7 +89,7 @@ function ChangePassword() {
             };
 
             postRequest("/auth/reset", json).then((response) => {
-                appContext?.stopLoading();
+                context.loading[1]((prev) => prev - 1);
                 setLoading(false);
                 if (response.ok) setComponentToRender(<ResetPasswordEmail />);
             });

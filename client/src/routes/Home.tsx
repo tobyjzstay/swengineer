@@ -1,5 +1,5 @@
-import { Collapse, Fade, Typography } from "@mui/material";
-import { ThemeProvider, createTheme, responsiveFontSizes, useTheme } from "@mui/material/styles";
+import { Box, Collapse, Fade } from "@mui/material";
+import { ThemeProvider, responsiveFontSizes, useTheme } from "@mui/material/styles";
 import React from "react";
 import { Trans } from "react-i18next";
 import Header from "../components/Header";
@@ -17,7 +17,7 @@ function Home() {
 
     const pageRef = React.useRef<HTMLDivElement>(null);
 
-    const theme = responsiveFontSizes(createTheme(useTheme()), {
+    const theme = responsiveFontSizes(useTheme(), {
         factor: 5,
     });
 
@@ -48,27 +48,19 @@ function Home() {
     }
 
     return (
-        <div className="home-page" ref={pageRef}>
+        <Box className="home-page" ref={pageRef}>
             <Fade in={header}>
                 <div>
                     <Header />
                 </div>
             </Fade>
-            <div className="home-container">
-                <ThemeProvider theme={theme}>
-                    <Typography variant="h1" style={{ lineHeight: 1.25 }}>
+            <ThemeProvider theme={theme}>
+                <Box className="home-container">
+                    <div>
                         <Trans i18nKey="home.greeting" />
-                        <div
-                            className="home-swengineer-container"
-                            style={{
-                                color: colour ? theme.palette.primary.main : theme.palette.text.primary,
-                                backgroundColor: colour ? "#121212" : theme.palette.background.default,
-                            }}
-                        >
+                        <Box className={"home-swengineer " + (colour ? "colour" : "default")}>
                             {replace ? (
-                                <strong className="home-swengineer-text" style={{ color: theme.palette.primary.main }}>
-                                    swengineer
-                                </strong>
+                                <strong>swengineer</strong>
                             ) : (
                                 <>
                                     <strong>s</strong>
@@ -81,7 +73,7 @@ function Home() {
                                         }}
                                     >
                                         <Fade in={expanded}>
-                                            <Typography variant="inherit">oft</Typography>
+                                            <span>oft</span>
                                         </Fade>
                                     </Collapse>
                                     <strong>w</strong>
@@ -94,18 +86,18 @@ function Home() {
                                         }}
                                     >
                                         <Fade in={expanded}>
-                                            <Typography variant="inherit">are&nbsp;</Typography>
+                                            <span>are&nbsp;</span>
                                         </Fade>
                                     </Collapse>
                                     <strong>engineer</strong>
                                 </>
                             )}
-                        </div>
+                        </Box>
                         <Trans i18nKey="home.greetingSuffix" />
-                    </Typography>
-                </ThemeProvider>
-            </div>
-        </div>
+                    </div>
+                </Box>
+            </ThemeProvider>
+        </Box>
     );
 }
 

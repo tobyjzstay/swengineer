@@ -48,6 +48,7 @@ function App() {
         () =>
             createTheme(
                 {
+                    cssVariables: true,
                     palette: {
                         mode: mode,
                         primary: {

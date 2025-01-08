@@ -255,15 +255,15 @@ router.post("/reset", async (req, res) => {
                 .then(() => {
                     const host = req.headers?.referer?.split("reset")[0] + "reset"; // TODO: fix this undefined error
                     const ip = req.ip;
-                    const err = sendResetEmail(host, token, email, ip);
-                    if (err) {
-                        // TODO: improve this
-                        internalServerError(res, null);
-                        return;
-                    } else {
+                    const success = sendResetEmail(host, token, email, ip);
+                    if (success) {
                         res.status(200).json({
                             message: "Reset email sent",
                         });
+                    } else {
+                        // TODO: improve this
+                        internalServerError(res, null);
+                        return;
                     }
                 })
                 .catch((err: NodeJS.ErrnoException) => {
@@ -294,15 +294,15 @@ router.post("/reset", async (req, res) => {
                 .then(() => {
                     const host = req.headers.referer.split("reset")[0] + "reset"; // domain
                     const ip = req.ip;
-                    const err = sendResetEmail(host, resetPasswordToken, email, ip);
-                    if (err) {
-                        // TODO: improve this
-                        internalServerError(res, null);
-                        return;
-                    } else {
+                    const success = sendResetEmail(host, resetPasswordToken, email, ip);
+                    if (success) {
                         res.status(200).json({
                             message: "Reset email sent",
                         });
+                    } else {
+                        // TODO: improve this
+                        internalServerError(res, null);
+                        return;
                     }
                 })
                 .catch((err: NodeJS.ErrnoException) => {

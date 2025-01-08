@@ -340,8 +340,7 @@ function getUser(email, func) {
 }
 
 // clean up
-function drop(done) {
-    mongoose.connection.collections.users.drop(() => {
-        done();
-    });
+async function drop(done) {
+    await mongoose.connection.collections.users.drop();
+    done();
 }

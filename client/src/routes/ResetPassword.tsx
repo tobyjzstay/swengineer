@@ -58,12 +58,12 @@ function ResetPassword() {
                     <Grid container>
                         <Grid item xs>
                             <Link href="/login" variant="body2">
-                                {"Back"}
+                                Back
                             </Link>
                         </Grid>
                         <Grid item>
                             <Link href="/register" variant="body2">
-                                {"Don't have an account? Register"}
+                                Don&apos;t have an account? Register
                             </Link>
                         </Grid>
                     </Grid>

@@ -1,5 +1,6 @@
+import { Login as LoginIcon } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Backdrop, Box, Button, Grid, Icon, Link, TextField } from "@mui/material";
+import { Backdrop, Box, Button, Grid, Link, TextField } from "@mui/material";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../App";
@@ -75,7 +76,7 @@ function Login() {
                         className="login-button"
                         loading={loading}
                         loadingPosition="start"
-                        startIcon={<Icon>login</Icon>}
+                        startIcon={<LoginIcon />}
                         type="submit"
                         variant="contained"
                     >

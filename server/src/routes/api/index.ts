@@ -9,7 +9,7 @@ router.use("/ping", require("./ping"));
 
 router.use(require("./404"));
 
-export function internalServerError(res: Response, err: NodeJS.ErrnoException) {
+export function internalServerError(res: Response, err: unknown) {
     logger.error(err, new Error().stack);
     res.status(500).json({
         message: "Internal server error",

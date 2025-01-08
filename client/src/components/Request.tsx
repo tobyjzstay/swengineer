@@ -21,6 +21,7 @@ export async function getRequest(input: RequestInfo | URL, quiet?: boolean) {
     }).then((response) => (quiet ? response : showResponse(response)));
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function postRequest(input: RequestInfo | URL, body: any, quiet?: boolean) {
     return fetch(API_SERVER_URL + input, {
         method: "POST",

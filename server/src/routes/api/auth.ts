@@ -51,7 +51,7 @@ router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
     res.cookie("token", token).redirect(redirect || "/");
 });
 
-router.post("/register", (req, res) => {
+router.post("/register", async (req, res) => {
     const { email, password, verify } = req.body || {};
 
     if (!email) {
@@ -62,36 +62,34 @@ router.post("/register", (req, res) => {
         return;
     }
 
-    User.findOne({ email }, (err: NodeJS.ErrnoException, user: User) => {
-        if (err) {
-            internalServerError(res, err);
-            return;
-        }
+    try {
+        const user = await User.findOne({ email });
+
         const verificationToken = crypto.randomBytes(cryptoSize).toString("hex");
         if (user) {
             if (verify) {
                 user.verificationToken = verificationToken;
                 // TODO: shouldn't use save?
-                user.save((error: NodeJS.ErrnoException) => {
-                    if (error) {
+                user.save()
+                    .then(() => {
+                        const host = req.headers.referer; // domain
+                        const success = sendVerificationEmail(host, verificationToken, email);
+                        if (success) {
+                            res.status(201).json({
+                                message: "Verification email sent",
+                            });
+                        } else {
+                            // TODO: improve this
+                            internalServerError(res, null);
+                        }
+                    })
+                    .catch((error: NodeJS.ErrnoException) => {
                         switch (error.code) {
                             default:
                                 internalServerError(res, error);
                                 return;
                         }
-                    }
-                    const host = req.headers.referer; // domain
-                    const success = sendVerificationEmail(host, verificationToken, email);
-                    if (success) {
-                        res.status(201).json({
-                            message: "Verification email sent",
-                        });
-                        return;
-                    } else {
-                        // TODO: improve this
-                        internalServerError(res, null);
-                    }
-                });
+                    });
             } else res.status(409).json({ message: "User already exists" });
             return;
         }
@@ -102,20 +100,9 @@ router.post("/register", (req, res) => {
             verificationToken,
         });
 
-        newUser.save((err: NodeJS.ErrnoException) => {
-            if (err) {
-                switch (err.code) {
-                    case "11000":
-                        res.status(400).json({
-                            message: "Email address already exists",
-                        });
-                        logger.warn(err, new Error().stack);
-                        return;
-                    default:
-                        internalServerError(res, err);
-                        return;
-                }
-            } else {
+        newUser
+            .save()
+            .then(() => {
                 const host = req.headers.referer; // domain
                 const success = sendVerificationEmail(host, verificationToken, email);
                 if (success) {
@@ -123,52 +110,64 @@ router.post("/register", (req, res) => {
                         message: "Verification email sent",
                     });
                 } else {
-                    internalServerError(res, err);
-                    return;
+                    internalServerError(res, null);
                 }
-            }
-        });
-    });
+            })
+            .catch((err: NodeJS.ErrnoException) => {
+                switch (err.code) {
+                    case "11000":
+                        res.status(400).json({
+                            message: "Email address already exists",
+                        });
+                        logger.warn(err, new Error().stack);
+                        break;
+                    default:
+                        internalServerError(res, err);
+                        break;
+                }
+            });
+    } catch (err: unknown) {
+        internalServerError(res, err);
+    }
 });
 
-router.get("/register/:token", (req, res, next) => {
+router.get("/register/:token", async (req, res, next) => {
     const token = req.params.token;
 
-    User.findOne({ verificationToken: token }, (err: NodeJS.ErrnoException, user: User) => {
-        if (err) {
-            internalServerError(res, err);
-            return;
-        } else if (!user) {
-            next();
-            return;
+    try {
+        const user = await User.findOne({ verificationToken: token });
+
+        if (!user) {
+            return next();
         }
 
         user.verified = true;
         user.verificationToken = undefined;
 
-        user.save((err) => {
-            if (err) {
-                internalServerError(res, err);
-                return;
-            } else {
+        user.save()
+            .then(() => {
                 res.status(200).json({
                     message: "User verified successfully",
                 });
-            }
-        });
-    });
+            })
+            .catch((err: NodeJS.ErrnoException) => {
+                internalServerError(res, err);
+            });
+        return;
+    } catch (err: unknown) {
+        internalServerError(res, err);
+    }
 });
 
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
     const { email, password } = req.body || {};
 
-    User.findOne({
-        email: email,
-    }).exec((err, user) => {
-        if (err) {
-            internalServerError(res, err);
-            return;
-        } else if (!user) {
+    try {
+        const user = await User.findOne({
+            email: email,
+        });
+
+        if (!user) {
             res.status(404).json({
                 message: "User not found",
             });
@@ -210,17 +209,19 @@ router.post("/login", (req, res) => {
         );
 
         // send token as cookie
-        return res
-            .cookie("token", token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-            })
+        res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+        })
             .status(200)
             .json({ message: "Logged in successfully" });
-    });
+        return;
+    } catch (err: unknown) {
+        internalServerError(res, err);
+    }
 });
 
-router.post("/logout", auth, (_req, res) => {
+router.post("/logout", auth, async (_req, res) => {
     delete app.locals.user;
 
     res.clearCookie("token").status(200).json({
@@ -228,73 +229,31 @@ router.post("/logout", auth, (_req, res) => {
     });
 });
 
-router.post("/reset", (req, res) => {
+router.post("/reset", async (req, res) => {
     const { email, token } = req.body || {};
 
     if (email) {
-        User.findOne({
-            email: email,
-        }).exec((err, user) => {
-            if (err) {
-                internalServerError(res, err);
-                return;
-            } else if (!user) {
-                res.status(404).json({
-                    message: "User not found",
-                });
-                return;
-            }
-
-            const token = crypto.randomBytes(cryptoSize).toString("hex");
-            const tokenExpiration = new Date();
-            tokenExpiration.setHours(tokenExpiration.getHours() + 1);
-
-            user.resetPasswordToken = token;
-            user.resetPasswordExpires = tokenExpiration;
-            user.save((err: NodeJS.ErrnoException) => {
-                if (err) {
-                    internalServerError(res, err);
-                    return;
-                } else {
-                    const host = req.headers?.referer?.split("reset")[0] + "reset"; // TODO: fix this undefined error
-                    const ip = req.ip;
-                    const success = sendResetEmail(host, token, email, ip);
-                    if (success) {
-                        res.status(200).json({
-                            message: "Reset email sent",
-                        });
-                    } else {
-                        internalServerError(res, err);
-                        return;
-                    }
-                }
+        try {
+            const user = await User.findOne({
+                email: email,
             });
-        });
-    } else
-        User.findOne({ resetPasswordToken: token }, (err: NodeJS.ErrnoException, user: User) => {
-            if (err) {
-                internalServerError(res, err);
-                return;
-            } else if (!user) {
+
+            if (!user) {
                 res.status(404).json({
                     message: "User not found",
                 });
                 return;
             }
 
-            const email = user.email;
             const token = crypto.randomBytes(cryptoSize).toString("hex");
             const tokenExpiration = new Date();
             tokenExpiration.setHours(tokenExpiration.getHours() + 1);
 
             user.resetPasswordToken = token;
             user.resetPasswordExpires = tokenExpiration;
-            user.save((err: NodeJS.ErrnoException) => {
-                if (err) {
-                    internalServerError(res, err);
-                    return;
-                } else {
-                    const host = req.headers.referer.split("reset")[0] + "reset"; // domain
+            user.save()
+                .then(() => {
+                    const host = req.headers?.referer?.split("reset")[0] + "reset"; // TODO: fix this undefined error
                     const ip = req.ip;
                     const err = sendResetEmail(host, token, email, ip);
                     if (err) {
@@ -306,19 +265,61 @@ router.post("/reset", (req, res) => {
                             message: "Reset email sent",
                         });
                     }
-                }
-            });
-        });
+                })
+                .catch((err: NodeJS.ErrnoException) => {
+                    internalServerError(res, err);
+                });
+        } catch (err: unknown) {
+            internalServerError(res, err);
+        }
+    } else
+        try {
+            const user = await User.findOne({ resetPasswordToken: token });
+
+            if (!user) {
+                res.status(404).json({
+                    message: "User not found",
+                });
+                return;
+            }
+
+            const email = user.email;
+            const resetPasswordToken = crypto.randomBytes(cryptoSize).toString("hex");
+            const tokenExpiration = new Date();
+            tokenExpiration.setHours(tokenExpiration.getHours() + 1);
+
+            user.resetPasswordToken = resetPasswordToken;
+            user.resetPasswordExpires = tokenExpiration;
+            user.save()
+                .then(() => {
+                    const host = req.headers.referer.split("reset")[0] + "reset"; // domain
+                    const ip = req.ip;
+                    const err = sendResetEmail(host, resetPasswordToken, email, ip);
+                    if (err) {
+                        // TODO: improve this
+                        internalServerError(res, null);
+                        return;
+                    } else {
+                        res.status(200).json({
+                            message: "Reset email sent",
+                        });
+                    }
+                })
+                .catch((err: NodeJS.ErrnoException) => {
+                    internalServerError(res, err);
+                });
+        } catch (err: unknown) {
+            internalServerError(res, err);
+        }
 });
 
-router.get("/reset/:token", (req, res, next) => {
+router.get("/reset/:token", async (req, res, next) => {
     const token = req.params.token;
 
-    User.findOne({ resetPasswordToken: token }, (err: NodeJS.ErrnoException, user: User) => {
-        if (err) {
-            internalServerError(res, err);
-            return;
-        } else if (!user) {
+    try {
+        const user = await User.findOne({ resetPasswordToken: token });
+
+        if (!user) {
             next();
             return;
         } else if (user.resetPasswordExpires.getTime() < new Date().getTime()) {
@@ -331,18 +332,19 @@ router.get("/reset/:token", (req, res, next) => {
                 message: "Token is valid",
             });
         }
-    });
+    } catch (err: unknown) {
+        internalServerError(res, err);
+    }
 });
 
-router.post("/reset/:token", (req, res, next) => {
+router.post("/reset/:token", async (req, res, next) => {
     const { password } = req.body || {};
     const token = req.params.token;
 
-    User.findOne({ resetPasswordToken: token }, (err: NodeJS.ErrnoException, user: User) => {
-        if (err) {
-            internalServerError(res, err);
-            return;
-        } else if (!user) {
+    try {
+        const user = await User.findOne({ resetPasswordToken: token });
+
+        if (!user) {
             next();
             return;
         } else if (user.resetPasswordExpires.getTime() < new Date().getTime()) {
@@ -359,17 +361,18 @@ router.post("/reset/:token", (req, res, next) => {
         user.resetPasswordToken = undefined;
         user.resetPasswordExpires = undefined;
 
-        user.save((err) => {
-            if (err) {
-                internalServerError(res, err);
-                return;
-            } else {
+        user.save()
+            .then(() => {
                 res.status(200).json({
                     message: "Password changed successfully",
                 });
-            }
-        });
-    });
+            })
+            .catch((err: NodeJS.ErrnoException) => {
+                internalServerError(res, err);
+            });
+    } catch (err: unknown) {
+        internalServerError(res, err);
+    }
 });
 
 router.post("/delete", auth, (req, res) => {

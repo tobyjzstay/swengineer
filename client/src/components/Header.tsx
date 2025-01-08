@@ -1,4 +1,4 @@
-import { DarkMode, Language, LightMode } from "@mui/icons-material";
+import { DarkMode, Language, LightMode, Logout, Person } from "@mui/icons-material";
 import {
     AppBar,
     Avatar,
@@ -7,7 +7,6 @@ import {
     Dialog,
     DialogContent,
     Grid,
-    Icon,
     IconButton,
     ListItemIcon,
     Menu,
@@ -28,7 +27,7 @@ function Header() {
     const [open, setOpen] = React.useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-    const { mode, user } = React.useContext(Context);
+    const context = React.useContext(Context);
 
     const navigate = useNavigate();
     const theme = useTheme();
@@ -57,7 +56,7 @@ function Header() {
         }).then(async (response) => {
             const json = await response.json();
             const { user } = json;
-            user[1](user);
+            context.user[1](user);
         });
     }, []);
 
@@ -98,24 +97,24 @@ function Header() {
                         </Grid>
                     </DialogContent>
                 </Dialog>
-                <IconButton onClick={() => mode[1]((prev) => (prev === "light" ? "dark" : "light"))}>
-                    {mode[0] === "light" ? <DarkMode /> : <LightMode />}
+                <IconButton onClick={() => context.mode[1]((prev) => (prev === "light" ? "dark" : "light"))}>
+                    {context.mode[0] === "light" ? <DarkMode /> : <LightMode />}
                 </IconButton>
-                {user[0] && (
+                {context.user[0] && (
                     <>
                         <IconButton onClick={(event) => setAnchorEl(event.currentTarget)}>
                             <Avatar className="header-avatar" />
                         </IconButton>
                         <Menu
                             anchorEl={anchorEl}
-                            open={open}
+                            open={Boolean(anchorEl)}
                             onClose={handleAvatarClose}
                             PaperProps={{
                                 className: "header-menu-paper",
                             }}
                         >
                             <MenuItem key="email" disabled divider>
-                                {user[0].email}
+                                {context.user[0].email}
                             </MenuItem>
                             <MenuItem
                                 key="profile"
@@ -124,7 +123,7 @@ function Header() {
                                 }}
                             >
                                 <ListItemIcon>
-                                    <Icon fontSize="small">person</Icon>
+                                    <Person />
                                 </ListItemIcon>
                                 Profile
                             </MenuItem>
@@ -137,7 +136,7 @@ function Header() {
                                 }}
                             >
                                 <ListItemIcon>
-                                    <Icon fontSize="small">logout</Icon>
+                                    <Logout />
                                 </ListItemIcon>
                                 Log out
                             </MenuItem>

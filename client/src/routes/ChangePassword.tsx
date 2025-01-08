@@ -1,5 +1,6 @@
+import { LockReset, Send } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Backdrop, Box, Icon, TextField, Typography } from "@mui/material";
+import { Backdrop, Box, TextField, Typography } from "@mui/material";
 import * as React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Context } from "../App";
@@ -63,7 +64,7 @@ function ChangePassword() {
                         className="change-password-button"
                         loading={loading}
                         loadingPosition="start"
-                        startIcon={<Icon>lock_reset</Icon>}
+                        startIcon={<LockReset />}
                         type="submit"
                         variant="contained"
                     >
@@ -103,7 +104,7 @@ function ChangePassword() {
                         className="change-password-button"
                         loading={loading}
                         loadingPosition="start"
-                        startIcon={<Icon>send</Icon>}
+                        startIcon={<Send />}
                         type="submit"
                         variant="contained"
                     >

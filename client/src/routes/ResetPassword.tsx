@@ -1,9 +1,11 @@
+import { Send } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Backdrop, Box, Grid, Icon, Link, TextField, Typography } from "@mui/material";
+import { Backdrop, Box, Grid, Link, TextField, Typography } from "@mui/material";
 import * as React from "react";
 import { Context } from "../App";
 import AuthLayout from "../components/AuthLayout";
 import { postRequest } from "../components/Request";
+import "./ResetPassword.scss";
 
 function ResetPassword() {
     const [componentToRender, setComponentToRender] = React.useState(<ResetPasswordComponent />);
@@ -47,7 +49,7 @@ function ResetPassword() {
                         className="reset-password-button"
                         loading={loading}
                         loadingPosition="start"
-                        startIcon={<Icon>send</Icon>}
+                        startIcon={<Send />}
                         type="submit"
                         variant="contained"
                     >

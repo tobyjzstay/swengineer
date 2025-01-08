@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import log4js from "log4js";
 import { app } from ".";
@@ -6,42 +6,56 @@ import { User } from "./models/User";
 
 const logger = log4js.getLogger(process.pid.toString());
 
-export const auth = (req: Request, res: Response, next: () => void) => {
+export const auth = async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies.token;
 
-    if (!token) return res.status(401).json({});
+    if (!token) {
+        res.status(401).json({});
+        return;
+    }
 
     try {
         const data = jwt.verify(token, process.env.API_SECRET);
-        if (!data) return res.status(403).json({});
+        if (!data) {
+            res.status(403).json({});
+            return;
+        }
         const { id } = data as { id: string };
-        User.findOne({
-            _id: id,
-        }).exec((err, user) => {
-            if (err) {
-                logger.error(err);
-                return res.status(500).json({});
+        try {
+            const user = await User.findOne({
+                _id: id,
+            });
+            if (!user) {
+                res.status(403).json({});
+                return;
             }
-            if (!user) return res.status(403).json({});
             app.locals.user = user;
             return next();
-        });
+        } catch (err) {
+            logger.error(err);
+            res.status(500).json({});
+            return;
+        }
     } catch (error: unknown) {
         if (error instanceof jwt.JsonWebTokenError) {
-            return res.status(401).json({
+            res.status(401).json({
                 message: error.message,
             });
+            return;
         } else if (error instanceof jwt.TokenExpiredError) {
-            return res.status(401).json({
+            res.status(401).json({
                 message: error.message,
             });
+            return;
         } else if (error instanceof jwt.NotBeforeError) {
-            return res.status(401).json({
+            res.status(401).json({
                 message: error.message,
             });
+            return;
         } else {
             logger.error(error);
-            return res.status(403).json({});
+            res.status(403).json({});
+            return;
         }
     }
 };

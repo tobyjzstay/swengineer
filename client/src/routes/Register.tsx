@@ -1,5 +1,6 @@
+import { Send } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
-import { Backdrop, Box, Grid, Icon, Link, TextField, Typography } from "@mui/material";
+import { Backdrop, Box, Grid, Link, TextField, Typography } from "@mui/material";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../App";
@@ -75,7 +76,7 @@ function Register() {
                         className="register-button"
                         loading={loading}
                         loadingPosition="start"
-                        startIcon={<Icon>send</Icon>}
+                        startIcon={<Send />}
                         type="submit"
                         variant="contained"
                     >
@@ -132,7 +133,7 @@ function VerificationEmail({ email }: { email: string }) {
                     className="verification-email-button"
                     loading={loading}
                     loadingPosition="start"
-                    startIcon={<Icon>send</Icon>}
+                    startIcon={<Send />}
                     type="submit"
                     variant="contained"
                 >

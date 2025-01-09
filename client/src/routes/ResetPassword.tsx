@@ -2,13 +2,23 @@ import { Send } from "@mui/icons-material";
 import { LoadingButton } from "@mui/lab";
 import { Backdrop, Box, Grid, Link, TextField, Typography } from "@mui/material";
 import * as React from "react";
+import { useNavigate } from "react-router-dom";
 import { Context } from "../App";
 import AuthLayout from "../components/AuthLayout";
-import { postRequest } from "../components/Request";
+import PlaceholderLayout from "../components/PlaceholderLayout";
+import { getRequest, postRequest } from "../components/Request";
 import "./ResetPassword.scss";
 
 function ResetPassword() {
-    const [componentToRender, setComponentToRender] = React.useState(<ResetPasswordComponent />);
+    const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
+    const navigate = useNavigate();
+
+    React.useMemo(() => {
+        getRequest("/auth").then(async (response) => {
+            if (response.ok) navigate("/", { replace: true });
+            else setComponentToRender(<ResetPasswordComponent />);
+        });
+    }, []);
 
     function ResetPasswordComponent() {
         const context = React.useContext(Context);
@@ -50,6 +60,7 @@ function ResetPassword() {
                         loading={loading}
                         loadingPosition="start"
                         startIcon={<Send />}
+                        sx={{ mt: 3, mb: 2 }}
                         type="submit"
                         variant="contained"
                     >

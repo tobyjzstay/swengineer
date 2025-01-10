@@ -1,6 +1,8 @@
-require("dotenv-expand").expand(
-    require("dotenv").config({ path: process.env.NODE_ENV ? `.env.${process.env.NODE_ENV}.local` : ".env" })
-);
+const dotenv = require("dotenv");
+const dotenvExpand = require("dotenv-expand");
+
+dotenvExpand.expand(dotenv.config({ path: ".env" }));
+dotenvExpand.expand(dotenv.config({ path: ".env." + process.env.NODE_ENV + ".local", override: true }));
 
 if (!process.env.NODE_ENV) {
     console.error("NODE_ENV is not set");

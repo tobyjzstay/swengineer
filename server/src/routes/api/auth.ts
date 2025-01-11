@@ -57,7 +57,7 @@ router.post("/register", async (req, res) => {
     if (!email) {
         res.status(400).json({ message: "Invalid email address" });
         return;
-    } else if (verify && !password) {
+    } else if (!verify && !password) {
         res.status(400).json({ message: "Invalid password" });
         return;
     }
@@ -83,12 +83,8 @@ router.post("/register", async (req, res) => {
                             internalServerError(res, null);
                         }
                     })
-                    .catch((error: NodeJS.ErrnoException) => {
-                        switch (error.code) {
-                            default:
-                                internalServerError(res, error);
-                                return;
-                        }
+                    .catch((err: NodeJS.ErrnoException) => {
+                        internalServerError(res, err);
                     });
             } else res.status(409).json({ message: "User already exists" });
             return;

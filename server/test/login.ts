@@ -27,6 +27,46 @@ describe("POST /register", () => {
                 .expect(409, done);
         });
     });
+
+    makeSuite("Email is required", () => {
+        it("Register a new user with invalid email", (done) => {
+            supertest(app).post("/api/auth/register").send({ email: "", password: "alice" }).expect(400, done);
+        });
+    });
+
+    makeSuite("Password is required", () => {
+        it("Register a new user with invalid password", (done) => {
+            supertest(app)
+                .post("/api/auth/register")
+                .send({ email: "alice@example.com", password: "" })
+                .expect(400, done);
+        });
+    });
+
+    makeSuite("User already registered needs verification", () => {
+        it("Register a new user", (done) => {
+            supertest(app)
+                .post("/api/auth/register")
+                .send({ email: "alice@example.com", password: "alice" })
+                .expect(201, done);
+        });
+
+        it("Resend verification token", (done) => {
+            supertest(app)
+                .post("/api/auth/register")
+                .send({ email: "alice@example.com", verify: true })
+                .expect(201, done);
+        });
+
+        it("Verify email with verification token", (done) => {
+            User.findOne({ email: "alice@example.com" }).then((user) => {
+                supertest(app)
+                    .get("/api/auth/register/" + user.verificationToken)
+                    .send()
+                    .expect(200, done);
+            });
+        });
+    });
 });
 
 describe("POST /login", () => {
@@ -276,6 +316,22 @@ describe("POST /reset/:token", () => {
                     .send({ password: "bob" })
                     .expect(200, done);
             });
+        });
+
+        it("Verify email with verification token", (done) => {
+            getUser("alice@example.com", (user) => {
+                supertest(app)
+                    .get("/api/auth/register/" + user.verificationToken)
+                    .send()
+                    .expect(200, done);
+            });
+        });
+
+        it("Login with new password", (done) => {
+            supertest(app)
+                .post("/api/auth/login")
+                .send({ email: "alice@example.com", password: "bob" })
+                .expect(200, done);
         });
     });
 

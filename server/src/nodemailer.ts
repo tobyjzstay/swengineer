@@ -17,7 +17,7 @@ export async function sendMail(options: Options) {
     const { from, ...rest } = options;
     try {
         const info = await transporter.sendMail({
-            from: '"swengineer" <' + process.env.GMAIL_EMAIL + ">",
+            from: process.env.GMAIL_SENDER,
             ...rest,
         });
         logger.info(info.messageId);

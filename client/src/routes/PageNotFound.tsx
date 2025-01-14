@@ -10,8 +10,7 @@ function PageNotFound() {
 
     React.useMemo(() => {
         getRequest(window.location.pathname).then(async (response) => {
-            const json = await response.json();
-            setComponentToRender(<PageNotFoundComponent message={json?.message || response.text()} />);
+            setComponentToRender(<PageNotFoundComponent message="Page not found" />);
         });
     }, []);
 

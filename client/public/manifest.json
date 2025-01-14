@@ -1,35 +1,85 @@
 {
     "short_name": "swengineer",
     "name": "swengineer",
+    "description": "A personal website showcasing my career learnings, projects, and growth.",
+    "lang": "en",
     "icons": [
         {
-            "purpose": "any",
-            "src": "/logo192.png",
+            "src": "/icons/icon16.png",
+            "sizes": "16x16",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon32.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon48.png",
+            "sizes": "48x48",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon72.png",
+            "sizes": "72x72",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon96.png",
+            "sizes": "96x96",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon128.png",
+            "sizes": "128x128",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon192.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
-            "purpose": "any",
-            "src": "/logo512.png",
+            "src": "/icons/icon384.png",
+            "sizes": "384x384",
+            "type": "image/png"
+        },
+        {
+            "src": "/icons/icon512.png",
             "sizes": "512x512",
             "type": "image/png"
         },
         {
             "purpose": "maskable",
-            "src": "/logo192_maskable.png",
+            "src": "/icons/icon192_maskable.png",
             "sizes": "192x192",
             "type": "image/png"
         },
         {
             "purpose": "maskable",
-            "src": "/logo512_maskable.png",
+            "src": "/icons/icon512_maskable.png",
             "sizes": "512x512",
             "type": "image/png"
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/screenshots/screenshot1.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "form_factor": "wide"
+        },
+        {
+            "src": "/screenshots/screenshot2.png",
+            "sizes": "720x1280",
+            "type": "image/png",
+            "form_factor": "narrow"
         }
     ],
     "background_color": "#121212",
     "theme_color": "#fdd835",
     "display": "standalone",
+    "orientation": "portrait",
     "scope": "/",
     "id": "/",
     "start_url": "/"

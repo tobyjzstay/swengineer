@@ -1,2 +1,6 @@
+.nyc_output
 node_modules
-npm-debug.log
+.git
+.gitignore
+*.log
+*.md

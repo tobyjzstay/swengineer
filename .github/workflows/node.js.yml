@@ -9,31 +9,32 @@ on:
 jobs:
     build:
         runs-on: self-hosted
-        strategy:
-            matrix:
-                node-version: [14, 16, 18]
-        name: Use Node.js ${{ matrix.node-version }}
         steps:
-            - uses: actions/checkout@v3
-            - name: Create env file
+            - uses: actions/checkout@v4
+            - name: Add pnpm to PATH
               run: |
-                  echo "${{ secrets.ENV_FILE }}" | base64 -d > ./server/.env
-            - name: Install pnpm
-              uses: pnpm/action-setup@v2
-              with:
-                  version: 6.0.2
-            - name: Build Docker image
-              run: docker-compose -f "docker-compose.yaml" up -d --build
+                  echo "$HOME/.local/share/pnpm" >> $GITHUB_PATH
+            - name: Create .env file
+              run: |
+                  echo "API_SECRET=${{ secrets.API_SECRET }}" >> .env
+                  echo "CRYPTO_SIZE=${{ vars.CRYPTO_SIZE }}" >> .env
+                  echo "GMAIL_EMAIL=${{ secrets.GMAIL_EMAIL }}" >> .env
+                  echo "GMAIL_PASSWORD=${{ secrets.GMAIL_PASSWORD }}" >> .env
+                  echo "GMAIL_SENDER=${{ secrets.GMAIL_SENDER }}" >> .env
+                  echo "GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }}" >> .env
+                  echo "GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}" >> .env
+                  echo "MONGODB_URI=${{ secrets.MONGODB_URI }}" >> .env
+                  echo "NODE_ENV=${{ vars.NODE_ENV }}" >> .env
+                  echo "SESSION_SECRET=${{ secrets.SESSION_SECRET }}" >> .env
+                  echo "HOSTNAME=${{ vars.HOSTNAME }}" >> .env
+                  echo "PORT=${{ vars.PORT }}" >> .env
+                  echo "SALT_ROUNDS=${{ vars.SALT_ROUNDS }}" >> .env
             - name: Install dependencies
-              run: pnpm install -r
-            - name: Build app
-              run: pnpm --if-present run build
-            - name: Run tests
-              run: pnpm --if-present run test
-            - name: Clean up
-              run: docker-compose -f "docker-compose.yaml" down
-
-              
-concurrency:
-    group: ${{ github.head_ref }}
-    cancel-in-progress: true
+              run: |
+                  pnpm --prefix ./client/ install --frozen-lockfile
+            - name: Build the project
+              run: |
+                  pnpm --prefix ./client/ build
+            - name: Copy client build to host
+              run: |
+                  cp -r client/build/* /var/www/swengineer/

@@ -1,6 +1,8 @@
 import Send from "@mui/icons-material/Send";
 import { Backdrop, Box, Button, Grid, Link, TextField, Typography } from "@mui/material";
+import { t } from "i18next";
 import * as React from "react";
+import { Trans } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../App";
 import AuthLayout from "../components/AuthLayout";
@@ -47,7 +49,7 @@ function Register() {
         };
 
         return (
-            <AuthLayout name={"Register"}>
+            <AuthLayout name={t("register.title")}>
                 <Box className="register-container" component="form" noValidate onSubmit={handleSubmit}>
                     <TextField
                         autoComplete="email"
@@ -55,7 +57,7 @@ function Register() {
                         className="register-text-field"
                         disabled={loading}
                         id="email"
-                        label="Email Address"
+                        label={<Trans i18nKey="register.emailAddress" />}
                         margin="normal"
                         name="email"
                         required
@@ -65,7 +67,7 @@ function Register() {
                         className="register-text-field"
                         disabled={loading}
                         id="password"
-                        label="Password"
+                        label={<Trans i18nKey="register.password" />}
                         margin="normal"
                         name="password"
                         required
@@ -78,17 +80,17 @@ function Register() {
                         type="submit"
                         variant="contained"
                     >
-                        Send email
+                        <Trans i18nKey="register.sendEmail" />
                     </Button>
                     <Grid container>
                         <Grid item xs>
                             <Link href="/reset" variant="body2">
-                                {"Forgot password?"}
+                                <Trans i18nKey="register.forgotPassword" />
                             </Link>
                         </Grid>
                         <Grid item>
                             <Link href="/login" variant="body2">
-                                {"Already have an account? Log in"}
+                                <Trans i18nKey="register.logIn" />
                             </Link>
                         </Grid>
                     </Grid>
@@ -125,7 +127,7 @@ function VerificationEmail({ email }: { email: string }) {
         <AuthLayout name="Register">
             <Box className="verification-email-container" component="form" noValidate onSubmit={handleSubmit}>
                 <Typography className="verification-email-text">
-                    Please check your email for a verification link.
+                    <Trans i18nKey="register.verificationEmail" />
                 </Typography>
                 <Button
                     className="verification-email-button"
@@ -134,7 +136,7 @@ function VerificationEmail({ email }: { email: string }) {
                     type="submit"
                     variant="contained"
                 >
-                    Resend email
+                    <Trans i18nKey="register.resendEmail" />
                 </Button>
             </Box>
         </AuthLayout>

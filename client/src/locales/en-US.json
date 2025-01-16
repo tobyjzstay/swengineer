@@ -2,5 +2,31 @@
     "home": {
         "greeting": "Hi, I'm <strong>Toby</strong>,<br />a ",
         "greetingSuffix": "."
+    },
+    "login": {
+        "title": "Login",
+        "emailAddress": "Email address",
+        "password": "Password",
+        "logIn": "Log in",
+        "forgotPassword": "Forgot password?",
+        "register": "Don't have an account? Register",
+        "googleLogIn": "Log in with Google"
+    },
+    "register": {
+        "title": "Register",
+        "emailAddress": "Email address",
+        "password": "Password",
+        "sendEmail": "Send email",
+        "forgotPassword": "Forgot password?",
+        "logIn": "Already have an account? Log in",
+        "verificationEmail": "Please check your email for a verification link.",
+        "resendEmail": "Resend email"
+    },
+    "resetPassword": {
+        "title": "Reset password",
+        "emailAddress": "Email address",
+        "sendEmail": "Send email",
+        "back": "Back",
+        "register": "Don't have an account? Register"
     }
 }

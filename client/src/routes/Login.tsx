@@ -1,6 +1,8 @@
 import LoginIcon from "@mui/icons-material/Login";
 import { Backdrop, Box, Button, Grid, Link, TextField } from "@mui/material";
+import { t } from "i18next";
 import * as React from "react";
+import { Trans } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../App";
 import AuthLayout from "../components/AuthLayout";
@@ -47,7 +49,7 @@ function Login() {
         };
 
         return (
-            <AuthLayout name="Log in">
+            <AuthLayout name={t("login.title")}>
                 <Box className="login-layout" component="form" noValidate onSubmit={handleSubmit}>
                     <TextField
                         autoComplete="email"
@@ -55,7 +57,7 @@ function Login() {
                         className="login-email-text-field"
                         disabled={loading}
                         id="email"
-                        label="Email Address"
+                        label={<Trans i18nKey="login.emailAddress" />}
                         margin="normal"
                         name="email"
                         required
@@ -65,7 +67,7 @@ function Login() {
                         className="login-password-text-field"
                         disabled={loading}
                         id="password"
-                        label="Password"
+                        label={<Trans i18nKey="login.password" />}
                         margin="normal"
                         name="password"
                         required
@@ -78,17 +80,17 @@ function Login() {
                         type="submit"
                         variant="contained"
                     >
-                        Log in
+                        <Trans i18nKey="login.logIn" />
                     </Button>
                     <Grid container>
                         <Grid item xs>
                             <Link href="/reset" variant="body2">
-                                {"Forgot password?"}
+                                <Trans i18nKey="login.forgotPassword" />
                             </Link>
                         </Grid>
                         <Grid item>
                             <Link href="/register" variant="body2">
-                                {"Don't have an account? Register"}
+                                <Trans i18nKey="login.register" />
                             </Link>
                         </Grid>
                     </Grid>
@@ -99,7 +101,7 @@ function Login() {
                         href="/api/auth/google"
                         variant="contained"
                     >
-                        Log in with Google
+                        <Trans i18nKey="login.googleLogIn" />
                     </Button>
                     <Backdrop open={loading} />
                 </Box>

@@ -1,6 +1,8 @@
 import Send from "@mui/icons-material/Send";
 import { Backdrop, Box, Button, Grid, Link, TextField, Typography } from "@mui/material";
+import { t } from "i18next";
 import * as React from "react";
+import { Trans } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../App";
 import AuthLayout from "../components/AuthLayout";
@@ -41,7 +43,7 @@ function ResetPassword() {
         };
 
         return (
-            <AuthLayout name="Reset password">
+            <AuthLayout name={t("resetPassword.title")}>
                 <Box className="reset-password-container" component="form" noValidate onSubmit={handleSubmit}>
                     <TextField
                         autoComplete="email"
@@ -49,7 +51,7 @@ function ResetPassword() {
                         className="reset-password-text-field"
                         disabled={loading}
                         id="email"
-                        label="Email Address"
+                        label={<Trans i18nKey="resetPassword.emailAddress" />}
                         margin="normal"
                         name="email"
                         required
@@ -62,17 +64,17 @@ function ResetPassword() {
                         type="submit"
                         variant="contained"
                     >
-                        Send email
+                        <Trans i18nKey="resetPassword.sendEmail" />
                     </Button>
                     <Grid container>
                         <Grid item xs>
                             <Link href="/login" variant="body2">
-                                Back
+                                <Trans i18nKey="resetPassword.back" />
                             </Link>
                         </Grid>
                         <Grid item>
                             <Link href="/register" variant="body2">
-                                Don&apos;t have an account? Register
+                                <Trans i18nKey="resetPassword.register" />
                             </Link>
                         </Grid>
                     </Grid>

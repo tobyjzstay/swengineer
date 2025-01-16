@@ -1,4 +1,4 @@
-import { Box, Collapse, Fade } from "@mui/material";
+import { Box, Collapse, Fade, Typography } from "@mui/material";
 import { ThemeProvider, responsiveFontSizes, useTheme } from "@mui/material/styles";
 import React from "react";
 import { Trans } from "react-i18next";
@@ -56,7 +56,7 @@ function Home() {
             </Fade>
             <ThemeProvider theme={theme}>
                 <Box className="home-container">
-                    <div>
+                    <Typography variant="h1" /* using `Typography` handles `responsiveFontSizes` */>
                         <Trans i18nKey="home.greeting" />
                         <Box className={"home-swengineer " + (colour ? "colour" : "default")}>
                             {replace ? (
@@ -94,7 +94,7 @@ function Home() {
                             )}
                         </Box>
                         <Trans i18nKey="home.greetingSuffix" />
-                    </div>
+                    </Typography>
                 </Box>
             </ThemeProvider>
         </Box>

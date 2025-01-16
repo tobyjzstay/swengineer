@@ -5,10 +5,8 @@ import en_AU from "./locales/en-AU.json";
 import en_GB from "./locales/en-GB.json";
 import en_NZ from "./locales/en-NZ.json";
 import en_US from "./locales/en-US.json";
-import en from "./locales/en.json";
 import mi_NZ from "./locales/mi-NZ.json";
 import zh_CN from "./locales/zh-CN.json";
-import zh from "./locales/zh.json";
 
 const isQueryLangPresent = new URLSearchParams(window.location.search).has("lang");
 
@@ -29,16 +27,19 @@ i18n.use(LanguageDetector)
                 translation: en_US,
             },
             en: {
-                translation: en,
+                translation: en_US,
             },
             "mi-NZ": {
+                translation: mi_NZ,
+            },
+            mi: {
                 translation: mi_NZ,
             },
             "zh-CN": {
                 translation: zh_CN,
             },
             zh: {
-                translation: zh,
+                translation: zh_CN,
             },
         },
         fallbackLng: "en",

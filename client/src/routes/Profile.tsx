@@ -1,6 +1,5 @@
-import { Delete } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
-import { Backdrop, Box, TextField, Typography } from "@mui/material";
+import Delete from "@mui/icons-material/Delete";
+import { Backdrop, Box, Button, TextField, Typography } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../App";
@@ -64,18 +63,16 @@ function Profile() {
                         required
                         value={value}
                     />
-                    <LoadingButton
+                    <Button
                         className="profile-button"
                         color="error"
-                        disabled={value !== context.user[0]?.email}
-                        loading={loading}
-                        loadingPosition="start"
+                        disabled={loading || value !== context.user[0]?.email}
                         startIcon={<Delete />}
                         type="submit"
                         variant="contained"
                     >
                         Delete account
-                    </LoadingButton>
+                    </Button>
                     <Backdrop open={loading} />
                 </Box>
             </AuthLayout>

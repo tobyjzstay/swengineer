@@ -1,6 +1,6 @@
-import { LockReset, Send } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
-import { Backdrop, Box, TextField, Typography } from "@mui/material";
+import LockReset from "@mui/icons-material/LockReset";
+import Send from "@mui/icons-material/Send";
+import { Backdrop, Box, Button, TextField, Typography } from "@mui/material";
 import * as React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Context } from "../App";
@@ -60,16 +60,15 @@ function ChangePassword() {
                         required
                         type="password"
                     />
-                    <LoadingButton
+                    <Button
                         className="change-password-button"
-                        loading={loading}
-                        loadingPosition="start"
+                        disabled={loading}
                         startIcon={<LockReset />}
                         type="submit"
                         variant="contained"
                     >
                         Change password
-                    </LoadingButton>
+                    </Button>
                 </Box>
             </AuthLayout>
         );
@@ -100,16 +99,15 @@ function ChangePassword() {
             <AuthLayout name="Reset password">
                 <Box className="change-password-resend-layout" component="form" noValidate onSubmit={handleSubmit}>
                     <Typography textAlign="center">The token has expired. Please request a new one.</Typography>
-                    <LoadingButton
+                    <Button
                         className="change-password-button"
-                        loading={loading}
-                        loadingPosition="start"
+                        disabled={loading}
                         startIcon={<Send />}
                         type="submit"
                         variant="contained"
                     >
                         Resend email
-                    </LoadingButton>
+                    </Button>
                     <Backdrop open={loading} />
                 </Box>
             </AuthLayout>

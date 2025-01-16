@@ -1,6 +1,5 @@
-import { Send } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
-import { Backdrop, Box, Grid, Link, TextField, Typography } from "@mui/material";
+import Send from "@mui/icons-material/Send";
+import { Backdrop, Box, Button, Grid, Link, TextField, Typography } from "@mui/material";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../App";
@@ -55,17 +54,16 @@ function ResetPassword() {
                         name="email"
                         required
                     />
-                    <LoadingButton
+                    <Button
                         className="reset-password-button"
-                        loading={loading}
-                        loadingPosition="start"
+                        disabled={loading}
                         startIcon={<Send />}
                         sx={{ mt: 3, mb: 2 }}
                         type="submit"
                         variant="contained"
                     >
                         Send email
-                    </LoadingButton>
+                    </Button>
                     <Grid container>
                         <Grid item xs>
                             <Link href="/login" variant="body2">

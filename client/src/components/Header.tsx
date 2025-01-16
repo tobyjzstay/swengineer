@@ -1,4 +1,8 @@
-import { DarkMode, Language, LightMode, Logout, Person } from "@mui/icons-material";
+import DarkMode from "@mui/icons-material/DarkMode";
+import Language from "@mui/icons-material/Language";
+import LightMode from "@mui/icons-material/LightMode";
+import Logout from "@mui/icons-material/Logout";
+import Person from "@mui/icons-material/Person";
 import {
     AppBar,
     Avatar,

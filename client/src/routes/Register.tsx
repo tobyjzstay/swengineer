@@ -1,6 +1,5 @@
-import { Send } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
-import { Backdrop, Box, Grid, Link, TextField, Typography } from "@mui/material";
+import Send from "@mui/icons-material/Send";
+import { Backdrop, Box, Button, Grid, Link, TextField, Typography } from "@mui/material";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../App";
@@ -72,16 +71,15 @@ function Register() {
                         required
                         type="password"
                     />
-                    <LoadingButton
+                    <Button
                         className="register-button"
-                        loading={loading}
-                        loadingPosition="start"
+                        disabled={loading}
                         startIcon={<Send />}
                         type="submit"
                         variant="contained"
                     >
                         Send email
-                    </LoadingButton>
+                    </Button>
                     <Grid container>
                         <Grid item xs>
                             <Link href="/reset" variant="body2">
@@ -129,16 +127,15 @@ function VerificationEmail({ email }: { email: string }) {
                 <Typography className="verification-email-text">
                     Please check your email for a verification link.
                 </Typography>
-                <LoadingButton
+                <Button
                     className="verification-email-button"
-                    loading={loading}
-                    loadingPosition="start"
+                    disabled={loading}
                     startIcon={<Send />}
                     type="submit"
                     variant="contained"
                 >
                     Resend email
-                </LoadingButton>
+                </Button>
             </Box>
         </AuthLayout>
     );

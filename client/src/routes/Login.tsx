@@ -1,5 +1,4 @@
-import { Login as LoginIcon } from "@mui/icons-material";
-import { LoadingButton } from "@mui/lab";
+import LoginIcon from "@mui/icons-material/Login";
 import { Backdrop, Box, Button, Grid, Link, TextField } from "@mui/material";
 import * as React from "react";
 import { useNavigate } from "react-router-dom";
@@ -72,16 +71,15 @@ function Login() {
                         required
                         type="password"
                     />
-                    <LoadingButton
+                    <Button
                         className="login-button"
-                        loading={loading}
-                        loadingPosition="start"
+                        disabled={loading}
                         startIcon={<LoginIcon />}
                         type="submit"
                         variant="contained"
                     >
                         Log in
-                    </LoadingButton>
+                    </Button>
                     <Grid container>
                         <Grid item xs>
                             <Link href="/reset" variant="body2">

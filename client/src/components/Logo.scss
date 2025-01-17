@@ -5,10 +5,19 @@
     }
     .logo-container {
         align-items: center;
+        background-color: #121212;
         display: flex;
         flex-direction: row;
+        padding: 0 4px 0 0;
+    }
+    .logo-image {
+        padding: 4px;
+        width: 2em;
+        height: auto;
     }
     .logo-text {
+        color: var(--mui-palette-common-white);
         font-family: "Cascadia Mono";
+        font-size: 1em;
     }
 }

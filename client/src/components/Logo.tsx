@@ -1,30 +1,12 @@
 import { Box, Link, Typography } from "@mui/material";
+import "./Logo.scss";
 
-export function Logo({ scale: s }: { scale?: number }) {
-    const scale = s || 1;
+export function Logo() {
     return (
-        <Link href={"/" + window.location.search} style={{ textDecoration: "none" }}>
-            <Box
-                display="flex"
-                flexDirection="row"
-                alignItems="center"
-                style={{ backgroundColor: "#121212", paddingRight: 10 * scale }}
-            >
-                <img
-                    src="./logo.svg"
-                    alt="swengineer"
-                    width={64 * scale}
-                    style={{ padding: 5 * scale, margin: 5 * scale }}
-                />
-                <Typography
-                    component="h1"
-                    variant="h4"
-                    color="white"
-                    fontFamily="Cascadia Mono"
-                    fontSize={2.125 * scale + "rem"}
-                >
-                    swengineer
-                </Typography>
+        <Link className="logo-link" href={"/" + window.location.search}>
+            <Box className="logo-container">
+                <img alt="swengineer" className="logo-image" src="./logo.svg" />
+                <Typography className="logo-text">swengineer</Typography>
             </Box>
         </Link>
     );

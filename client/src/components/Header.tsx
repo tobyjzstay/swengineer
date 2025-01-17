@@ -56,7 +56,7 @@ function Header() {
         <AppBar className="header-app-bar">
             <Toolbar variant="dense">
                 <Box className="header-logo">
-                    <Logo scale={0.6} />
+                    <Logo />
                 </Box>
                 <IconButton onClick={() => setOpen(true)}>
                     <Language />

@@ -1,5 +1,5 @@
 import Send from "@mui/icons-material/Send";
-import { Backdrop, Box, Button, Grid, Link, TextField, Typography } from "@mui/material";
+import { Backdrop, Box, Button, Grid2 as Grid, Link, TextField, Typography } from "@mui/material";
 import { t } from "i18next";
 import * as React from "react";
 import { Trans } from "react-i18next";
@@ -67,12 +67,12 @@ function ResetPassword() {
                         <Trans i18nKey="resetPassword.sendEmail" />
                     </Button>
                     <Grid container>
-                        <Grid item xs>
+                        <Grid size="grow">
                             <Link href="/login" variant="body2">
                                 <Trans i18nKey="resetPassword.back" />
                             </Link>
                         </Grid>
-                        <Grid item>
+                        <Grid>
                             <Link href="/register" variant="body2">
                                 <Trans i18nKey="resetPassword.register" />
                             </Link>

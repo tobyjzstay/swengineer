@@ -1,5 +1,5 @@
 import LoginIcon from "@mui/icons-material/Login";
-import { Backdrop, Box, Button, Grid, Link, TextField } from "@mui/material";
+import { Backdrop, Box, Button, Grid2 as Grid, Link, TextField } from "@mui/material";
 import { t } from "i18next";
 import * as React from "react";
 import { Trans } from "react-i18next";
@@ -83,12 +83,12 @@ function Login() {
                         <Trans i18nKey="login.logIn" />
                     </Button>
                     <Grid container>
-                        <Grid item xs>
+                        <Grid size="grow">
                             <Link href="/reset" variant="body2">
                                 <Trans i18nKey="login.forgotPassword" />
                             </Link>
                         </Grid>
-                        <Grid item>
+                        <Grid>
                             <Link href="/register" variant="body2">
                                 <Trans i18nKey="login.register" />
                             </Link>

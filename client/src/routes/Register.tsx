@@ -1,5 +1,5 @@
 import Send from "@mui/icons-material/Send";
-import { Backdrop, Box, Button, Grid, Link, TextField, Typography } from "@mui/material";
+import { Backdrop, Box, Button, Grid2 as Grid, Link, TextField, Typography } from "@mui/material";
 import { t } from "i18next";
 import * as React from "react";
 import { Trans } from "react-i18next";
@@ -82,13 +82,13 @@ function Register() {
                     >
                         <Trans i18nKey="register.sendEmail" />
                     </Button>
-                    <Grid container>
-                        <Grid item xs>
+                    <Grid size="grow">
+                        <Grid size="auto">
                             <Link href="/reset" variant="body2">
                                 <Trans i18nKey="register.forgotPassword" />
                             </Link>
                         </Grid>
-                        <Grid item>
+                        <Grid>
                             <Link href="/login" variant="body2">
                                 <Trans i18nKey="register.logIn" />
                             </Link>

@@ -9,7 +9,7 @@ import {
     DialogContent,
     DialogTitle,
     Fab,
-    Grid,
+    Grid2 as Grid,
     Icon,
     IconButton,
     TextField,
@@ -146,7 +146,7 @@ export function Notepad() {
                         {notepads
                             .sort((a, b) => b.modified.getTime() - a.modified.getTime())
                             .map((notepad, i) => (
-                                <Grid key={notepad.id} item xs={12}>
+                                <Grid key={notepad.id} size={{ xs: 12 }}>
                                     <Card sx={{ width: "100%", marginTop: 2 }}>
                                         <CardActionArea onClick={() => handleClick(i)}>
                                             <CardContent>

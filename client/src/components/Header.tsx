@@ -10,7 +10,7 @@ import {
     Button,
     Dialog,
     DialogContent,
-    Grid,
+    Grid2 as Grid,
     IconButton,
     ListItemIcon,
     Menu,
@@ -79,7 +79,7 @@ function Header() {
                             {Object.entries(languages)
                                 .sort((a, b) => a[1].name.localeCompare(b[1].name))
                                 .map(([key, value]) => (
-                                    <Grid item key={key}>
+                                    <Grid key={key}>
                                         <Button
                                             startIcon={<span style={{ fontSize: "2em" }}>{value.flag}</span>}
                                             onClick={() => {

@@ -11,12 +11,12 @@ import {
     Dialog,
     DialogContent,
     Grid2 as Grid,
+    Icon,
     IconButton,
     ListItemIcon,
     Menu,
     MenuItem,
     Toolbar,
-    useTheme,
 } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -25,7 +25,7 @@ import { Context } from "../App";
 import languages from "../locales/languages.json";
 import "./Header.scss";
 import { Logo } from "./Logo";
-import { postRequest } from "./Request";
+import { getRequest, postRequest } from "./Request";
 
 function Header() {
     const [open, setOpen] = React.useState(false);
@@ -34,8 +34,6 @@ function Header() {
     const context = React.useContext(Context);
 
     const navigate = useNavigate();
-    const theme = useTheme();
-
     const { i18n } = useTranslation();
 
     const handleAvatarClose = () => {
@@ -46,18 +44,8 @@ function Header() {
         setOpen(false);
     };
 
-    // React.useEffect(() => {
-    //     getRequest("/auth").then(async (response) => {
-    //         const json = await response.json();
-    //         const { user } = json;
-    //         setUser(user);
-    //     });
-    // }, []);
-
     React.useEffect(() => {
-        fetch(`/api/auth`, {
-            method: "GET",
-        }).then(async (response) => {
+        getRequest("/auth", true).then(async (response) => {
             const json = await response.json();
             const { user } = json;
             context.user[1](user);
@@ -73,26 +61,28 @@ function Header() {
                 <IconButton onClick={() => setOpen(true)}>
                     <Language />
                 </IconButton>
-                <Dialog onClose={handleLanguageClose} open={open} transitionDuration={{ enter: 300, exit: 0 }}>
+                <Dialog
+                    onClose={handleLanguageClose}
+                    open={open}
+                    transitionDuration={{
+                        enter: 225,
+                        exit: 0, // no duration for exit to prevent selecting during transition
+                    }}
+                >
                     <DialogContent>
-                        <Grid container direction="column">
+                        <Grid className="header-flag-grid" container>
                             {Object.entries(languages)
                                 .sort((a, b) => a[1].name.localeCompare(b[1].name))
                                 .map(([key, value]) => (
                                     <Grid key={key}>
                                         <Button
-                                            startIcon={<span style={{ fontSize: "2em" }}>{value.flag}</span>}
+                                            className="header-flag-button"
                                             onClick={() => {
                                                 i18n.changeLanguage(key);
                                                 handleLanguageClose();
                                             }}
+                                            startIcon={<Icon className="header-flag-icon">{value.flag}</Icon>}
                                             variant="text"
-                                            style={{
-                                                color: theme.palette.text.primary,
-                                                lineHeight: 1,
-                                                textTransform: "none",
-                                                whiteSpace: "nowrap",
-                                            }}
                                         >
                                             {value.name}
                                         </Button>
@@ -113,8 +103,10 @@ function Header() {
                             anchorEl={anchorEl}
                             open={Boolean(anchorEl)}
                             onClose={handleAvatarClose}
-                            PaperProps={{
-                                className: "header-menu-paper",
+                            slotProps={{
+                                paper: {
+                                    className: "header-avatar-menu-paper",
+                                },
                             }}
                         >
                             <MenuItem key="email" disabled divider>

@@ -56,7 +56,9 @@ function Home() {
             </Fade>
             <ThemeProvider theme={theme}>
                 <Box className="home-container">
-                    <Typography variant="h1" /* using `Typography` handles `responsiveFontSizes` */>
+                    <Typography // using `Typography` to handle `responsiveFontSizes`
+                        variant="h1"
+                    >
                         <Trans i18nKey="home.greeting" />
                         <Box className={"home-swengineer " + (colour ? "colour" : "default")}>
                             {replace ? (

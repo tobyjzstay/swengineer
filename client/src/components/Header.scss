@@ -6,15 +6,27 @@
         position: sticky;
     }
     .header-logo {
-        display: flex;
         align-items: center;
+        display: flex;
         flex-grow: 1;
     }
-    .header-avatar {
-        width: 24px;
-        height: 24px;
+    .header-flag-grid {
+        flex-direction: column;
     }
-    .header-menu-paper {
+    .header-flag-button {
+        color: var(--mui-text-primary);
+        line-height: 1;
+        text-transform: none;
+        white-space: nowrap;
+    }
+    .header-flag-icon {
+        font-size: 2em !important; // increase specificity to override MUI styles
+    }
+    .header-avatar {
+        height: 24px;
+        width: 24px;
+    }
+    .header-avatar-menu-paper {
         min-width: 120px;
     }
 }

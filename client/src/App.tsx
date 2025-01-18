@@ -46,6 +46,10 @@ function App() {
 
     const { i18n } = useTranslation();
 
+    React.useEffect(() => {
+        document.documentElement.lang = i18n.language;
+    }, [i18n.language]);
+
     const darkTheme = React.useMemo(
         () =>
             createTheme(

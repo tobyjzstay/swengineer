@@ -56,7 +56,7 @@ const colors = [
     Color.LAVENDER,
 ];
 
-export function Draw() {
+function Draw() {
     const [canvasRef, setCanvasRef] = React.useState<HTMLCanvasElement | null>(null);
     const [ctx, setCtx] = React.useState<CanvasRenderingContext2D | null>(null);
     const [isDrawing, setIsDrawing] = React.useState(false);
@@ -241,3 +241,5 @@ export function Draw() {
         </>
     );
 }
+
+export default Draw;

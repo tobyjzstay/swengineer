@@ -29,7 +29,7 @@ interface Notepad {
     modified: Date;
 }
 
-export function Notepad() {
+function Notepad() {
     const { enqueueSnackbar, closeSnackbar } = useSnackbar();
     const navigate = useNavigate();
     const forceUpdate = useForceUpdate();
@@ -231,3 +231,5 @@ function useForceUpdate() {
     const [, setValue] = React.useState(0);
     return () => setValue((value) => value + 1);
 }
+
+export default Notepad;

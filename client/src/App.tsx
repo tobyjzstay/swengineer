@@ -7,17 +7,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { SnackbarAlert } from "./components/SnackbarAlert";
-import ChangePassword from "./routes/ChangePassword";
-import Clock from "./routes/Clock";
-import { Draw } from "./routes/Draw";
-import Home from "./routes/Home";
-import Login from "./routes/Login";
-import { Notepad } from "./routes/Notepad";
-import PageNotFound from "./routes/PageNotFound";
-import Profile from "./routes/Profile";
-import Register from "./routes/Register";
-import ResetPassword from "./routes/ResetPassword";
-import Verify from "./routes/Verify";
+import routes from "./routes";
 
 export const snackbars: SnackbarKey[] = [];
 
@@ -80,21 +70,16 @@ function App() {
                     }}
                     transitionDuration={{ enter: 50, exit: 150 }}
                 >
-                    <BrowserRouter>
-                        <Routes>
-                            <Route index element={<Home />} />
-                            <Route path="login" element={<Login />} />
-                            <Route path="register" element={<Register />} />
-                            <Route path="register/:token" element={<Verify />} />
-                            <Route path="reset" element={<ResetPassword />} />
-                            <Route path="reset/:token" element={<ChangePassword />} />
-                            <Route path="profile" element={<Profile />} />
-                            <Route path="clock" element={<Clock />} />
-                            <Route path="draw" element={<Draw />} />
-                            <Route path="notepad" element={<Notepad />} />
-                            <Route path="*" element={<PageNotFound />} />
-                        </Routes>
-                    </BrowserRouter>
+                    <React.Suspense>
+                        <BrowserRouter>
+                            <Routes>
+                                {routes.map((route, index) => {
+                                    const Component = React.lazy(route.component);
+                                    return <Route key={index} path={route.path} element={<Component />} />;
+                                })}
+                            </Routes>
+                        </BrowserRouter>
+                    </React.Suspense>
                 </SnackbarProvider>
             </ThemeProvider>
         </Context.Provider>

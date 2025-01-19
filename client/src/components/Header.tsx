@@ -36,6 +36,11 @@ function Header() {
     const navigate = useNavigate();
     const { i18n } = useTranslation();
 
+    React.useEffect(() => {
+        handleLanguageClose();
+        document.documentElement.lang = i18n.language;
+    }, [i18n.language]);
+
     const handleAvatarClose = () => {
         setAnchorEl(null);
     };
@@ -79,7 +84,6 @@ function Header() {
                                             className="header-flag-button"
                                             onClick={() => {
                                                 i18n.changeLanguage(key);
-                                                handleLanguageClose();
                                             }}
                                             startIcon={<Icon className="header-flag-icon">{value.flag}</Icon>}
                                             variant="text"

@@ -5,7 +5,7 @@ interface Route {
     sitemap: {
         url: string;
     } | null;
-    component: () => Promise<{ default: ComponentType<any> }>;
+    component: () => Promise<{ default: ComponentType<unknown> }>;
 }
 
 const routes: Route[] = [

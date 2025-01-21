@@ -25,13 +25,13 @@ export type User = {
 
 export const Context = React.createContext<Context>({
     loading: [0, () => void 0],
-    mode: ["light", () => void 0],
+    mode: ["dark", () => void 0],
     user: [null, () => void 0],
 });
 
 function App() {
     const [loading, setLoading] = React.useState(0);
-    const [mode, setMode] = React.useState<PaletteMode>("light");
+    const [mode, setMode] = React.useState<PaletteMode>("dark");
     const [user, setUser] = React.useState<User>(null);
 
     const { i18n } = useTranslation();
@@ -55,10 +55,10 @@ function App() {
                     palette: {
                         mode: mode,
                         primary: {
-                            main: "#fdd835",
+                            main: mode === "light" ? "#0078d4" : "#fdd835",
                         },
                         secondary: {
-                            main: "#0078d4",
+                            main: "#fdd835",
                         },
                     },
                 },

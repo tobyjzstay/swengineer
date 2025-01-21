@@ -94,13 +94,7 @@ function Login() {
                             </Link>
                         </Grid>
                     </Grid>
-                    <Button
-                        className="login-button"
-                        color="secondary"
-                        disabled={loading}
-                        href="/api/auth/google"
-                        variant="contained"
-                    >
+                    <Button className="login-button" disabled={loading} href="/api/auth/google" variant="outlined">
                         <Trans i18nKey="login.googleLogIn" />
                     </Button>
                     <Backdrop open={loading} />

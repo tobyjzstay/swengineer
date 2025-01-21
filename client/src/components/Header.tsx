@@ -83,7 +83,8 @@ function Header() {
                                         <Button
                                             className="header-flag-button"
                                             onClick={() => {
-                                                i18n.changeLanguage(key);
+                                                if (i18n.language === key) handleLanguageClose();
+                                                else i18n.changeLanguage(key);
                                             }}
                                             startIcon={<Icon className="header-flag-icon">{value.flag}</Icon>}
                                             variant="text"

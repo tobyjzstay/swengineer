@@ -2,6 +2,7 @@ import { Box, Collapse, Fade, Typography } from "@mui/material";
 import { ThemeProvider, responsiveFontSizes, useTheme } from "@mui/material/styles";
 import React from "react";
 import { Trans } from "react-i18next";
+import { Context } from "../App";
 import Header from "../components/Header";
 import "./Home.scss";
 
@@ -14,6 +15,8 @@ function Home() {
     const [expanded, setExpanded] = React.useState(true);
     const [colour, setColour] = React.useState(false);
     const [replace, setReplace] = React.useState(false);
+
+    const context = React.useContext(Context);
 
     const pageRef = React.useRef<HTMLDivElement>(null);
 
@@ -60,7 +63,7 @@ function Home() {
                         variant="h1"
                     >
                         <Trans i18nKey="home.greeting" />
-                        <Box className={"home-swengineer " + (colour ? "colour" : "default")}>
+                        <Box className={"home-swengineer " + (colour ? "colour " + context.mode[0] : "default")}>
                             {replace ? (
                                 <strong>swengineer</strong>
                             ) : (

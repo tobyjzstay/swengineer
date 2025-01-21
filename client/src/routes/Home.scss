@@ -11,23 +11,26 @@
         flex-grow: 1;
         font: var(--mui-font-h1);
         justify-content: center;
-        line-height: 1.25;
         padding: 16px;
     }
 
     .home-swengineer {
         display: inline-flex;
         flex-direction: row;
-        padding: 0.05em;
+        padding: 0 0.05em;
+        margin: 0 -0.05em;
         transition: background-color 0.5s, color 0.5s;
 
         &.default {
-            color: var(--mui-text-primary);
+            color: var(--mui-palette-text-primary);
         }
 
         &.colour {
-            background-color: #121212;
-            color: var(--mui-palette-primary-main);
+            color: var(--mui-palette-secondary-main);
+
+            &.light {
+                background-color: var(--mui-palette-text-primary);
+            }
         }
     }
 }

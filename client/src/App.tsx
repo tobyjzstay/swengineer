@@ -31,12 +31,23 @@ export const Context = React.createContext<Context>({
 
 function App() {
     const [loading, setLoading] = React.useState(0);
-    const [mode, setMode] = React.useState<PaletteMode>("dark");
+    const [mode, setMode] = React.useState<PaletteMode>("light");
     const [user, setUser] = React.useState<User>(null);
 
     const { i18n } = useTranslation();
 
-    const darkTheme = React.useMemo(
+    React.useEffect(() => {
+        // set the mode based on user's system preference by default
+        const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+        const handleChange = (event: MediaQueryListEvent) => {
+            setMode(event.matches ? "dark" : "light");
+        };
+        mediaQuery.addEventListener("change", handleChange);
+        setMode(mediaQuery.matches ? "dark" : "light");
+        return () => mediaQuery.removeEventListener("change", handleChange);
+    }, []);
+
+    const theme = React.useMemo(
         () =>
             createTheme(
                 {
@@ -58,7 +69,7 @@ function App() {
 
     return (
         <Context.Provider value={{ loading: [loading, setLoading], mode: [mode, setMode], user: [user, setUser] }}>
-            <ThemeProvider theme={darkTheme}>
+            <ThemeProvider theme={theme}>
                 <CssBaseline />
                 <SnackbarProvider
                     Components={{

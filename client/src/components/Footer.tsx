@@ -1,22 +1,23 @@
-import { Box, Fade, LinearProgress } from "@mui/material";
-import React from "react";
-import { Context } from "../App";
+import GitHub from "@mui/icons-material/GitHub";
+import { Box, IconButton, Toolbar } from "@mui/material";
 import "./Footer.scss";
 
 function Footer() {
-    const context = React.useContext(Context);
-    const [loading, setLoading] = React.useState(false);
-
-    React.useEffect(() => {
-        if (!context) return;
-        setLoading(context.loading[0] > 0);
-    }, [context.loading[0]]);
-
     return (
         <Box className="footer-layout" component="footer">
-            <Fade in={loading} unmountOnExit>
-                <LinearProgress />
-            </Fade>
+            <Toolbar variant="dense">
+                <Box className="footer-start"></Box>
+                <Box className="footer-end">
+                    <IconButton
+                        component="a"
+                        href="https://github.com/tobyjzstay/swengineer"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <GitHub />
+                    </IconButton>
+                </Box>
+            </Toolbar>
         </Box>
     );
 }

@@ -1,0 +1,8 @@
+// increase specificity to override MUI styles
+:not(.\9) {
+    .loading-progress {
+        bottom: 0;
+        position: fixed;
+        width: 100%;
+    }
+}

@@ -5,11 +5,16 @@
         box-shadow: none;
         position: sticky;
     }
-    .header-logo {
+    .header-start {
+        align-items: center;
+        display: flex;
+        font-size: 1.275em;
+    }
+    .header-end {
         align-items: center;
         display: flex;
         flex-grow: 1;
-        font-size: 1.275em;
+        justify-content: flex-end;
     }
     .header-flag-grid {
         flex-direction: column;

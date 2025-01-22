@@ -1,6 +1,7 @@
 import DarkMode from "@mui/icons-material/DarkMode";
 import Language from "@mui/icons-material/Language";
 import LightMode from "@mui/icons-material/LightMode";
+import Login from "@mui/icons-material/Login";
 import Logout from "@mui/icons-material/Logout";
 import Person from "@mui/icons-material/Person";
 import {
@@ -27,7 +28,7 @@ import "./Header.scss";
 import { Logo } from "./Logo";
 import { getRequest, postRequest } from "./Request";
 
-function Header() {
+function Header({ logo = true }: { logo?: boolean }) {
     const [open, setOpen] = React.useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
@@ -60,46 +61,49 @@ function Header() {
     return (
         <AppBar className="header-app-bar">
             <Toolbar variant="dense">
-                <Box className="header-logo">
-                    <Logo />
-                </Box>
-                <IconButton onClick={() => setOpen(true)}>
-                    <Language />
-                </IconButton>
-                <Dialog
-                    onClose={handleLanguageClose}
-                    open={open}
-                    transitionDuration={{
-                        enter: 225,
-                        exit: 0, // no duration for exit to prevent selecting during transition
-                    }}
-                >
-                    <DialogContent>
-                        <Grid className="header-flag-grid" container>
-                            {Object.entries(languages)
-                                .sort((a, b) => a[1].name.localeCompare(b[1].name))
-                                .map(([key, value]) => (
-                                    <Grid key={key}>
-                                        <Button
-                                            className="header-flag-button"
-                                            onClick={() => {
-                                                if (i18n.language === key) handleLanguageClose();
-                                                else i18n.changeLanguage(key);
-                                            }}
-                                            startIcon={<Icon className="header-flag-icon">{value.flag}</Icon>}
-                                            variant="text"
-                                        >
-                                            {value.name}
-                                        </Button>
-                                    </Grid>
-                                ))}
-                        </Grid>
-                    </DialogContent>
-                </Dialog>
-                <IconButton onClick={() => context.mode[1]((prev) => (prev === "light" ? "dark" : "light"))}>
-                    {context.mode[0] === "light" ? <DarkMode /> : <LightMode />}
-                </IconButton>
-                {context.user[0] && (
+                {logo && (
+                    <Box className="header-start">
+                        <Logo />
+                    </Box>
+                )}
+                <Box className="header-end">
+                    <IconButton onClick={() => setOpen(true)}>
+                        <Language />
+                    </IconButton>
+                    <Dialog
+                        onClose={handleLanguageClose}
+                        open={open}
+                        transitionDuration={{
+                            enter: 225,
+                            exit: 0, // no duration for exit to prevent selecting during transition
+                        }}
+                    >
+                        <DialogContent>
+                            <Grid className="header-flag-grid" container>
+                                {Object.entries(languages)
+                                    .sort((a, b) => a[1].name.localeCompare(b[1].name))
+                                    .map(([key, value]) => (
+                                        <Grid key={key}>
+                                            <Button
+                                                className="header-flag-button"
+                                                onClick={() => {
+                                                    if (i18n.language === key) handleLanguageClose();
+                                                    else i18n.changeLanguage(key);
+                                                }}
+                                                startIcon={<Icon className="header-flag-icon">{value.flag}</Icon>}
+                                                variant="text"
+                                            >
+                                                {value.name}
+                                            </Button>
+                                        </Grid>
+                                    ))}
+                            </Grid>
+                        </DialogContent>
+                    </Dialog>
+                    <IconButton onClick={() => context.mode[1]((prev) => (prev === "light" ? "dark" : "light"))}>
+                        {context.mode[0] === "light" ? <DarkMode /> : <LightMode />}
+                    </IconButton>
+
                     <>
                         <IconButton onClick={(event) => setAnchorEl(event.currentTarget)}>
                             <Avatar className="header-avatar" />
@@ -114,36 +118,53 @@ function Header() {
                                 },
                             }}
                         >
-                            <MenuItem key="email" disabled divider>
-                                {context.user[0].email}
-                            </MenuItem>
-                            <MenuItem
-                                key="profile"
-                                onClick={() => {
-                                    navigate("/profile");
-                                }}
-                            >
-                                <ListItemIcon>
-                                    <Person />
-                                </ListItemIcon>
-                                Profile
-                            </MenuItem>
-                            <MenuItem
-                                key="logout"
-                                onClick={() => {
-                                    postRequest("/auth/logout", {}).then(() => {
-                                        navigate(0);
-                                    });
-                                }}
-                            >
-                                <ListItemIcon>
-                                    <Logout />
-                                </ListItemIcon>
-                                Log out
-                            </MenuItem>
+                            {!context.user[0] && (
+                                <MenuItem
+                                    key="login"
+                                    onClick={() => {
+                                        navigate("/login");
+                                    }}
+                                >
+                                    <ListItemIcon>
+                                        <Login />
+                                    </ListItemIcon>
+                                    Login
+                                </MenuItem>
+                            )}
+                            {context.user[0] && (
+                                <>
+                                    <MenuItem key="email" disabled divider>
+                                        {context.user[0].email}
+                                    </MenuItem>
+                                    <MenuItem
+                                        key="profile"
+                                        onClick={() => {
+                                            navigate("/profile");
+                                        }}
+                                    >
+                                        <ListItemIcon>
+                                            <Person />
+                                        </ListItemIcon>
+                                        Profile
+                                    </MenuItem>
+                                    <MenuItem
+                                        key="logout"
+                                        onClick={() => {
+                                            postRequest("/auth/logout", {}).then(() => {
+                                                navigate(0);
+                                            });
+                                        }}
+                                    >
+                                        <ListItemIcon>
+                                            <Logout />
+                                        </ListItemIcon>
+                                        Log out
+                                    </MenuItem>
+                                </>
+                            )}
                         </Menu>
                     </>
-                )}
+                </Box>
             </Toolbar>
         </AppBar>
     );

@@ -1,8 +1,17 @@
 // increase specificity to override MUI styles
 :not(.\9) {
     .footer-layout {
-        height: 32px;
         margin-top: auto;
         position: sticky;
+    }
+    .footer-start {
+        align-items: center;
+        display: flex;
+    }
+    .footer-end {
+        align-items: center;
+        display: flex;
+        flex-grow: 1;
+        justify-content: flex-end;
     }
 }

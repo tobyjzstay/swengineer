@@ -4,7 +4,7 @@ import { Backdrop, Box, Button, TextField, Typography } from "@mui/material";
 import * as React from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Context } from "../App";
-import AuthLayout from "../components/AuthLayout";
+import Layout, { LayoutType } from "../components/Layout";
 import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest } from "../components/Request";
 import "./ChangePassword.scss";
@@ -46,7 +46,7 @@ function ChangePassword() {
         };
 
         return (
-            <AuthLayout name="Reset password">
+            <Layout layoutType={LayoutType.Auth} name="Reset password">
                 <Box className="change-password-layout" component="form" noValidate onSubmit={handleSubmit}>
                     <TextField
                         autoComplete="new-password"
@@ -70,7 +70,7 @@ function ChangePassword() {
                         Change password
                     </Button>
                 </Box>
-            </AuthLayout>
+            </Layout>
         );
     }
 
@@ -96,7 +96,7 @@ function ChangePassword() {
         };
 
         return (
-            <AuthLayout name="Reset password">
+            <Layout layoutType={LayoutType.Auth} name="Reset password">
                 <Box className="change-password-resend-layout" component="form" noValidate onSubmit={handleSubmit}>
                     <Typography textAlign="center">The token has expired. Please request a new one.</Typography>
                     <Button
@@ -110,7 +110,7 @@ function ChangePassword() {
                     </Button>
                     <Backdrop open={loading} />
                 </Box>
-            </AuthLayout>
+            </Layout>
         );
     }
 

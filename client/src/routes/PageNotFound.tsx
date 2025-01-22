@@ -1,6 +1,6 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import React from "react";
-import PageLayout from "../components/PageLayout";
+import Layout, { LayoutType } from "../components/Layout";
 import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest } from "../components/Request";
 import "./PageNotFound.scss";
@@ -21,7 +21,7 @@ export function PageNotFoundComponent({ message }: { message?: string }) {
     const theme = useTheme();
 
     return (
-        <PageLayout>
+        <Layout layoutType={LayoutType.Page}>
             <Box className="page-not-found-container">
                 <Typography
                     className="page-not-found-text"
@@ -32,7 +32,7 @@ export function PageNotFoundComponent({ message }: { message?: string }) {
                     {message}
                 </Typography>
             </Box>
-        </PageLayout>
+        </Layout>
     );
 }
 

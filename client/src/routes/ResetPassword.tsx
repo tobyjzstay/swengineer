@@ -5,7 +5,7 @@ import * as React from "react";
 import { Trans } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../App";
-import AuthLayout from "../components/AuthLayout";
+import Layout, { LayoutType } from "../components/Layout";
 import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest } from "../components/Request";
 import "./ResetPassword.scss";
@@ -43,7 +43,7 @@ function ResetPassword() {
         };
 
         return (
-            <AuthLayout name={t("resetPassword.title")}>
+            <Layout layoutType={LayoutType.Auth} name={t("resetPassword.title")}>
                 <Box className="reset-password-container" component="form" noValidate onSubmit={handleSubmit}>
                     <TextField
                         autoComplete="email"
@@ -80,7 +80,7 @@ function ResetPassword() {
                     </Grid>
                     <Backdrop open={loading} />
                 </Box>
-            </AuthLayout>
+            </Layout>
         );
     }
 
@@ -89,13 +89,13 @@ function ResetPassword() {
 
 export function ResetPasswordEmail() {
     return (
-        <AuthLayout name="Reset password">
+        <Layout layoutType={LayoutType.Auth} name="Reset password">
             <Box className="reset-password-email-container">
                 <Typography className="reset-password-email-text">
                     Please check your email for a reset password link.
                 </Typography>
             </Box>
-        </AuthLayout>
+        </Layout>
     );
 }
 

@@ -3,7 +3,7 @@ import { Backdrop, Box, Button, TextField, Typography } from "@mui/material";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../App";
-import AuthLayout from "../components/AuthLayout";
+import Layout, { LayoutType } from "../components/Layout";
 import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest } from "../components/Request";
 import "./Profile.scss";
@@ -45,7 +45,7 @@ function Profile() {
         };
 
         return (
-            <AuthLayout name="Profile">
+            <Layout layoutType={LayoutType.Auth} name="Profile">
                 <Box className="profile-container" component="form" noValidate onSubmit={handleSubmit}>
                     <Typography>
                         To confirm your account deletion, enter your email associated with your account.
@@ -75,7 +75,7 @@ function Profile() {
                     </Button>
                     <Backdrop open={loading} />
                 </Box>
-            </AuthLayout>
+            </Layout>
         );
     }
 

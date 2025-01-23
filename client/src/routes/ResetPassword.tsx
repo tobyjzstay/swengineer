@@ -1,5 +1,5 @@
 import Send from "@mui/icons-material/Send";
-import { Backdrop, Box, Button, Grid2 as Grid, Link, TextField, Typography } from "@mui/material";
+import { Box, Button, Grid2 as Grid, Link, TextField, Typography } from "@mui/material";
 import { t } from "i18next";
 import * as React from "react";
 import { Trans } from "react-i18next";
@@ -12,15 +12,20 @@ import "./ResetPassword.scss";
 function ResetPassword() {
     const context = React.useContext(Context);
 
+    const hasToken = document.cookie.includes("token");
+    const [initialised, setInitialised] = React.useState(!hasToken);
     const [loading, setLoading] = React.useState(false);
     const [componentToRender, setComponentToRender] = React.useState<React.JSX.Element>();
+    const disabled = !initialised && loading;
 
     const navigate = useNavigate();
 
     React.useMemo(() => {
+        if (initialised) return;
         // redirect user if already logged in
         getRequest("/auth", true).then(async (response) => {
             if (response.ok) navigate("/", { replace: true });
+            else setInitialised(true);
         });
     }, [navigate]);
 
@@ -47,13 +52,13 @@ function ResetPassword() {
 
     return (
         componentToRender ?? (
-            <Layout layoutType={LayoutType.Auth} name={t("resetPassword.title")}>
+            <Layout initialised={initialised} layoutType={LayoutType.Auth} name={t("resetPassword.title")}>
                 <Box className="reset-password-container" component="form" noValidate onSubmit={handleSubmit}>
                     <TextField
                         autoComplete="email"
                         autoFocus
                         className="reset-password-text-field"
-                        disabled={loading}
+                        disabled={disabled}
                         id="email"
                         label={<Trans i18nKey="resetPassword.emailAddress" />}
                         margin="normal"
@@ -62,7 +67,7 @@ function ResetPassword() {
                     />
                     <Button
                         className="reset-password-button"
-                        disabled={loading}
+                        disabled={disabled}
                         startIcon={<Send />}
                         type="submit"
                         variant="contained"
@@ -81,7 +86,6 @@ function ResetPassword() {
                             </Link>
                         </Grid>
                     </Grid>
-                    <Backdrop open={loading} />
                 </Box>
             </Layout>
         )

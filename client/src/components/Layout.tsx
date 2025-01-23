@@ -11,26 +11,40 @@ export enum LayoutType {
     Auth = "AUTH",
 }
 
-function Layout({ children, layoutType, name }: { children: React.ReactNode; layoutType: LayoutType; name?: string }) {
+function Layout({
+    children,
+    initialised = true,
+    layoutType,
+    name,
+}: {
+    children: React.ReactNode;
+    initialised?: boolean;
+    layoutType: LayoutType;
+    name?: string;
+}) {
     const authPage = layoutType === LayoutType.Auth;
     return (
         <>
             <Container className="auth-layout">
-                <Header logo={!authPage} />
-                <Container className="auth-container" component="main" maxWidth={getMaxWidth(layoutType)}>
-                    {authPage && (
-                        <Box className="auth-logo-layout">
-                            <Logo />
-                        </Box>
-                    )}
-                    {name && (
-                        <Typography component="h1" variant="h5">
-                            {name}
-                        </Typography>
-                    )}
-                    {children}
-                </Container>
-                <Footer />
+                {initialised && (
+                    <>
+                        <Header logo={!authPage} />
+                        <Container className="auth-container" component="main" maxWidth={getMaxWidth(layoutType)}>
+                            {authPage && (
+                                <Box className="auth-logo-layout">
+                                    <Logo />
+                                </Box>
+                            )}
+                            {name && (
+                                <Typography component="h1" variant="h5">
+                                    {name}
+                                </Typography>
+                            )}
+                            {children}
+                        </Container>
+                        <Footer />
+                    </>
+                )}
             </Container>
             <LoadingProgress />
         </>

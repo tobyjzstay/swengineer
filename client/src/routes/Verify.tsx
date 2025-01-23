@@ -1,18 +1,23 @@
 import * as React from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import PlaceholderLayout from "../components/PlaceholderLayout";
+import { Context } from "../App";
 import { getRequest } from "../components/Request";
-import { PageNotFoundComponent } from "./PageNotFound";
+import PageNotFound from "./PageNotFound";
 
 function Verify() {
-    const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
-    const navigate = useNavigate();
-    const token = useParams().token;
+    const context = React.useContext(Context);
 
-    React.useEffect(() => {
-        getRequest(`/auth/register/${token}`).then((response) => {
+    const [componentToRender, setComponentToRender] = React.useState<React.JSX.Element>(<></>);
+
+    const navigate = useNavigate();
+    const { token } = useParams();
+
+    React.useMemo(() => {
+        context.loading[1]((prev) => prev + 1);
+        getRequest(`/auth/register/${token}`, true).then((response) => {
             if (response.ok) navigate("/login", { replace: true });
-            else setComponentToRender(<PageNotFoundComponent />);
+            else setComponentToRender(<PageNotFound />);
+            context.loading[1]((prev) => prev - 1);
         });
     }, []);
 

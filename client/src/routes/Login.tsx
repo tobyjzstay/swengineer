@@ -1,5 +1,5 @@
 import LoginIcon from "@mui/icons-material/Login";
-import { Backdrop, Box, Button, Grid2 as Grid, Link, TextField } from "@mui/material";
+import { Box, Button, Grid2 as Grid, Link, TextField } from "@mui/material";
 import { t } from "i18next";
 import * as React from "react";
 import { Trans } from "react-i18next";
@@ -12,15 +12,21 @@ import "./Login.scss";
 function Login() {
     const context = React.useContext(Context);
 
+    const hasToken = document.cookie.includes("token");
+    const [initialised, setInitialised] = React.useState(!hasToken);
     const [loading, setLoading] = React.useState(false);
+    const disabled = !initialised && loading;
 
     const navigate = useNavigate();
     const redirectTo = getRedirectTo();
 
     React.useMemo(() => {
+        if (initialised) return;
         // redirect user if already logged in
         getRequest("/auth", true).then(async (response) => {
+            setLoading(false);
             if (response.ok) navigate(redirectTo, { replace: true });
+            else setInitialised(true);
         });
     }, [navigate]);
 
@@ -47,13 +53,13 @@ function Login() {
     };
 
     return (
-        <Layout layoutType={LayoutType.Auth} name={t("login.title")}>
+        <Layout initialised={initialised} layoutType={LayoutType.Auth} name={t("login.title")}>
             <Box className="login-layout" component="form" noValidate onSubmit={handleSubmit}>
                 <TextField
                     autoComplete="email"
                     autoFocus
                     className="login-email-text-field"
-                    disabled={loading}
+                    disabled={disabled}
                     id="email"
                     label={<Trans i18nKey="login.emailAddress" />}
                     margin="normal"
@@ -63,7 +69,7 @@ function Login() {
                 <TextField
                     autoComplete="current-password"
                     className="login-password-text-field"
-                    disabled={loading}
+                    disabled={disabled}
                     id="password"
                     label={<Trans i18nKey="login.password" />}
                     margin="normal"
@@ -73,7 +79,7 @@ function Login() {
                 />
                 <Button
                     className="login-button"
-                    disabled={loading}
+                    disabled={disabled}
                     startIcon={<LoginIcon />}
                     type="submit"
                     variant="contained"
@@ -95,13 +101,12 @@ function Login() {
                 <Button
                     className="login-button"
                     component={RouterLink}
-                    disabled={loading}
+                    disabled={disabled}
                     to="/api/auth/google"
                     variant="outlined"
                 >
                     <Trans i18nKey="login.googleLogIn" />
                 </Button>
-                <Backdrop open={loading} />
             </Box>
         </Layout>
     );

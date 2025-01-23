@@ -1,24 +1,21 @@
 import { Box, Typography, useTheme } from "@mui/material";
 import React from "react";
+import { Context } from "../App";
 import Layout, { LayoutType } from "../components/Layout";
-import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest } from "../components/Request";
 import "./PageNotFound.scss";
 
 function PageNotFound() {
-    const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
+    const context = React.useContext(Context);
+
+    const theme = useTheme();
 
     React.useMemo(() => {
+        context.loading[1]((prev) => prev + 1);
         getRequest(window.location.pathname).then(async (response) => {
-            setComponentToRender(<PageNotFoundComponent message="Page not found" />);
+            context.loading[1]((prev) => prev - 1);
         });
     }, []);
-
-    return componentToRender;
-}
-
-export function PageNotFoundComponent({ message }: { message?: string }) {
-    const theme = useTheme();
 
     return (
         <Layout layoutType={LayoutType.Page}>
@@ -29,7 +26,7 @@ export function PageNotFoundComponent({ message }: { message?: string }) {
                     component="h1"
                     variant="h4"
                 >
-                    {message}
+                    Page not found
                 </Typography>
             </Box>
         </Layout>

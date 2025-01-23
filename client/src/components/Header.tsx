@@ -29,10 +29,12 @@ import { Logo } from "./Logo";
 import { getRequest, postRequest } from "./Request";
 
 function Header({ logo = true }: { logo?: boolean }) {
+    const context = React.useContext(Context);
+
     const [open, setOpen] = React.useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-    const context = React.useContext(Context);
+    const hasToken = document.cookie.includes("token");
 
     const navigate = useNavigate();
     const { i18n } = useTranslation();
@@ -51,6 +53,7 @@ function Header({ logo = true }: { logo?: boolean }) {
     };
 
     React.useEffect(() => {
+        if (!hasToken) return;
         getRequest("/auth", true).then(async (response) => {
             const json = await response.json();
             const { user } = json;
@@ -150,8 +153,12 @@ function Header({ logo = true }: { logo?: boolean }) {
                                     <MenuItem
                                         key="logout"
                                         onClick={() => {
-                                            postRequest("/auth/logout", {}).then(() => {
-                                                navigate(0);
+                                            postRequest("/auth/logout", {}).then((response) => {
+                                                if (response.ok) {
+                                                    navigate("/");
+                                                    document.cookie =
+                                                        "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                                                }
                                             });
                                         }}
                                     >

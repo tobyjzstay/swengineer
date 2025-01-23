@@ -43,14 +43,16 @@ function Notepad() {
         if (!refresh) return;
         getRequest("/notepad").then(async (response) => {
             const json = await response.json();
-            const { notepads } = json;
-            setNotepads(
-                notepads.map((notepad: Notepad) => ({
-                    ...notepad,
-                    created: new Date(notepad.created),
-                    modified: new Date(notepad.modified),
-                }))
-            );
+            const { notepads } = json || {};
+            if (!notepads) setNotepads([]);
+            else
+                setNotepads(
+                    notepads?.map((notepad: Notepad) => ({
+                        ...notepad,
+                        created: new Date(notepad.created),
+                        modified: new Date(notepad.modified),
+                    }))
+                );
             setRefresh(false);
         });
     }, [refresh]);

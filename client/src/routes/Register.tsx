@@ -6,29 +6,33 @@ import { Trans } from "react-i18next";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Context } from "../App";
 import Layout, { LayoutType } from "../components/Layout";
-import { getRequest, postRequest, useQuery } from "../components/Request";
+import { getRequest, postRequest } from "../components/Request";
 import "./Register.scss";
 
 function Register() {
-    const navigate = useNavigate();
-    const query = useQuery();
-    const redirect = query.get("redirect") || "/";
+    const context = React.useContext(Context);
 
+    const [loading, setLoading] = React.useState(false);
     const [componentToRender, setComponentToRender] = React.useState<React.JSX.Element>();
 
-    React.useMemo(() => {
-        getRequest("/auth", true).then(async (response) => {
-            if (response.ok) navigate(redirect, { replace: true });
-        });
-    }, [navigate, redirect]);
+    const navigate = useNavigate();
 
-    const context = React.useContext(Context);
-    const [loading, setLoading] = React.useState(false);
+    React.useMemo(() => {
+        // redirect user if already logged in
+        getRequest("/auth", true).then(async (response) => {
+            if (response.ok) navigate("/", { replace: true });
+        });
+    }, [navigate]);
+
+    React.useEffect(() => {
+        // update local loading state with global loading state
+        if (loading) context.loading[1]((prev) => prev + 1);
+        else context.loading[1]((prev) => prev - 1);
+    }, [loading]);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setLoading(true);
-        context.loading[1]((prev) => prev + 1);
 
         const data = new FormData(event.currentTarget);
         const email = data.get("email")?.toString();
@@ -38,7 +42,6 @@ function Register() {
         };
 
         postRequest("/auth/register", json).then((response) => {
-            context.loading[1]((prev) => prev - 1);
             setLoading(false);
             if (email && (response.ok || response.status === 409))
                 setComponentToRender(<VerificationEmail email={email} />);

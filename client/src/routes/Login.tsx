@@ -6,31 +6,33 @@ import { Trans } from "react-i18next";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Context } from "../App";
 import Layout, { LayoutType } from "../components/Layout";
-import { getRequest, postRequest, useQuery } from "../components/Request";
+import { getRedirectTo, getRequest, postRequest } from "../components/Request";
 import "./Login.scss";
 
 function Login() {
-    const navigate = useNavigate();
-    const query = useQuery();
-    const redirect = query.get("redirect") || "/";
-
     const context = React.useContext(Context);
+
     const [loading, setLoading] = React.useState(false);
 
+    const navigate = useNavigate();
+    const redirectTo = getRedirectTo();
+
     React.useMemo(() => {
-        setLoading(true);
+        // redirect user if already logged in
         getRequest("/auth", true).then(async (response) => {
-            if (response.ok) navigate(redirect, { replace: true });
-            setLoading(false);
+            if (response.ok) navigate(redirectTo, { replace: true });
         });
-    }, [navigate, redirect]);
+    }, [navigate]);
+
+    React.useEffect(() => {
+        // update local loading state with global loading state
+        if (loading) context.loading[1]((prev) => prev + 1);
+        else context.loading[1]((prev) => prev - 1);
+    }, [loading]);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (!context) return;
         setLoading(true);
-
-        context.loading[1]((prev) => prev + 1);
 
         const data = new FormData(event.currentTarget);
         const json = {
@@ -39,9 +41,8 @@ function Login() {
         };
 
         postRequest("/auth/login", json).then((response) => {
-            context.loading[1]((prev) => prev - 1);
             setLoading(false);
-            if (response.ok) navigate(redirect, { replace: true });
+            if (response.ok) navigate(redirectTo, { replace: true });
         });
     };
 

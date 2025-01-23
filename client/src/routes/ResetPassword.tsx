@@ -10,22 +10,29 @@ import { getRequest, postRequest } from "../components/Request";
 import "./ResetPassword.scss";
 
 function ResetPassword() {
+    const context = React.useContext(Context);
+
+    const [loading, setLoading] = React.useState(false);
     const [componentToRender, setComponentToRender] = React.useState<React.JSX.Element>();
+
     const navigate = useNavigate();
 
     React.useMemo(() => {
+        // redirect user if already logged in
         getRequest("/auth", true).then(async (response) => {
             if (response.ok) navigate("/", { replace: true });
         });
-    }, []);
+    }, [navigate]);
 
-    const context = React.useContext(Context);
-    const [loading, setLoading] = React.useState(false);
+    React.useEffect(() => {
+        // update local loading state with global loading state
+        if (loading) context.loading[1]((prev) => prev + 1);
+        else context.loading[1]((prev) => prev - 1);
+    }, [loading]);
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setLoading(true);
-        context.loading[1]((prev) => prev + 1);
 
         const data = new FormData(event.currentTarget);
         const json = {
@@ -33,7 +40,6 @@ function ResetPassword() {
         };
 
         postRequest("/auth/reset", json).then((response) => {
-            context.loading[1]((prev) => prev - 1);
             setLoading(false);
             if (response.ok) setComponentToRender(<ResetPasswordEmail />);
         });
@@ -58,7 +64,6 @@ function ResetPassword() {
                         className="reset-password-button"
                         disabled={loading}
                         startIcon={<Send />}
-                        sx={{ mt: 3, mb: 2 }}
                         type="submit"
                         variant="contained"
                     >

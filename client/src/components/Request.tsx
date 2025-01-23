@@ -1,6 +1,5 @@
 import { AlertColor } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
-import React from "react";
 import { useLocation } from "react-router-dom";
 import { snackbars } from "../App";
 
@@ -84,7 +83,9 @@ function isJsonString(str: string) {
     return true;
 }
 
-export function useQuery() {
+export function getRedirectTo() {
     const { search } = useLocation();
-    return React.useMemo(() => new URLSearchParams(search), [search]);
+
+    const queryParams = new URLSearchParams(search);
+    return queryParams.get("redirect") || "/";
 }

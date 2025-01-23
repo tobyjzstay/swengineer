@@ -3,10 +3,9 @@ import { Backdrop, Box, Button, Grid2 as Grid, Link, TextField, Typography } fro
 import { t } from "i18next";
 import * as React from "react";
 import { Trans } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Context } from "../App";
 import Layout, { LayoutType } from "../components/Layout";
-import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest, useQuery } from "../components/Request";
 import "./Register.scss";
 
@@ -15,40 +14,39 @@ function Register() {
     const query = useQuery();
     const redirect = query.get("redirect") || "/";
 
-    const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
+    const [componentToRender, setComponentToRender] = React.useState<React.JSX.Element>();
 
     React.useMemo(() => {
         getRequest("/auth", true).then(async (response) => {
             if (response.ok) navigate(redirect, { replace: true });
-            else setComponentToRender(<RegisterComponent />);
         });
     }, [navigate, redirect]);
 
-    function RegisterComponent() {
-        const context = React.useContext(Context);
-        const [loading, setLoading] = React.useState(false);
+    const context = React.useContext(Context);
+    const [loading, setLoading] = React.useState(false);
 
-        const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            setLoading(true);
-            context.loading[1]((prev) => prev + 1);
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        setLoading(true);
+        context.loading[1]((prev) => prev + 1);
 
-            const data = new FormData(event.currentTarget);
-            const email = data.get("email")?.toString();
-            const json = {
-                email: data.get("email"),
-                password: data.get("password"),
-            };
-
-            postRequest("/auth/register", json).then((response) => {
-                context.loading[1]((prev) => prev - 1);
-                setLoading(false);
-                if (email && (response.ok || response.status === 409))
-                    setComponentToRender(<VerificationEmail email={email} />);
-            });
+        const data = new FormData(event.currentTarget);
+        const email = data.get("email")?.toString();
+        const json = {
+            email: data.get("email"),
+            password: data.get("password"),
         };
 
-        return (
+        postRequest("/auth/register", json).then((response) => {
+            context.loading[1]((prev) => prev - 1);
+            setLoading(false);
+            if (email && (response.ok || response.status === 409))
+                setComponentToRender(<VerificationEmail email={email} />);
+        });
+    };
+
+    return (
+        componentToRender ?? (
             <Layout layoutType={LayoutType.Auth} name={t("register.title")}>
                 <Box className="register-container" component="form" noValidate onSubmit={handleSubmit}>
                     <TextField
@@ -82,14 +80,14 @@ function Register() {
                     >
                         <Trans i18nKey="register.sendEmail" />
                     </Button>
-                    <Grid size="grow">
-                        <Grid size="auto">
-                            <Link href="/reset" variant="body2">
+                    <Grid container>
+                        <Grid size="grow">
+                            <Link component={RouterLink} to="/reset" variant="body2">
                                 <Trans i18nKey="register.forgotPassword" />
                             </Link>
                         </Grid>
                         <Grid>
-                            <Link href="/login" variant="body2">
+                            <Link component={RouterLink} to="/login" variant="body2">
                                 <Trans i18nKey="register.logIn" />
                             </Link>
                         </Grid>
@@ -97,10 +95,8 @@ function Register() {
                     <Backdrop open={loading} />
                 </Box>
             </Layout>
-        );
-    }
-
-    return componentToRender;
+        )
+    );
 }
 
 function VerificationEmail({ email }: { email: string }) {

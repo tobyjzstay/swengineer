@@ -51,4 +51,7 @@ i18n.use(LanguageDetector)
         interpolation: {
             escapeValue: false,
         },
+        react: {
+            useSuspense: false,
+        },
     });

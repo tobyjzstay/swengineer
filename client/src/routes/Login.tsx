@@ -3,10 +3,9 @@ import { Backdrop, Box, Button, Grid2 as Grid, Link, TextField } from "@mui/mate
 import { t } from "i18next";
 import * as React from "react";
 import { Trans } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Context } from "../App";
 import Layout, { LayoutType } from "../components/Layout";
-import PlaceholderLayout from "../components/PlaceholderLayout";
 import { getRequest, postRequest, useQuery } from "../components/Request";
 import "./Login.scss";
 
@@ -15,95 +14,96 @@ function Login() {
     const query = useQuery();
     const redirect = query.get("redirect") || "/";
 
-    const [componentToRender, setComponentToRender] = React.useState(<PlaceholderLayout />);
+    const context = React.useContext(Context);
+    const [loading, setLoading] = React.useState(false);
 
     React.useMemo(() => {
+        setLoading(true);
         getRequest("/auth", true).then(async (response) => {
             if (response.ok) navigate(redirect, { replace: true });
-            else setComponentToRender(<LoginComponent />);
+            setLoading(false);
         });
     }, [navigate, redirect]);
 
-    function LoginComponent() {
-        const context = React.useContext(Context);
-        const [loading, setLoading] = React.useState(false);
+    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (!context) return;
+        setLoading(true);
 
-        const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-            event.preventDefault();
-            if (!context) return;
-            setLoading(true);
+        context.loading[1]((prev) => prev + 1);
 
-            context.loading[1]((prev) => prev + 1);
-
-            const data = new FormData(event.currentTarget);
-            const json = {
-                email: data.get("email"),
-                password: data.get("password"),
-            };
-
-            postRequest("/auth/login", json).then((response) => {
-                context.loading[1]((prev) => prev - 1);
-                setLoading(false);
-                if (response.ok) navigate(redirect || "/", { replace: true });
-            });
+        const data = new FormData(event.currentTarget);
+        const json = {
+            email: data.get("email"),
+            password: data.get("password"),
         };
 
-        return (
-            <Layout layoutType={LayoutType.Auth} name={t("login.title")}>
-                <Box className="login-layout" component="form" noValidate onSubmit={handleSubmit}>
-                    <TextField
-                        autoComplete="email"
-                        autoFocus
-                        className="login-email-text-field"
-                        disabled={loading}
-                        id="email"
-                        label={<Trans i18nKey="login.emailAddress" />}
-                        margin="normal"
-                        name="email"
-                        required
-                    />
-                    <TextField
-                        autoComplete="current-password"
-                        className="login-password-text-field"
-                        disabled={loading}
-                        id="password"
-                        label={<Trans i18nKey="login.password" />}
-                        margin="normal"
-                        name="password"
-                        required
-                        type="password"
-                    />
-                    <Button
-                        className="login-button"
-                        disabled={loading}
-                        startIcon={<LoginIcon />}
-                        type="submit"
-                        variant="contained"
-                    >
-                        <Trans i18nKey="login.logIn" />
-                    </Button>
-                    <Grid container>
-                        <Grid size="grow">
-                            <Link href="/reset" variant="body2">
-                                <Trans i18nKey="login.forgotPassword" />
-                            </Link>
-                        </Grid>
-                        <Grid>
-                            <Link href="/register" variant="body2">
-                                <Trans i18nKey="login.register" />
-                            </Link>
-                        </Grid>
-                    </Grid>
-                    <Button className="login-button" disabled={loading} href="/api/auth/google" variant="outlined">
-                        <Trans i18nKey="login.googleLogIn" />
-                    </Button>
-                    <Backdrop open={loading} />
-                </Box>
-            </Layout>
-        );
-    }
+        postRequest("/auth/login", json).then((response) => {
+            context.loading[1]((prev) => prev - 1);
+            setLoading(false);
+            if (response.ok) navigate(redirect, { replace: true });
+        });
+    };
 
-    return componentToRender;
+    return (
+        <Layout layoutType={LayoutType.Auth} name={t("login.title")}>
+            <Box className="login-layout" component="form" noValidate onSubmit={handleSubmit}>
+                <TextField
+                    autoComplete="email"
+                    autoFocus
+                    className="login-email-text-field"
+                    disabled={loading}
+                    id="email"
+                    label={<Trans i18nKey="login.emailAddress" />}
+                    margin="normal"
+                    name="email"
+                    required
+                />
+                <TextField
+                    autoComplete="current-password"
+                    className="login-password-text-field"
+                    disabled={loading}
+                    id="password"
+                    label={<Trans i18nKey="login.password" />}
+                    margin="normal"
+                    name="password"
+                    required
+                    type="password"
+                />
+                <Button
+                    className="login-button"
+                    disabled={loading}
+                    startIcon={<LoginIcon />}
+                    type="submit"
+                    variant="contained"
+                >
+                    <Trans i18nKey="login.logIn" />
+                </Button>
+                <Grid container>
+                    <Grid size="grow">
+                        <Link component={RouterLink} to="/reset" variant="body2">
+                            <Trans i18nKey="login.forgotPassword" />
+                        </Link>
+                    </Grid>
+                    <Grid>
+                        <Link component={RouterLink} to="/register" variant="body2">
+                            <Trans i18nKey="login.register" />
+                        </Link>
+                    </Grid>
+                </Grid>
+                <Button
+                    className="login-button"
+                    component={RouterLink}
+                    disabled={loading}
+                    to="/api/auth/google"
+                    variant="outlined"
+                >
+                    <Trans i18nKey="login.googleLogIn" />
+                </Button>
+                <Backdrop open={loading} />
+            </Box>
+        </Layout>
+    );
 }
 
 export default Login;

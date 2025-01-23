@@ -77,16 +77,14 @@ function App() {
                     }}
                     transitionDuration={{ enter: 50, exit: 150 }}
                 >
-                    <React.Suspense>
-                        <BrowserRouter>
-                            <Routes>
-                                {routes.map((route, index) => {
-                                    const Component = React.lazy(route.component);
-                                    return <Route key={index} path={route.path} element={<Component />} />;
-                                })}
-                            </Routes>
-                        </BrowserRouter>
-                    </React.Suspense>
+                    <BrowserRouter>
+                        <Routes>
+                            {routes.map((route, index) => {
+                                const Component = route.element;
+                                return <Route key={index} path={route.path} element={<Component />} />;
+                            })}
+                        </Routes>
+                    </BrowserRouter>
                 </SnackbarProvider>
             </ThemeProvider>
         </Context.Provider>

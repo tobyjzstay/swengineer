@@ -14,7 +14,6 @@ const router = express.Router();
 const logger = log4js.getLogger(process.pid.toString());
 
 const cryptoSize = Number(process.env.CRYPTO_SIZE);
-const saltRounds = Number(process.env.SALT_ROUNDS);
 
 router.get("/", auth, (_req, res) => {
     const user = app.locals.user as User;
@@ -23,7 +22,7 @@ router.get("/", auth, (_req, res) => {
         ? {
               id: user._id,
               email: user.email,
-              created: user.created,
+              created: user.createdAt,
           }
         : undefined;
 
@@ -92,7 +91,7 @@ router.post("/register", async (req, res) => {
 
         const newUser = new User({
             email,
-            password: bcryptjs.hashSync(password, saltRounds),
+            password,
             verificationToken,
         });
 
@@ -138,7 +137,6 @@ router.get("/register/:token", async (req, res, next) => {
         }
 
         user.verified = true;
-        user.verificationToken = undefined;
 
         user.save()
             .then(() => {
@@ -353,9 +351,7 @@ router.post("/reset/:token", async (req, res, next) => {
             return;
         }
 
-        user.password = bcryptjs.hashSync(password, saltRounds);
-        user.resetPasswordToken = undefined;
-        user.resetPasswordExpires = undefined;
+        user.password = password;
 
         user.save()
             .then(() => {

@@ -8,7 +8,7 @@ describe("POST /register", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
     });
@@ -17,20 +17,20 @@ describe("POST /register", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
         it("Register duplicate user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(409, done);
         });
     });
 
     makeSuite("Email is required", () => {
         it("Register a new user with invalid email", (done) => {
-            supertest(app).post("/api/auth/register").send({ email: "", password: "alice" }).expect(400, done);
+            supertest(app).post("/api/auth/register").send({ email: "", password: "alice123" }).expect(400, done);
         });
     });
 
@@ -47,7 +47,7 @@ describe("POST /register", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
 
@@ -74,7 +74,7 @@ describe("POST /login", () => {
         it("Log in with invalid email", (done) => {
             supertest(app)
                 .post("/api/auth/login")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(404, done);
         });
     });
@@ -83,11 +83,11 @@ describe("POST /login", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
         it("Log in with no email", (done) => {
-            supertest(app).post("/api/auth/login").send({ password: "alice" }).expect(404, done);
+            supertest(app).post("/api/auth/login").send({ password: "alice123" }).expect(404, done);
         });
     });
 
@@ -95,7 +95,7 @@ describe("POST /login", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
         it("Log in with no password", (done) => {
@@ -107,13 +107,13 @@ describe("POST /login", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
         it("Log in without email verification", (done) => {
             supertest(app)
                 .post("/api/auth/login")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(403, done);
         });
     });
@@ -122,13 +122,13 @@ describe("POST /login", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
         it("Log in with invalid password", (done) => {
             supertest(app)
                 .post("/api/auth/login")
-                .send({ email: "alice@example.com", password: "bob" })
+                .send({ email: "alice@example.com", password: "bob12345" })
                 .expect(401, done);
         });
     });
@@ -137,13 +137,13 @@ describe("POST /login", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
         it("Log in with invalid email", (done) => {
             supertest(app)
                 .post("/api/auth/login")
-                .send({ email: "bob.smith@example.com", password: "alice" })
+                .send({ email: "bob.smith@example.com", password: "alice123" })
                 .expect(404, done);
         });
     });
@@ -152,7 +152,7 @@ describe("POST /login", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
 
@@ -168,7 +168,7 @@ describe("POST /login", () => {
         it("Log in as verified user", (done) => {
             supertest(app)
                 .post("/api/auth/login")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(200, done);
         });
         // TODO: check cookie?
@@ -180,7 +180,7 @@ describe("GET /register/:token", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
 
@@ -198,7 +198,7 @@ describe("GET /register/:token", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
 
@@ -213,7 +213,7 @@ describe("POST /reset", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
 
@@ -234,7 +234,7 @@ describe("GET /reset/:token", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
 
@@ -256,7 +256,7 @@ describe("GET /reset/:token", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
 
@@ -273,7 +273,7 @@ describe("GET /reset/:token", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
 
@@ -301,7 +301,7 @@ describe("POST /reset/:token", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
 
@@ -313,7 +313,7 @@ describe("POST /reset/:token", () => {
             getUser("alice@example.com", (user) => {
                 supertest(app)
                     .post("/api/auth/reset/" + user.resetPasswordToken)
-                    .send({ password: "bob" })
+                    .send({ password: "bob12345" })
                     .expect(200, done);
             });
         });
@@ -330,7 +330,7 @@ describe("POST /reset/:token", () => {
         it("Login with new password", (done) => {
             supertest(app)
                 .post("/api/auth/login")
-                .send({ email: "alice@example.com", password: "bob" })
+                .send({ email: "alice@example.com", password: "bob12345" })
                 .expect(200, done);
         });
     });
@@ -339,7 +339,7 @@ describe("POST /reset/:token", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
 
@@ -348,7 +348,10 @@ describe("POST /reset/:token", () => {
         });
 
         it("Reset password with invalid token", (done) => {
-            supertest(app).post("/api/auth/reset/thisisnotavalidtoken").send({ password: "bob" }).expect(404, done);
+            supertest(app)
+                .post("/api/auth/reset/thisisnotavalidtoken")
+                .send({ password: "bob12345" })
+                .expect(404, done);
         });
     });
 
@@ -356,7 +359,7 @@ describe("POST /reset/:token", () => {
         it("Register a new user", (done) => {
             supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice" })
+                .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201, done);
         });
 
@@ -371,7 +374,7 @@ describe("POST /reset/:token", () => {
                 user.save().then(() => {
                     supertest(app)
                         .post("/api/auth/reset/" + user.resetPasswordToken)
-                        .send({ password: "bob" })
+                        .send({ password: "bob12345" })
                         .expect(410, done);
                 });
             });

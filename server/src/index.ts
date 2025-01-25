@@ -72,7 +72,14 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
         const responseSend = res.send;
 
         res.send = function (body): express.Response {
-            logger.debug(`${req.method} ${res.statusCode} ${requestUrl}`);
+            let bodyMessage: string;
+            if (process.env.NODE_ENV !== "production") {
+                try {
+                    bodyMessage = JSON.parse(body)?.message;
+                    if (bodyMessage) bodyMessage = " " + bodyMessage;
+                } catch (error) {}
+            }
+            logger.trace(req.method + " " + res.statusCode + bodyMessage + " " + requestUrl);
             return responseSend.call(this, body);
         };
 

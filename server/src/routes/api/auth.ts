@@ -1,7 +1,6 @@
 import express from "express";
 import jwt from "jsonwebtoken";
 import log4js from "log4js";
-import crypto from "node:crypto";
 import passport from "passport";
 import { internalServerError } from ".";
 import { app } from "../..";
@@ -22,6 +21,8 @@ enum SuccessMessage {
     VERIFICATION_SUCCESS = "VERIFICATION_SUCCESS",
     LOGIN_SUCCESS = "LOGIN_SUCCESS",
     LOGOUT_SUCCESS = "LOGOUT_SUCCESS",
+    VALID_TOKEN = "VALID_TOKEN",
+    RESET_PASSWORD_SUCCESS = "RESET_PASSWORD_SUCCESS",
 }
 enum ErrorMessage {
     INVALID_EMAIL = "INVALID_EMAIL",
@@ -30,6 +31,7 @@ enum ErrorMessage {
     DUPLICATE_USER = "DUPLICATE_USER",
     UNVERIFIED_EMAIL = "UNVERIFIED_EMAIL",
     NO_PASSWORD = "NO_PASSWORD",
+    TOKEN_EXPIRED = "TOKEN_EXPIRED",
 }
 
 router.get("/", auth, (_req, res) => {
@@ -163,147 +165,75 @@ router.post("/logout", auth, async (_req, res) => {
     res.clearCookie("token").status(200).json({ message: SuccessMessage.LOGOUT_SUCCESS });
 });
 
-router.post("/reset", async (req, res) => {
-    const { email, token } = req.body || {};
+router.post("/reset", async (request, response) => {
+    const { email } = request.body || {};
 
-    if (email) {
-        try {
-            const user = await User.findOne({
-                email: email,
-            });
-
-            if (!user) {
-                res.status(404).json({
-                    message: "User not found",
-                });
-                return;
-            }
-
-            const token = crypto.randomBytes(cryptoSize).toString("hex");
-            const tokenExpiration = new Date();
-            tokenExpiration.setHours(tokenExpiration.getHours() + 1);
-
-            user.resetPasswordToken = token;
-            user.resetPasswordExpires = tokenExpiration;
-            user.save()
-                .then(() => {
-                    const host = req.headers?.referer?.split("reset")[0] + "reset"; // TODO: fix this undefined error
-                    const ip = req.ip;
-                    const success = sendResetEmail(host, token, email, ip);
-                    if (success) {
-                        res.status(200).json({
-                            message: "Reset email sent",
-                        });
-                    } else {
-                        // TODO: improve this
-                        internalServerError(res, null);
-                        return;
-                    }
-                })
-                .catch((err: NodeJS.ErrnoException) => {
-                    internalServerError(res, err);
-                });
-        } catch (err: unknown) {
-            internalServerError(res, err);
-        }
-    } else
-        try {
-            const user = await User.findOne({ resetPasswordToken: token });
-
-            if (!user) {
-                res.status(404).json({
-                    message: "User not found",
-                });
-                return;
-            }
-
-            const email = user.email;
-            const resetPasswordToken = crypto.randomBytes(cryptoSize).toString("hex");
-            const tokenExpiration = new Date();
-            tokenExpiration.setHours(tokenExpiration.getHours() + 1);
-
-            user.resetPasswordToken = resetPasswordToken;
-            user.resetPasswordExpires = tokenExpiration;
-            user.save()
-                .then(() => {
-                    const host = req.headers.referer.split("reset")[0] + "reset"; // domain
-                    const ip = req.ip;
-                    const success = sendResetEmail(host, resetPasswordToken, email, ip);
-                    if (success) {
-                        res.status(200).json({
-                            message: "Reset email sent",
-                        });
-                    } else {
-                        // TODO: improve this
-                        internalServerError(res, null);
-                        return;
-                    }
-                })
-                .catch((err: NodeJS.ErrnoException) => {
-                    internalServerError(res, err);
-                });
-        } catch (err: unknown) {
-            internalServerError(res, err);
-        }
-});
-
-router.get("/reset/:token", async (req, res, next) => {
-    const token = req.params.token;
+    if (!email) {
+        response.status(404).json({ message: ErrorMessage.INVALID_EMAIL });
+        return;
+    }
 
     try {
-        const user = await User.findOne({ resetPasswordToken: token });
+        const user: User = await User.findOne({ email });
 
         if (!user) {
-            next();
+            response.status(404).json({ message: ErrorMessage.INVALID_EMAIL });
             return;
-        } else if (user.resetPasswordExpires.getTime() < new Date().getTime()) {
-            res.status(410).json({
-                message: "Token has expired",
-            });
-            return;
-        } else {
-            res.status(200).json({
-                message: "Token is valid",
-            });
         }
-    } catch (err: unknown) {
-        internalServerError(res, err);
+
+        const token = user.generateResetPasswordToken();
+        await user.save();
+        const host = request.headers?.referer?.split("reset")[0] + "reset"; // TODO: fix this undefined error
+        const ip = request.ip;
+        sendResetEmail(host, token, email, ip);
+        response.status(200).json({ message: SuccessMessage.RESET_EMAIL_SENT });
+    } catch (error: unknown) {
+        internalServerError(response, error);
     }
 });
 
-router.post("/reset/:token", async (req, res, next) => {
-    const { password } = req.body || {};
-    const token = req.params.token;
+router.get("/reset/:token", async (request, response, next) => {
+    const token = request.params.token;
 
     try {
-        const user = await User.findOne({ resetPasswordToken: token });
+        const user: User = await User.findOne({ resetPasswordToken: token });
 
-        if (!user) {
-            next();
+        if (!user) return next();
+        else if (!user.verifyResetPasswordToken()) {
+            response.status(410).json({ message: ErrorMessage.TOKEN_EXPIRED });
             return;
-        } else if (user.resetPasswordExpires.getTime() < new Date().getTime()) {
-            res.status(410).json({
-                message: "Token has expired",
-            });
+        }
+
+        response.status(200).json({ message: SuccessMessage.VALID_TOKEN });
+    } catch (error: unknown) {
+        internalServerError(response, error);
+    }
+});
+
+router.post("/reset/:token", async (request, response, next) => {
+    const { password } = request.body || {};
+    const token = request.params.token;
+
+    try {
+        const user: User = await User.findOne({ resetPasswordToken: token });
+
+        if (!user) return next();
+        else if (!user.verifyResetPasswordToken()) {
+            response.status(410).json({ message: ErrorMessage.TOKEN_EXPIRED });
             return;
         } else if (!password) {
-            res.status(400).json({ message: "Invalid password" });
+            response.status(400).json({ message: ErrorMessage.INVALID_PASSWORD });
+            return;
+        } else if (password.length < 8) {
+            response.status(400).json({ message: ErrorMessage.INVALID_PASSWORD_LENGTH });
             return;
         }
 
         user.password = password;
-
-        user.save()
-            .then(() => {
-                res.status(200).json({
-                    message: "Password changed successfully",
-                });
-            })
-            .catch((err: NodeJS.ErrnoException) => {
-                internalServerError(res, err);
-            });
-    } catch (err: unknown) {
-        internalServerError(res, err);
+        await user.save();
+        response.status(200).json({ message: SuccessMessage.RESET_PASSWORD_SUCCESS });
+    } catch (error: unknown) {
+        internalServerError(response, error);
     }
 });
 

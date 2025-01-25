@@ -19,6 +19,8 @@ export interface User extends mongoose.Document {
     resetPasswordExpires: Date;
     comparePassword(candidatePassword: string): Promise<boolean>;
     generateVerificationToken(): string;
+    generateResetPasswordToken(): string;
+    verifyResetPasswordToken(): boolean;
     toJSON(): object;
 }
 
@@ -81,6 +83,22 @@ userSchema.methods.comparePassword = async function (candidatePassword: string) 
 userSchema.methods.generateVerificationToken = function (): string {
     const token = crypto.randomBytes(cryptoSize).toString("hex");
     this.verificationToken = token;
+
+    return token;
+};
+
+userSchema.methods.verifyResetPasswordToken = function (): boolean {
+    return this.resetPasswordExpires.getTime() > new Date().getTime();
+};
+
+userSchema.methods.generateResetPasswordToken = function (): string {
+    const token = crypto.randomBytes(cryptoSize).toString("hex");
+    this.resetPasswordToken = token;
+
+    const tokenExpiration = new Date();
+    tokenExpiration.setHours(tokenExpiration.getHours() + 1);
+    this.resetPasswordExpires = tokenExpiration;
+
     return token;
 };
 

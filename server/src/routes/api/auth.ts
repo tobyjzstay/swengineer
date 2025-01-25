@@ -15,6 +15,19 @@ const logger = log4js.getLogger(process.pid.toString());
 
 const cryptoSize = Number(process.env.CRYPTO_SIZE);
 
+enum SuccessMessage {
+    VERIFICATION_EMAIL_SENT = "VERIFICATION_EMAIL_SENT",
+    RESET_EMAIL_SENT = "RESET_EMAIL_SENT",
+    PASSWORD_CHANGED = "PASSWORD_CHANGED",
+    ACCOUNT_DELETED = "ACCOUNT_DELETED",
+}
+enum ErrorMessage {
+    INVALID_EMAIL = "INVALID_EMAIL",
+    INVALID_PASSWORD = "INVALID_PASSWORD",
+    INVALID_PASSWORD_LENGTH = "INVALID_PASSWORD_LENGTH",
+    DUPLICATE_USER = "DUPLICATE_USER",
+}
+
 router.get("/", auth, (_req, res) => {
     const user = app.locals.user as User;
 
@@ -50,79 +63,43 @@ router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
     res.cookie("token", token).redirect(redirect || "/");
 });
 
-router.post("/register", async (req, res) => {
-    const { email, password, verify } = req.body || {};
+router.post("/register", async (request, response) => {
+    const { email, password, verify } = request.body || {};
 
     if (!email) {
-        res.status(400).json({ message: "Invalid email address" });
+        response.status(400).json({ message: ErrorMessage.INVALID_EMAIL });
         return;
-    } else if (!verify && !password) {
-        res.status(400).json({ message: "Invalid password" });
-        return;
+    } else if (!verify) {
+        if (!password) {
+            response.status(400).json({ message: ErrorMessage.INVALID_PASSWORD });
+            return;
+        } else if (password.length < 8) {
+            response.status(400).json({ message: ErrorMessage.INVALID_PASSWORD_LENGTH });
+            return;
+        }
     }
 
     try {
-        const user = await User.findOne({ email });
+        let user: User = await User.findOne({ email });
 
-        const verificationToken = crypto.randomBytes(cryptoSize).toString("hex");
         if (user) {
-            if (verify) {
-                user.verificationToken = verificationToken;
-                // TODO: shouldn't use save?
-                user.save()
-                    .then(() => {
-                        const host = req.headers.referer; // domain
-                        const success = sendVerificationEmail(host, verificationToken, email);
-                        if (success) {
-                            res.status(201).json({
-                                message: "Verification email sent",
-                            });
-                        } else {
-                            // TODO: improve this
-                            internalServerError(res, null);
-                        }
-                    })
-                    .catch((err: NodeJS.ErrnoException) => {
-                        internalServerError(res, err);
-                    });
-            } else res.status(409).json({ message: "User already exists" });
-            return;
-        }
-
-        const newUser = new User({
-            email,
-            password,
-            verificationToken,
-        });
-
-        newUser
-            .save()
-            .then(() => {
-                const host = req.headers.referer; // domain
-                const success = sendVerificationEmail(host, verificationToken, email);
-                if (success) {
-                    res.status(201).json({
-                        message: "Verification email sent",
-                    });
-                } else {
-                    internalServerError(res, null);
-                }
-            })
-            .catch((err: NodeJS.ErrnoException) => {
-                switch (err.code) {
-                    case "11000":
-                        res.status(400).json({
-                            message: "Email address already exists",
-                        });
-                        logger.warn(err, new Error().stack);
-                        break;
-                    default:
-                        internalServerError(res, err);
-                        break;
-                }
+            if (!verify) {
+                response.status(409).json({ message: ErrorMessage.DUPLICATE_USER });
+                return;
+            }
+        } else {
+            user = new User({
+                email,
+                password,
             });
-    } catch (err: unknown) {
-        internalServerError(res, err);
+        }
+        const verificationToken = user.generateVerificationToken();
+        await user.save();
+        const host = request.headers.referer;
+        sendVerificationEmail(host, verificationToken, email);
+        response.status(201).json({ message: SuccessMessage.VERIFICATION_EMAIL_SENT });
+    } catch (error: unknown) {
+        internalServerError(response, error);
     }
 });
 

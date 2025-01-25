@@ -1,9 +1,11 @@
 import bcrypt from "bcryptjs";
 import log4js from "log4js";
 import mongoose from "mongoose";
+import crypto from "node:crypto";
 
 const logger = log4js.getLogger(process.pid.toString());
 
+const cryptoSize = Number(process.env.CRYPTO_SIZE);
 const saltRounds = Number(process.env.SALT_ROUNDS);
 
 export interface User extends mongoose.Document {
@@ -16,6 +18,7 @@ export interface User extends mongoose.Document {
     resetPasswordToken: string | null;
     resetPasswordExpires: Date;
     comparePassword(candidatePassword: string): Promise<boolean>;
+    generateVerificationToken(): string;
     toJSON(): object;
 }
 
@@ -27,18 +30,11 @@ const userSchema = new mongoose.Schema(
             index: true,
             lowercase: true,
             trim: true,
-            required: [true, "Email is required"],
-            validate: {
-                validator: function (v: string) {
-                    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
-                },
-                message: "{VALUE} is not a valid email",
-            },
+            required: true,
         },
         password: {
             type: String,
-            required: [true, "Password is required"],
-            minlength: [8, "Password must be at least 8 characters long"],
+            required: true,
         },
         verified: {
             type: Boolean,
@@ -77,9 +73,14 @@ userSchema.pre("save", function (next) {
     }
 });
 
-// compare password
 userSchema.methods.comparePassword = async function (candidatePassword: string) {
     return bcrypt.compare(candidatePassword, this.password);
+};
+
+userSchema.methods.generateVerificationToken = function (): string {
+    const token = crypto.randomBytes(cryptoSize).toString("hex");
+    this.verificationToken = token;
+    return token;
 };
 
 // sanitize output

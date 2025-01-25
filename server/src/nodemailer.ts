@@ -20,7 +20,7 @@ export async function sendMail(options: Options) {
             from: process.env.GMAIL_SENDER,
             ...rest,
         });
-        logger.info(info.messageId);
+        logger.info(info.messageId + " email sent to " + rest.to);
         return true;
     } catch (error) {
         logger.error(error);

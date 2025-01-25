@@ -237,28 +237,16 @@ router.post("/reset/:token", async (request, response, next) => {
     }
 });
 
-router.post("/delete", auth, (req, res) => {
+router.post("/delete", auth, async (_request, response) => {
     const user = app.locals.user as User;
 
-    if (!user) {
-        res.status(404).json({
-            message: "User not found",
-        });
-        return;
+    try {
+        await User.findByIdAndDelete(user.id).exec();
+        delete app.locals.user;
+        response.clearCookie("token").status(200).json({ message: SuccessMessage.ACCOUNT_DELETED });
+    } catch (error: unknown) {
+        internalServerError(response, error);
     }
-
-    User.findByIdAndDelete(user.id, (err: NodeJS.ErrnoException) => {
-        if (err) {
-            internalServerError(res, err);
-            return;
-        } else {
-            delete app.locals.user;
-
-            res.clearCookie("token").status(200).json({
-                message: "Account deleted",
-            });
-        }
-    });
 });
 
 function sendVerificationEmail(host: string, token: string, email: string) {

@@ -1,6 +1,5 @@
 import express from "express";
 import jwt from "jsonwebtoken";
-import log4js from "log4js";
 import passport from "passport";
 import { internalServerError } from ".";
 import { app } from "../..";
@@ -9,64 +8,48 @@ import { User } from "../../models/User";
 import { sendMail } from "../../nodemailer";
 
 const router = express.Router();
-const logger = log4js.getLogger(process.pid.toString());
-
-const cryptoSize = Number(process.env.CRYPTO_SIZE);
 
 enum SuccessMessage {
-    VERIFICATION_EMAIL_SENT = "VERIFICATION_EMAIL_SENT",
-    RESET_EMAIL_SENT = "RESET_EMAIL_SENT",
-    PASSWORD_CHANGED = "PASSWORD_CHANGED",
     ACCOUNT_DELETED = "ACCOUNT_DELETED",
-    VERIFICATION_SUCCESS = "VERIFICATION_SUCCESS",
     LOGIN_SUCCESS = "LOGIN_SUCCESS",
     LOGOUT_SUCCESS = "LOGOUT_SUCCESS",
-    VALID_TOKEN = "VALID_TOKEN",
+    RESET_EMAIL_SENT = "RESET_EMAIL_SENT",
     RESET_PASSWORD_SUCCESS = "RESET_PASSWORD_SUCCESS",
+    VERIFICATION_EMAIL_SENT = "VERIFICATION_EMAIL_SENT",
+    VERIFICATION_SUCCESS = "VERIFICATION_SUCCESS",
+    VALID_TOKEN = "VALID_TOKEN",
 }
 enum ErrorMessage {
+    DUPLICATE_USER = "DUPLICATE_USER",
     INVALID_EMAIL = "INVALID_EMAIL",
     INVALID_PASSWORD = "INVALID_PASSWORD",
     INVALID_PASSWORD_LENGTH = "INVALID_PASSWORD_LENGTH",
-    DUPLICATE_USER = "DUPLICATE_USER",
-    UNVERIFIED_EMAIL = "UNVERIFIED_EMAIL",
     NO_PASSWORD = "NO_PASSWORD",
     TOKEN_EXPIRED = "TOKEN_EXPIRED",
+    UNVERIFIED_EMAIL = "UNVERIFIED_EMAIL",
 }
 
-router.get("/", auth, (_req, res) => {
+router.get("/", auth, (_request, response) => {
     const user = app.locals.user as User;
 
-    const userData = user
-        ? {
-              id: user._id,
-              email: user.email,
-              created: user.createdAt,
-          }
-        : undefined;
+    const userData = {
+        email: user.email,
+    };
 
-    res.status(200).json({ user: userData });
+    response.status(200).json({ user: userData });
 });
 
 router.get("/google", passport.authenticate("google", { scope: ["profile", "email"] }));
 
 // redirect to home page after successful login
-router.get("/google/redirect", passport.authenticate("google"), (req, res) => {
-    const user = req.user as User;
+router.get("/google/redirect", passport.authenticate("google"), (request, response) => {
+    const user = request.user as User;
     const redirect = app.locals.redirect;
 
-    const token = jwt.sign(
-        {
-            id: user.id,
-        },
-        process.env.API_SECRET,
-        {
-            expiresIn: 86400,
-        }
-    );
+    const token = generateJwt(user);
 
     // responding to client request success message and access token
-    res.cookie("token", token).redirect(redirect || "/");
+    response.cookie("token", token).redirect(redirect || "/");
 });
 
 router.post("/register", async (request, response) => {
@@ -99,6 +82,7 @@ router.post("/register", async (request, response) => {
                 password,
             });
         }
+
         const verificationToken = user.generateVerificationToken();
         await user.save();
         const host = request.headers.referer;
@@ -118,7 +102,6 @@ router.get("/register/:token", async (request, response, next) => {
         if (!user) return next();
 
         user.verified = true;
-
         await user.save();
         response.status(200).json({ message: SuccessMessage.VERIFICATION_SUCCESS });
     } catch (error: unknown) {
@@ -160,9 +143,9 @@ router.post("/login", async (request, response) => {
     }
 });
 
-router.post("/logout", auth, async (_req, res) => {
+router.post("/logout", auth, async (_request, response) => {
     delete app.locals.user;
-    res.clearCookie("token").status(200).json({ message: SuccessMessage.LOGOUT_SUCCESS });
+    response.clearCookie("token").status(200).json({ message: SuccessMessage.LOGOUT_SUCCESS });
 });
 
 router.post("/reset", async (request, response) => {

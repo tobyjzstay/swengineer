@@ -76,10 +76,9 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
             if (process.env.NODE_ENV !== "production") {
                 try {
                     bodyMessage = JSON.parse(body)?.message;
-                    if (bodyMessage) bodyMessage = " " + bodyMessage;
                 } catch (error) {}
             }
-            logger.trace(req.method + " " + res.statusCode + bodyMessage + " " + requestUrl);
+            logger.trace(req.method + " " + res.statusCode + (bodyMessage ? " " + bodyMessage : "") + " " + requestUrl);
             return responseSend.call(this, body);
         };
 

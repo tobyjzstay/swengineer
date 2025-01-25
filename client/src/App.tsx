@@ -18,9 +18,7 @@ type Context = {
 };
 
 export type User = {
-    id: string;
     email: string;
-    created: string;
 } | null;
 
 export const Context = React.createContext<Context>({

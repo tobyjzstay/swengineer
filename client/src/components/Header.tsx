@@ -34,8 +34,6 @@ function Header({ logo = true }: { logo?: boolean }) {
     const [open, setOpen] = React.useState(false);
     const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
-    const hasToken = document.cookie.includes("token");
-
     const navigate = useNavigate();
     const { i18n } = useTranslation();
 
@@ -53,7 +51,6 @@ function Header({ logo = true }: { logo?: boolean }) {
     };
 
     React.useEffect(() => {
-        if (!hasToken) return;
         getRequest("/auth", true).then(async (response) => {
             const json = await response.json();
             const { user } = json;

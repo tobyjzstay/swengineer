@@ -1,4 +1,3 @@
-import bcryptjs from "bcryptjs";
 import express from "express";
 import jwt from "jsonwebtoken";
 import log4js from "log4js";
@@ -20,12 +19,17 @@ enum SuccessMessage {
     RESET_EMAIL_SENT = "RESET_EMAIL_SENT",
     PASSWORD_CHANGED = "PASSWORD_CHANGED",
     ACCOUNT_DELETED = "ACCOUNT_DELETED",
+    VERIFICATION_SUCCESS = "VERIFICATION_SUCCESS",
+    LOGIN_SUCCESS = "LOGIN_SUCCESS",
+    LOGOUT_SUCCESS = "LOGOUT_SUCCESS",
 }
 enum ErrorMessage {
     INVALID_EMAIL = "INVALID_EMAIL",
     INVALID_PASSWORD = "INVALID_PASSWORD",
     INVALID_PASSWORD_LENGTH = "INVALID_PASSWORD_LENGTH",
     DUPLICATE_USER = "DUPLICATE_USER",
+    UNVERIFIED_EMAIL = "UNVERIFIED_EMAIL",
+    NO_PASSWORD = "NO_PASSWORD",
 }
 
 router.get("/", auth, (_req, res) => {
@@ -103,101 +107,60 @@ router.post("/register", async (request, response) => {
     }
 });
 
-router.get("/register/:token", async (req, res, next) => {
-    const token = req.params.token;
+router.get("/register/:token", async (request, response, next) => {
+    const token = request.params.token;
 
     try {
-        const user = await User.findOne({ verificationToken: token });
+        const user: User = await User.findOne({ verificationToken: token });
 
-        if (!user) {
-            return next();
-        }
+        if (!user) return next();
 
         user.verified = true;
 
-        user.save()
-            .then(() => {
-                res.status(200).json({
-                    message: "User verified successfully",
-                });
-            })
-            .catch((err: NodeJS.ErrnoException) => {
-                internalServerError(res, err);
-            });
-        return;
-    } catch (err: unknown) {
-        internalServerError(res, err);
+        await user.save();
+        response.status(200).json({ message: SuccessMessage.VERIFICATION_SUCCESS });
+    } catch (error: unknown) {
+        internalServerError(response, error);
     }
 });
 
-router.post("/login", async (req, res) => {
-    const { email, password } = req.body || {};
+router.post("/login", async (request, response) => {
+    const { email, password } = request.body || {};
 
     try {
-        const user = await User.findOne({
-            email: email,
-        });
+        const user: User = await User.findOne({ email });
 
         if (!user) {
-            res.status(404).json({
-                message: "User not found",
-            });
+            response.status(404).json({ message: ErrorMessage.INVALID_EMAIL });
             return;
         } else if (!user.password) {
-            res.status(403).json({
-                message: "User has no password",
-            });
+            response.status(403).json({ message: ErrorMessage.NO_PASSWORD });
+            return;
+        } else if (!(await user.comparePassword(password))) {
+            response.status(401).json({ message: ErrorMessage.INVALID_PASSWORD });
+            return;
+        } else if (!user.verified) {
+            response.status(403).json({ message: ErrorMessage.UNVERIFIED_EMAIL });
             return;
         }
 
-        // comparing passwords
-        const passwordIsValid = password && bcryptjs.compareSync(password, user.password);
-
-        // checking if password was valid and send response accordingly
-        if (!passwordIsValid) {
-            res.status(401).json({
-                message: "Invalid password",
-            });
-            return;
-        }
-
-        if (!user.verified) {
-            res.status(403).json({
-                message: "Email address not verified",
-            });
-            return;
-        }
-
-        // signing token with user id
-        const token = jwt.sign(
-            {
-                id: user.id,
-            },
-            process.env.API_SECRET,
-            {
-                expiresIn: 86400,
-            }
-        );
-
-        // send token as cookie
-        res.cookie("token", token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-        })
+        const token = generateJwt(user);
+        response
+            .cookie("token", token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+            })
             .status(200)
-            .json({ message: "Logged in successfully" });
+            .json({ message: SuccessMessage.LOGIN_SUCCESS });
         return;
-    } catch (err: unknown) {
-        internalServerError(res, err);
+    } catch (error: unknown) {
+        internalServerError(response, error);
     }
 });
 
 router.post("/logout", auth, async (_req, res) => {
     delete app.locals.user;
-
-    res.clearCookie("token").status(200).json({
-        message: "Logged out successfully",
-    });
+    res.clearCookie("token").status(200).json({ message: SuccessMessage.LOGOUT_SUCCESS });
 });
 
 router.post("/reset", async (req, res) => {
@@ -392,6 +355,18 @@ function sendResetEmail(host: string, token: string, email: string, ip: string) 
             `IP Address: ${ip}\n` +
             `Created: ${new Date().toString()}\n`,
     });
+}
+
+function generateJwt(user: User) {
+    return jwt.sign(
+        {
+            id: user.id,
+        },
+        process.env.API_SECRET,
+        {
+            expiresIn: 86400,
+        }
+    );
 }
 
 module.exports = router;

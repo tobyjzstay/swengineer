@@ -1,60 +1,67 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 import log4js from "log4js";
-import { app } from ".";
+import { app } from "./";
 import { User } from "./models/User";
 
 const logger = log4js.getLogger(process.pid.toString());
 
-export const auth = async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.token;
+export type Payload = {
+    id: string;
+};
+
+enum ClientErrorMessage {
+    INVALID_TOKEN = "INVALID_TOKEN",
+    INVALID_USER = "INVALID_USER",
+    TOKEN_EXPIRED = "TOKEN_EXPIRED",
+}
+
+enum ServerErrorMessage {
+    USER_FIND_ERROR = "USER_FIND_ERROR",
+    TOKEN_VERIFICATION_ERROR = "TOKEN_VERIFICATION_ERROR",
+}
+
+export const auth = async (request: Request, response: Response, next: NextFunction) => {
+    const token = request.cookies.token;
 
     if (!token) {
-        res.status(401).json({});
+        response.status(401).json({ message: ClientErrorMessage.INVALID_TOKEN });
         return;
     }
 
     try {
         const data = jwt.verify(token, process.env.API_SECRET);
         if (!data) {
-            res.status(403).json({});
+            response.status(401).json({ message: ClientErrorMessage.INVALID_TOKEN });
             return;
         }
-        const { id } = data as { id: string };
+        const { id } = data as Payload;
         try {
-            const user = await User.findOne({
-                _id: id,
-            });
+            const user = await User.findOne({ _id: id });
             if (!user) {
-                res.status(403).json({});
+                response.status(403).json({ message: ClientErrorMessage.INVALID_USER });
                 return;
             }
             app.locals.user = user;
             return next();
-        } catch (err) {
-            logger.error(err);
-            res.status(500).json({});
+        } catch (error) {
+            logger.error(error);
+            response.status(500).json({ message: ServerErrorMessage.USER_FIND_ERROR });
             return;
         }
     } catch (error: unknown) {
         if (error instanceof jwt.JsonWebTokenError) {
-            res.status(401).json({
-                message: error.message,
-            });
+            response.status(401).json({ message: ClientErrorMessage.INVALID_TOKEN });
             return;
         } else if (error instanceof jwt.TokenExpiredError) {
-            res.status(401).json({
-                message: error.message,
-            });
+            response.status(401).json({ message: ClientErrorMessage.TOKEN_EXPIRED });
             return;
         } else if (error instanceof jwt.NotBeforeError) {
-            res.status(401).json({
-                message: error.message,
-            });
+            response.status(401).json({ message: ClientErrorMessage.INVALID_TOKEN });
             return;
         } else {
             logger.error(error);
-            res.status(403).json({});
+            response.status(500).json({ message: ServerErrorMessage.TOKEN_VERIFICATION_ERROR });
             return;
         }
     }

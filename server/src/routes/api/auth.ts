@@ -1,13 +1,14 @@
 import express from "express";
 import jwt from "jsonwebtoken";
+import log4js from "log4js";
 import passport from "passport";
-import { internalServerError } from ".";
 import { app } from "../..";
-import { auth } from "../../middleware";
+import { auth, Payload } from "../../middleware";
 import { User } from "../../models/User";
 import { sendMail } from "../../nodemailer";
 
 const router = express.Router();
+const logger = log4js.getLogger(process.pid.toString());
 
 enum SuccessMessage {
     ACCOUNT_DELETED = "ACCOUNT_DELETED",
@@ -19,7 +20,8 @@ enum SuccessMessage {
     VERIFICATION_SUCCESS = "VERIFICATION_SUCCESS",
     VALID_TOKEN = "VALID_TOKEN",
 }
-enum ErrorMessage {
+
+enum ClientErrorMessage {
     DUPLICATE_USER = "DUPLICATE_USER",
     INVALID_EMAIL = "INVALID_EMAIL",
     INVALID_PASSWORD = "INVALID_PASSWORD",
@@ -27,6 +29,15 @@ enum ErrorMessage {
     NO_PASSWORD = "NO_PASSWORD",
     TOKEN_EXPIRED = "TOKEN_EXPIRED",
     UNVERIFIED_EMAIL = "UNVERIFIED_EMAIL",
+}
+
+enum ServerErrorMessage {
+    REGISTER_ERROR = "REGISTER_ERROR",
+    VERIFICATION_ERROR = "VERIFICATION_ERROR",
+    LOGIN_ERROR = "LOGIN_ERROR",
+    RESET_PASSWORD_ERROR = "RESET_PASSWORD_ERROR",
+    RESET_PASSWORD_TOKEN_ERROR = "RESET_PASSWORD_TOKEN_ERROR",
+    ACCOUNT_DELETION_ERROR = "ACCOUNT_DELETION_ERROR",
 }
 
 router.get("/", auth, (_request, response) => {
@@ -56,14 +67,14 @@ router.post("/register", async (request, response) => {
     const { email, password, verify } = request.body || {};
 
     if (!email) {
-        response.status(400).json({ message: ErrorMessage.INVALID_EMAIL });
+        response.status(400).json({ message: ClientErrorMessage.INVALID_EMAIL });
         return;
     } else if (!verify) {
         if (!password) {
-            response.status(400).json({ message: ErrorMessage.INVALID_PASSWORD });
+            response.status(400).json({ message: ClientErrorMessage.INVALID_PASSWORD });
             return;
         } else if (password.length < 8) {
-            response.status(400).json({ message: ErrorMessage.INVALID_PASSWORD_LENGTH });
+            response.status(400).json({ message: ClientErrorMessage.INVALID_PASSWORD_LENGTH });
             return;
         }
     }
@@ -73,7 +84,7 @@ router.post("/register", async (request, response) => {
 
         if (user) {
             if (!verify) {
-                response.status(409).json({ message: ErrorMessage.DUPLICATE_USER });
+                response.status(409).json({ message: ClientErrorMessage.DUPLICATE_USER });
                 return;
             }
         } else {
@@ -89,7 +100,8 @@ router.post("/register", async (request, response) => {
         sendVerificationEmail(host, verificationToken, email);
         response.status(201).json({ message: SuccessMessage.VERIFICATION_EMAIL_SENT });
     } catch (error: unknown) {
-        internalServerError(response, error);
+        logger.error(error);
+        response.status(500).json({ message: ServerErrorMessage.REGISTER_ERROR });
     }
 });
 
@@ -105,7 +117,8 @@ router.get("/register/:token", async (request, response, next) => {
         await user.save();
         response.status(200).json({ message: SuccessMessage.VERIFICATION_SUCCESS });
     } catch (error: unknown) {
-        internalServerError(response, error);
+        logger.error(error);
+        response.status(500).json({ message: ServerErrorMessage.VERIFICATION_ERROR });
     }
 });
 
@@ -116,16 +129,16 @@ router.post("/login", async (request, response) => {
         const user: User = await User.findOne({ email });
 
         if (!user) {
-            response.status(404).json({ message: ErrorMessage.INVALID_EMAIL });
+            response.status(404).json({ message: ClientErrorMessage.INVALID_EMAIL });
             return;
         } else if (!user.password) {
-            response.status(403).json({ message: ErrorMessage.NO_PASSWORD });
+            response.status(403).json({ message: ClientErrorMessage.NO_PASSWORD });
             return;
         } else if (!(await user.comparePassword(password))) {
-            response.status(401).json({ message: ErrorMessage.INVALID_PASSWORD });
+            response.status(401).json({ message: ClientErrorMessage.INVALID_PASSWORD });
             return;
         } else if (!user.verified) {
-            response.status(403).json({ message: ErrorMessage.UNVERIFIED_EMAIL });
+            response.status(403).json({ message: ClientErrorMessage.UNVERIFIED_EMAIL });
             return;
         }
 
@@ -139,7 +152,8 @@ router.post("/login", async (request, response) => {
             .json({ message: SuccessMessage.LOGIN_SUCCESS });
         return;
     } catch (error: unknown) {
-        internalServerError(response, error);
+        logger.error(error);
+        response.status(500).json({ message: ServerErrorMessage.LOGIN_ERROR });
     }
 });
 
@@ -152,7 +166,7 @@ router.post("/reset", async (request, response) => {
     const { email } = request.body || {};
 
     if (!email) {
-        response.status(404).json({ message: ErrorMessage.INVALID_EMAIL });
+        response.status(404).json({ message: ClientErrorMessage.INVALID_EMAIL });
         return;
     }
 
@@ -160,7 +174,7 @@ router.post("/reset", async (request, response) => {
         const user: User = await User.findOne({ email });
 
         if (!user) {
-            response.status(404).json({ message: ErrorMessage.INVALID_EMAIL });
+            response.status(404).json({ message: ClientErrorMessage.INVALID_EMAIL });
             return;
         }
 
@@ -171,7 +185,8 @@ router.post("/reset", async (request, response) => {
         sendResetEmail(host, token, email, ip);
         response.status(200).json({ message: SuccessMessage.RESET_EMAIL_SENT });
     } catch (error: unknown) {
-        internalServerError(response, error);
+        logger.error(error);
+        response.status(500).json({ message: ServerErrorMessage.RESET_PASSWORD_ERROR });
     }
 });
 
@@ -183,13 +198,14 @@ router.get("/reset/:token", async (request, response, next) => {
 
         if (!user) return next();
         else if (!user.verifyResetPasswordToken()) {
-            response.status(410).json({ message: ErrorMessage.TOKEN_EXPIRED });
+            response.status(410).json({ message: ClientErrorMessage.TOKEN_EXPIRED });
             return;
         }
 
         response.status(200).json({ message: SuccessMessage.VALID_TOKEN });
     } catch (error: unknown) {
-        internalServerError(response, error);
+        logger.error(error);
+        response.status(500).json({ message: ServerErrorMessage.RESET_PASSWORD_TOKEN_ERROR });
     }
 });
 
@@ -202,13 +218,13 @@ router.post("/reset/:token", async (request, response, next) => {
 
         if (!user) return next();
         else if (!user.verifyResetPasswordToken()) {
-            response.status(410).json({ message: ErrorMessage.TOKEN_EXPIRED });
+            response.status(410).json({ message: ClientErrorMessage.TOKEN_EXPIRED });
             return;
         } else if (!password) {
-            response.status(400).json({ message: ErrorMessage.INVALID_PASSWORD });
+            response.status(400).json({ message: ClientErrorMessage.INVALID_PASSWORD });
             return;
         } else if (password.length < 8) {
-            response.status(400).json({ message: ErrorMessage.INVALID_PASSWORD_LENGTH });
+            response.status(400).json({ message: ClientErrorMessage.INVALID_PASSWORD_LENGTH });
             return;
         }
 
@@ -216,7 +232,7 @@ router.post("/reset/:token", async (request, response, next) => {
         await user.save();
         response.status(200).json({ message: SuccessMessage.RESET_PASSWORD_SUCCESS });
     } catch (error: unknown) {
-        internalServerError(response, error);
+        response.status(500).json({ message: ServerErrorMessage.RESET_PASSWORD_TOKEN_ERROR });
     }
 });
 
@@ -228,7 +244,8 @@ router.post("/delete", auth, async (_request, response) => {
         delete app.locals.user;
         response.clearCookie("token").status(200).json({ message: SuccessMessage.ACCOUNT_DELETED });
     } catch (error: unknown) {
-        internalServerError(response, error);
+        logger.error(error);
+        response.status(500).json({ message: ServerErrorMessage.ACCOUNT_DELETION_ERROR });
     }
 });
 
@@ -259,15 +276,10 @@ function sendResetEmail(host: string, token: string, email: string, ip: string) 
 }
 
 function generateJwt(user: User) {
-    return jwt.sign(
-        {
-            id: user.id,
-        },
-        process.env.API_SECRET,
-        {
-            expiresIn: 86400,
-        }
-    );
+    const payload: Payload = {
+        id: user.id,
+    };
+    return jwt.sign(payload, process.env.API_SECRET, { expiresIn: 86400 });
 }
 
 module.exports = router;

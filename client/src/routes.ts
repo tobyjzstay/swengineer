@@ -16,12 +16,12 @@ const routes: Route[] = [
     },
     {
         path: "/login",
-        sitemap: { url: "/login" },
+        sitemap: null,
         element: React.lazy(() => import("./routes/Login")),
     },
     {
         path: "/register",
-        sitemap: { url: "/register" },
+        sitemap: null,
         element: React.lazy(() => import("./routes/Register")),
     },
     {
@@ -31,7 +31,7 @@ const routes: Route[] = [
     },
     {
         path: "/reset",
-        sitemap: { url: "/reset" },
+        sitemap: null,
         element: React.lazy(() => import("./routes/ResetPassword")),
     },
     {
@@ -41,22 +41,22 @@ const routes: Route[] = [
     },
     {
         path: "/profile",
-        sitemap: { url: "/profile" },
+        sitemap: null,
         element: React.lazy(() => import("./routes/Profile")),
     },
     {
         path: "/clock",
-        sitemap: { url: "/clock" },
+        sitemap: null,
         element: React.lazy(() => import("./routes/Clock")),
     },
     {
         path: "/draw",
-        sitemap: { url: "/draw" },
+        sitemap: null,
         element: React.lazy(() => import("./routes/Draw")),
     },
     {
         path: "/notepad",
-        sitemap: { url: "/notepad" },
+        sitemap: null,
         element: React.lazy(() => import("./routes/Notepad")),
     },
     {

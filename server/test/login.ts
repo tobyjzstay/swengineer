@@ -43,6 +43,15 @@ describe("POST /register", () => {
         });
     });
 
+    makeSuite("Password must be at least 8 characters", () => {
+        it("Register a new user with invalid password", (done) => {
+            supertest(app)
+                .post("/api/auth/register")
+                .send({ email: "alice@example.com", password: "alice" })
+                .expect(400, done);
+        });
+    });
+
     makeSuite("User already registered needs verification", () => {
         it("Register a new user", (done) => {
             supertest(app)
@@ -222,6 +231,12 @@ describe("POST /reset", () => {
         });
     });
 
+    makeSuite("Email is required", () => {
+        it("Log in with no email", (done) => {
+            supertest(app).post("/api/auth/reset").send({}).expect(404, done);
+        });
+    });
+
     makeSuite("Invalid email", () => {
         it("Send reset password email to invalid user", (done) => {
             supertest(app).post("/api/auth/reset").send({ email: "alice@example.com" }).expect(404, done);
@@ -291,6 +306,68 @@ describe("GET /reset/:token", () => {
                         .send()
                         .expect(410, done);
                 });
+            });
+        });
+    });
+
+    makeSuite("Password is required", () => {
+        it("Register a new user", (done) => {
+            supertest(app)
+                .post("/api/auth/register")
+                .send({ email: "alice@example.com", password: "alice123" })
+                .expect(201, done);
+        });
+
+        it("Send reset password email to valid user", (done) => {
+            supertest(app).post("/api/auth/reset").send({ email: "alice@example.com" }).expect(200, done);
+        });
+
+        it("Check reset password link valid", (done) => {
+            getUser("alice@example.com", (user) => {
+                supertest(app)
+                    .get("/api/auth/reset/" + user.resetPasswordToken)
+                    .send()
+                    .expect(200, done);
+            });
+        });
+
+        it("Reset password with invalid password", (done) => {
+            getUser("alice@example.com", (user) => {
+                supertest(app)
+                    .post("/api/auth/reset/" + user.resetPasswordToken)
+                    .send({ email: "alice@example.com" })
+                    .expect(400, done);
+            });
+        });
+    });
+
+    makeSuite("Password is required", () => {
+        it("Register a new user", (done) => {
+            supertest(app)
+                .post("/api/auth/register")
+                .send({ email: "alice@example.com", password: "alice123" })
+                .expect(201, done);
+        });
+
+        it("Send reset password email to valid user", (done) => {
+            supertest(app).post("/api/auth/reset").send({ email: "alice@example.com" }).expect(200, done);
+        });
+
+        it("Check reset password link valid", (done) => {
+            getUser("alice@example.com", (user) => {
+                supertest(app)
+                    .get("/api/auth/reset/" + user.resetPasswordToken)
+                    .send()
+                    .expect(200, done);
+            });
+        });
+
+        it("Reset password with invalid password", (done) => {
+            getUser("alice@example.com", (user) => {
+                supertest(app)
+                    .post("/api/auth/reset/" + user.resetPasswordToken)
+                    .send({ email: "alice@example.com", password: "alice" })
+                    .expect(400, done);
             });
         });
     });
@@ -378,6 +455,82 @@ describe("POST /reset/:token", () => {
                         .expect(410, done);
                 });
             });
+        });
+    });
+});
+
+describe("POST /logout", () => {
+    makeSuite("Log out with valid cookie", () => {
+        let cookie = null;
+
+        it("Register a new user", (done) => {
+            supertest(app)
+                .post("/api/auth/register")
+                .send({ email: "alice@example.com", password: "alice123" })
+                .expect(201, done);
+        });
+
+        it("Verify email with verification token", (done) => {
+            getUser("alice@example.com", (user) => {
+                supertest(app)
+                    .get("/api/auth/register/" + user.verificationToken)
+                    .send()
+                    .expect(200, done);
+            });
+        });
+
+        it("Log in as verified user", (done) => {
+            supertest(app)
+                .post("/api/auth/login")
+                .send({ email: "alice@example.com", password: "alice123" })
+                .expect(200)
+                .end((err, res) => {
+                    if (err) return done(err);
+                    cookie = res.headers["set-cookie"];
+                    done();
+                });
+        });
+
+        it("Log out", (done) => {
+            supertest(app).post("/api/auth/logout").set("Cookie", cookie).expect(200, done);
+        });
+    });
+});
+
+describe("POST /delete", () => {
+    makeSuite("Delete user with valid cookie", () => {
+        let cookie = null;
+
+        it("Register a new user", (done) => {
+            supertest(app)
+                .post("/api/auth/register")
+                .send({ email: "alice@example.com", password: "alice123" })
+                .expect(201, done);
+        });
+
+        it("Verify email with verification token", (done) => {
+            getUser("alice@example.com", (user) => {
+                supertest(app)
+                    .get("/api/auth/register/" + user.verificationToken)
+                    .send()
+                    .expect(200, done);
+            });
+        });
+
+        it("Log in as verified user", (done) => {
+            supertest(app)
+                .post("/api/auth/login")
+                .send({ email: "alice@example.com", password: "alice123" })
+                .expect(200)
+                .end((err, res) => {
+                    if (err) return done(err);
+                    cookie = res.headers["set-cookie"];
+                    done();
+                });
+        });
+
+        it("Delete user", (done) => {
+            supertest(app).post("/api/auth/delete").set("Cookie", cookie).expect(200, done);
         });
     });
 });

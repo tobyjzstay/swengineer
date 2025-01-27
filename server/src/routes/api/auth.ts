@@ -1,9 +1,8 @@
 import express from "express";
-import jwt from "jsonwebtoken";
 import log4js from "log4js";
 import passport from "passport";
 import { app } from "../..";
-import { auth, Payload } from "../../middleware";
+import { auth, generateJwt } from "../../middleware";
 import { User } from "../../models/User";
 import { sendMail } from "../../nodemailer";
 
@@ -273,13 +272,6 @@ function sendResetEmail(host: string, token: string, email: string, ip: string) 
             `IP Address: ${ip}\n` +
             `Created: ${new Date().toString()}\n`,
     });
-}
-
-function generateJwt(user: User) {
-    const payload: Payload = {
-        id: user.id,
-    };
-    return jwt.sign(payload, process.env.API_SECRET, { expiresIn: 86400 });
 }
 
 module.exports = router;

@@ -31,13 +31,9 @@ export const auth = async (request: Request, response: Response, next: NextFunct
 
     try {
         const data = jwt.verify(token, process.env.API_SECRET);
-        if (!data) {
-            response.status(401).json({ message: ClientErrorMessage.INVALID_TOKEN });
-            return;
-        }
         const { id } = data as Payload;
         try {
-            const user = await User.findOne({ _id: id });
+            const user: User = await User.findOne({ _id: id });
             if (!user) {
                 response.status(403).json({ message: ClientErrorMessage.INVALID_USER });
                 return;
@@ -53,12 +49,6 @@ export const auth = async (request: Request, response: Response, next: NextFunct
         if (error instanceof jwt.JsonWebTokenError) {
             response.status(401).json({ message: ClientErrorMessage.INVALID_TOKEN });
             return;
-        } else if (error instanceof jwt.TokenExpiredError) {
-            response.status(401).json({ message: ClientErrorMessage.TOKEN_EXPIRED });
-            return;
-        } else if (error instanceof jwt.NotBeforeError) {
-            response.status(401).json({ message: ClientErrorMessage.INVALID_TOKEN });
-            return;
         } else {
             logger.error(error);
             response.status(500).json({ message: ServerErrorMessage.TOKEN_VERIFICATION_ERROR });
@@ -66,3 +56,10 @@ export const auth = async (request: Request, response: Response, next: NextFunct
         }
     }
 };
+
+export function generateJwt(user: User, expiresIn = 86400) {
+    const payload: Payload = {
+        id: user.id,
+    };
+    return jwt.sign(payload, process.env.API_SECRET, { expiresIn });
+}

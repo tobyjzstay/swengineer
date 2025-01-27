@@ -1,5 +1,6 @@
-import { after, before, describe, it } from "mocha";
-import { app, mongoose } from "../src/index";
+import { describe, it } from "mocha";
+import { makeSuite } from ".";
+import { app } from "../src/index";
 import { User } from "../src/models/User";
 import supertest = require("supertest");
 
@@ -516,21 +517,3 @@ describe("POST /delete", () => {
         });
     });
 });
-
-function makeSuite(name, tests) {
-    describe(name, () => {
-        before((done) => {
-            drop(done);
-        });
-        tests();
-        after((done) => {
-            drop(done);
-        });
-    });
-}
-
-// clean up
-async function drop(done) {
-    await mongoose.connection.collections.users.drop();
-    done();
-}

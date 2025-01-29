@@ -1,5 +1,6 @@
 import { describe, it } from "mocha";
 import mongoose from "mongoose";
+import { Response } from "supertest";
 import { app } from "../src/index";
 import supertest = require("supertest");
 
@@ -20,6 +21,10 @@ export function makeSuite(name: string, tests: () => void) {
             drop(done);
         });
     });
+}
+
+export function assertBodyMessage(response: Response, message: string) {
+    if (response.body["message"] !== message) throw new Error(`Expected: ${message}, got: ${response.body["message"]}`);
 }
 
 // clean up

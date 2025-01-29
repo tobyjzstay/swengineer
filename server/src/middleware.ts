@@ -6,17 +6,17 @@ import { User } from "./models/User";
 
 const logger = log4js.getLogger(process.pid.toString());
 
-export type Payload = {
+type Payload = {
     id: string;
 };
 
-enum ClientErrorMessage {
+export enum ClientErrorMessage {
     INVALID_TOKEN = "INVALID_TOKEN",
     INVALID_USER = "INVALID_USER",
     TOKEN_EXPIRED = "TOKEN_EXPIRED",
 }
 
-enum ServerErrorMessage {
+export enum ServerErrorMessage {
     USER_FIND_ERROR = "USER_FIND_ERROR",
     TOKEN_VERIFICATION_ERROR = "TOKEN_VERIFICATION_ERROR",
 }

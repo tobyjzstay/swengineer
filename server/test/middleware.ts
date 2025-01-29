@@ -1,28 +1,33 @@
 import { describe, it } from "mocha";
-import { makeSuite } from ".";
+import { assertBodyMessage, makeSuite } from ".";
 import { app } from "../src/index";
-import { generateJwt } from "../src/middleware";
+import { ClientErrorMessage, generateJwt } from "../src/middleware";
 import { User } from "../src/models/User";
 import supertest = require("supertest");
 
 describe("GET /auth", () => {
-    makeSuite("Authenticate without cookie", () => {
+    makeSuite("No cookie", () => {
         it("Authenticate with no cookie token", async () => {
-            await supertest(app).get("/api/auth").expect(401);
+            await supertest(app)
+                .get("/api/auth")
+                .expect(401)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_TOKEN));
         });
     });
 
-    makeSuite("Authenticate using invalid cookie", () => {
+    makeSuite("Cookie is invalid", () => {
         it("Authenticate with cookie with no token", async () => {
             const cookie = "thisisnotavalidcookie";
-            await supertest(app).get("/api/auth").set("Cookie", cookie).expect(401);
+            await supertest(app)
+                .get("/api/auth")
+                .set("Cookie", cookie)
+                .expect(401)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_TOKEN));
         });
     });
 
-    makeSuite("Authenticate using valid cookie", () => {
-        let cookie = null;
-
-        it("Log in as verified user", async () => {
+    makeSuite("Authenticate user", () => {
+        it("Authenticate with valid cookie", async () => {
             const userData = {
                 email: "alice@example.com",
                 password: "alice123",
@@ -30,54 +35,13 @@ describe("GET /auth", () => {
             };
             const user = new User(userData);
             await user.save();
-            const response = await supertest(app)
-                .post("/api/auth/login")
-                .send({ email: userData.email, password: userData.password })
-                .expect(200);
-            cookie = response.headers["set-cookie"];
-        });
-
-        it("Authenticate with valid cookie", async () => {
+            const cookie = ["token=" + generateJwt(user)];
             await supertest(app).get("/api/auth").set("Cookie", cookie).expect(200);
         });
     });
 
-    makeSuite("Authenticate using invalid cookie token", () => {
-        let cookie = null;
-
-        it("Log in as verified user", async () => {
-            const userData = {
-                email: "alice@example.com",
-                password: "alice123",
-                verified: true,
-            };
-            const user = new User(userData);
-            await user.save();
-            const response = await supertest(app)
-                .post("/api/auth/login")
-                .send({ email: userData.email, password: userData.password })
-                .expect(200);
-            cookie = response.headers["set-cookie"];
-        });
-
+    makeSuite("Cookie token is invalid", () => {
         it("Authenticate using invalid modified cookie", async () => {
-            cookie = cookie.map((str: string) =>
-                str
-                    .split(";")
-                    .map((str: string) => {
-                        if (str.includes("token")) return "token=thisisnotavalidtoken";
-                        else return str;
-                    })
-                    .join(";")
-            );
-            await supertest(app).get("/api/auth").set("Cookie", cookie).expect(401);
-        });
-    });
-
-    makeSuite("Authenticate using invalid user cookie", () => {
-        let cookie = null;
-
-        it("Log in as verified user", async () => {
             const userData = {
                 email: "alice@example.com",
                 password: "alice123",
@@ -85,23 +49,17 @@ describe("GET /auth", () => {
             };
             const user = new User(userData);
             await user.save();
-            const response = await supertest(app)
-                .post("/api/auth/login")
-                .send({ email: userData.email, password: userData.password })
-                .expect(200);
-            cookie = response.headers["set-cookie"];
-            await User.findByIdAndDelete(user.id).exec();
+            const cookie = ["token=thisisnotavalidtoken"];
+            await supertest(app)
+                .get("/api/auth")
+                .set("Cookie", cookie)
+                .expect(401)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_TOKEN));
         });
+    });
 
+    makeSuite("User is invalid", () => {
         it("Authenticate using cookie with invalid user ID", async () => {
-            await supertest(app).get("/api/auth").set("Cookie", cookie).expect(403);
-        });
-    });
-
-    makeSuite("Authenticate using expired cookie token", () => {
-        let cookie = null;
-
-        it("Log in as verified user", async () => {
             const userData = {
                 email: "alice@example.com",
                 password: "alice123",
@@ -109,24 +67,31 @@ describe("GET /auth", () => {
             };
             const user = new User(userData);
             await user.save();
-            const response = await supertest(app)
-                .post("/api/auth/login")
-                .send({ email: userData.email, password: userData.password })
-                .expect(200);
-            cookie = response.headers["set-cookie"];
-            cookie = cookie.map((str: string) =>
-                str
-                    .split(";")
-                    .map((str: string) => {
-                        if (str.includes("token")) return "token=" + generateJwt(user, 0);
-                        else return str;
-                    })
-                    .join(";")
-            );
+            const cookie = ["token=" + generateJwt(user)];
+            await User.findByIdAndDelete(user.id).exec();
+            await supertest(app)
+                .get("/api/auth")
+                .set("Cookie", cookie)
+                .expect(403)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_USER));
         });
+    });
 
+    makeSuite("Expired cookie token", () => {
         it("Authenticate using an expired cookie", async () => {
-            await supertest(app).get("/api/auth").set("Cookie", cookie).expect(401);
+            const userData = {
+                email: "alice@example.com",
+                password: "alice123",
+                verified: true,
+            };
+            const user = new User(userData);
+            await user.save();
+            const cookie = ["token=" + generateJwt(user, 0)];
+            await supertest(app)
+                .get("/api/auth")
+                .set("Cookie", cookie)
+                .expect(401)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_TOKEN));
         });
     });
 });

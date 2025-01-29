@@ -1,7 +1,9 @@
 import { describe, it } from "mocha";
-import { makeSuite } from ".";
+import { assertBodyMessage, makeSuite } from ".";
 import { app } from "../src/index";
+import { generateJwt } from "../src/middleware";
 import { User } from "../src/models/User";
+import { ClientErrorMessage, SuccessMessage } from "../src/routes/api/auth";
 import supertest = require("supertest");
 
 describe("POST /register", () => {
@@ -10,29 +12,34 @@ describe("POST /register", () => {
             await supertest(app)
                 .post("/api/auth/register")
                 .send({ email: "alice@example.com", password: "alice123" })
-                .expect(201);
+                .expect(201)
+                .expect((response) => assertBodyMessage(response, SuccessMessage.VERIFICATION_EMAIL_SENT));
         });
     });
 
     makeSuite("Duplicate user", () => {
-        it("Register a new user", async () => {
-            await supertest(app)
-                .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice123" })
-                .expect(201);
-        });
-
         it("Register a duplicate user", async () => {
+            const userData = {
+                email: "alice@example.com",
+                password: "alice123",
+            };
+            const user = new User(userData);
+            await user.save();
             await supertest(app)
                 .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice123" })
-                .expect(409);
+                .send({ email: userData.email, password: userData.password })
+                .expect(409)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.DUPLICATE_USER));
         });
     });
 
     makeSuite("Email is required", () => {
         it("Register a new user with invalid email", async () => {
-            await supertest(app).post("/api/auth/register").send({ email: "", password: "alice123" }).expect(400);
+            await supertest(app)
+                .post("/api/auth/register")
+                .send({ email: "", password: "alice123" })
+                .expect(400)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_EMAIL));
         });
     });
 
@@ -41,51 +48,97 @@ describe("POST /register", () => {
             await supertest(app)
                 .post("/api/auth/register")
                 .send({ email: "alice@example.com", password: "" })
-                .expect(400);
+                .expect(400)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_PASSWORD));
         });
     });
 
     makeSuite("Password must be at least 8 characters", () => {
-        it("Register a new user with invalid password", async () => {
+        it("Register a new user with less than 8 characters", async () => {
             await supertest(app)
                 .post("/api/auth/register")
                 .send({ email: "alice@example.com", password: "alice" })
-                .expect(400);
+                .expect(400)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_PASSWORD_LENGTH));
         });
     });
 
-    makeSuite("User already registered needs verification", () => {
-        it("Register a new user", async () => {
-            await supertest(app)
-                .post("/api/auth/register")
-                .send({ email: "alice@example.com", password: "alice123" })
-                .expect(201);
-        });
-
+    makeSuite("Resend verification email", () => {
         it("Resend verification token", async () => {
+            const userData = {
+                email: "alice@example.com",
+                password: "alice123",
+            };
+            const user = new User(userData);
+            user.generateVerificationToken();
+            await user.save();
             await supertest(app)
                 .post("/api/auth/register")
                 .send({ email: "alice@example.com", verify: true })
-                .expect(201);
+                .expect(201)
+                .expect((response) => assertBodyMessage(response, SuccessMessage.VERIFICATION_EMAIL_SENT));
         });
+    });
+});
 
+describe("GET /register/:token", () => {
+    makeSuite("Verify user", () => {
         it("Verify email with verification token", async () => {
-            const user: User = await User.findOne({ email: "alice@example.com" });
+            const userData = {
+                email: "alice@example.com",
+                password: "alice123",
+            };
+            const user = new User(userData);
+            user.generateVerificationToken();
+            await user.save();
             await supertest(app)
                 .get("/api/auth/register/" + user.verificationToken)
                 .send()
-                .expect(200);
+                .expect(200)
+                .expect((response) => assertBodyMessage(response, SuccessMessage.VERIFICATION_SUCCESS));
+        });
+    });
+
+    makeSuite("Invalid verification token", () => {
+        it("Verify user with invalid verification token", async () => {
+            const userData = {
+                email: "alice@example.com",
+                password: "alice123",
+            };
+            const user = new User(userData);
+            user.generateVerificationToken();
+            await user.save();
+            await supertest(app).get("/api/auth/register/thisisnotavalidtoken").send().expect(404);
         });
     });
 });
 
 describe("POST /login", () => {
+    makeSuite("Login with verified email", () => {
+        it("Log in with a verified user", async () => {
+            const userData = {
+                email: "alice@example.com",
+                password: "alice123",
+                verified: true,
+            };
+            const user = new User(userData);
+            await user.save();
+            await supertest(app)
+                .post("/api/auth/login")
+                .send({ email: "alice@example.com", password: "alice123" })
+                .expect(200)
+                .expect((response) => assertBodyMessage(response, SuccessMessage.LOGIN_SUCCESS));
+        });
+        // TODO: check cookie?
+    });
+
     makeSuite("Unregistered user", () => {
         it("Log in with invalid email", async () => {
             await supertest(app)
                 .post("/api/auth/login")
                 .send({ email: "alice@example.com", password: "alice123" })
-                .expect(404);
+                .expect(404)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_EMAIL));
         });
     });
 
@@ -98,7 +151,11 @@ describe("POST /login", () => {
             };
             const user = new User(userData);
             await user.save();
-            await supertest(app).post("/api/auth/login").send({ password: userData.password }).expect(404);
+            await supertest(app)
+                .post("/api/auth/login")
+                .send({ password: userData.password })
+                .expect(404)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_EMAIL));
         });
     });
 
@@ -111,7 +168,11 @@ describe("POST /login", () => {
             };
             const user = new User(userData);
             await user.save();
-            await supertest(app).post("/api/auth/login").send({ email: userData.email }).expect(401);
+            await supertest(app)
+                .post("/api/auth/login")
+                .send({ email: userData.email })
+                .expect(401)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_PASSWORD));
         });
     });
 
@@ -126,7 +187,8 @@ describe("POST /login", () => {
             await supertest(app)
                 .post("/api/auth/login")
                 .send({ email: userData.email, password: userData.password })
-                .expect(403);
+                .expect(403)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.UNVERIFIED_EMAIL));
         });
     });
 
@@ -141,7 +203,8 @@ describe("POST /login", () => {
             await supertest(app)
                 .post("/api/auth/login")
                 .send({ email: userData.email, password: "bob12345" })
-                .expect(401);
+                .expect(401)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_PASSWORD));
         });
     });
 
@@ -155,58 +218,9 @@ describe("POST /login", () => {
             await user.save();
             await supertest(app)
                 .post("/api/auth/login")
-                .send({ email: "bob@example.com", password: "alice123" })
-                .expect(404);
-        });
-    });
-
-    makeSuite("Login with verified email", () => {
-        it("Log in as verified user", async () => {
-            const userData = {
-                email: "alice@example.com",
-                password: "alice123",
-                verified: true,
-            };
-            const user = new User(userData);
-            await user.save();
-            await supertest(app)
-                .post("/api/auth/login")
-                .send({ email: "alice@example.com", password: "alice123" })
-                .expect(200);
-        });
-        // TODO: check cookie?
-    });
-});
-
-describe("GET /register/:token", () => {
-    makeSuite("Verify token", () => {
-        it("Verify email with verification token", async () => {
-            const userData = {
-                email: "alice@example.com",
-                password: "alice123",
-            };
-            const user = new User(userData);
-            user.generateVerificationToken();
-            await user.save();
-            await supertest(app)
-                .get("/api/auth/register/" + user.verificationToken)
-                .send()
-                .expect(200);
-            // TODO: assert?
-        });
-    });
-
-    makeSuite("Invalid email verification token", () => {
-        it("Verify email with invalid verification token", async () => {
-            const userData = {
-                email: "alice@example.com",
-                password: "alice123",
-            };
-            const user = new User(userData);
-            user.generateVerificationToken();
-            await user.save();
-            await supertest(app).get("/api/auth/register/thisisnotavalidtoken").send().expect(404);
-            // TODO: assert?
+                .send({ email: "bob@example.com", password: userData.password })
+                .expect(404)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_EMAIL));
         });
     });
 });
@@ -220,25 +234,37 @@ describe("POST /reset", () => {
             };
             const user = new User(userData);
             await user.save();
-            await supertest(app).post("/api/auth/reset").send({ email: "alice@example.com" }).expect(200);
+            await supertest(app)
+                .post("/api/auth/reset")
+                .send({ email: userData.email })
+                .expect(200)
+                .expect((response) => assertBodyMessage(response, SuccessMessage.RESET_EMAIL_SENT));
         });
     });
 
     makeSuite("Email is required", () => {
         it("Log in with no email", async () => {
-            await supertest(app).post("/api/auth/reset").send({}).expect(404);
+            await supertest(app)
+                .post("/api/auth/reset")
+                .send({})
+                .expect(404)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_EMAIL));
         });
     });
 
     makeSuite("Invalid email", () => {
         it("Send reset password email to invalid user", async () => {
-            await supertest(app).post("/api/auth/reset").send({ email: "alice@example.com" }).expect(404);
+            await supertest(app)
+                .post("/api/auth/reset")
+                .send({ email: "alice@example.com" })
+                .expect(404)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_EMAIL));
         });
     });
 });
 
 describe("GET /reset/:token", () => {
-    makeSuite("Valid password token", () => {
+    makeSuite("Valid reset password token", () => {
         it("Check reset password link valid", async () => {
             const userData = {
                 email: "alice@example.com",
@@ -250,11 +276,12 @@ describe("GET /reset/:token", () => {
             await supertest(app)
                 .get("/api/auth/reset/" + user.resetPasswordToken)
                 .send()
-                .expect(200);
+                .expect(200)
+                .expect((response) => assertBodyMessage(response, SuccessMessage.VALID_TOKEN));
         });
     });
 
-    makeSuite("Invalid password token", () => {
+    makeSuite("Invalid reset password token", () => {
         it("Check reset password link invalid", async () => {
             const userData = {
                 email: "alice@example.com",
@@ -267,7 +294,7 @@ describe("GET /reset/:token", () => {
         });
     });
 
-    makeSuite("Expired password token", () => {
+    makeSuite("Expired reset password token", () => {
         it("Check expired reset password link invalid", async () => {
             const userData = {
                 email: "alice@example.com",
@@ -275,13 +302,13 @@ describe("GET /reset/:token", () => {
             };
             const user = new User(userData);
             user.generateResetPasswordToken();
-            // make token expired
-            user.resetPasswordExpires = new Date(0);
+            user.resetPasswordExpires = new Date(0); // make token expired
             await user.save();
             await supertest(app)
                 .get("/api/auth/reset/" + user.resetPasswordToken)
                 .send()
-                .expect(410);
+                .expect(410)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.TOKEN_EXPIRED));
         });
     });
 
@@ -296,13 +323,14 @@ describe("GET /reset/:token", () => {
             await user.save();
             supertest(app)
                 .post("/api/auth/reset/" + user.resetPasswordToken)
-                .send({ email: "alice@example.com" })
-                .expect(400);
+                .send({ email: userData.email })
+                .expect(400)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_PASSWORD));
         });
     });
 
-    makeSuite("Password is required", () => {
-        it("Reset password with invalid password", async () => {
+    makeSuite("Password must be at least 8 characters", () => {
+        it("Reset password with password less than 8 characters", async () => {
             const userData = {
                 email: "alice@example.com",
                 password: "alice123",
@@ -312,19 +340,19 @@ describe("GET /reset/:token", () => {
             await user.save();
             await supertest(app)
                 .post("/api/auth/reset/" + user.resetPasswordToken)
-                .send({ email: "alice@example.com", password: "alice" })
-                .expect(400);
+                .send({ email: userData.email, password: "alice" })
+                .expect(400)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_PASSWORD_LENGTH));
         });
     });
 });
 
 describe("POST /reset/:token", () => {
-    makeSuite("Valid password token", () => {
-        it("Reset password with valid token", async () => {
+    makeSuite("Valid reset password token", () => {
+        it("Reset password with valid reset password token", async () => {
             const userData = {
                 email: "alice@example.com",
                 password: "alice123",
-                verified: true,
             };
             const user = new User(userData);
             user.generateResetPasswordToken();
@@ -332,16 +360,16 @@ describe("POST /reset/:token", () => {
             await supertest(app)
                 .post("/api/auth/reset/" + user.resetPasswordToken)
                 .send({ password: "bob12345" })
-                .expect(200);
+                .expect(200)
+                .expect((response) => assertBodyMessage(response, SuccessMessage.RESET_PASSWORD_SUCCESS));
         });
     });
 
     makeSuite("Invalid password token", () => {
-        it("Reset password with invalid token", async () => {
+        it("Reset password with invalid reset password token", async () => {
             const userData = {
                 email: "alice@example.com",
                 password: "alice123",
-                verified: true,
             };
             const user = new User(userData);
             user.generateResetPasswordToken();
@@ -354,72 +382,60 @@ describe("POST /reset/:token", () => {
     });
 
     makeSuite("Expired password token", () => {
-        it("Reset password with expired token", async () => {
+        it("Reset password with expired reset password token", async () => {
             const userData = {
                 email: "alice@example.com",
                 password: "alice123",
             };
             const user = new User(userData);
             user.generateResetPasswordToken();
-            // make token expired
-            user.resetPasswordExpires = new Date(0);
+            user.resetPasswordExpires = new Date(0); // make token expired
             await user.save();
             await supertest(app)
                 .post("/api/auth/reset/" + user.resetPasswordToken)
                 .send({ password: "bob12345" })
-                .expect(410);
+                .expect(410)
+                .expect((response) => assertBodyMessage(response, ClientErrorMessage.TOKEN_EXPIRED));
         });
     });
 });
 
 describe("POST /logout", () => {
-    makeSuite("Log out with valid cookie", () => {
-        let cookie = null;
-
-        it("Obtain cookie for user", async () => {
+    makeSuite("Log out", () => {
+        it("Log out user with valid cookie", async () => {
             const userData = {
                 email: "alice@example.com",
                 password: "alice123",
                 verified: true,
             };
             const user = new User(userData);
-            user.generateResetPasswordToken();
             await user.save();
-            const response = await supertest(app)
-                .post("/api/auth/login")
-                .send({ email: userData.email, password: userData.password })
-                .expect(200);
-            cookie = response.headers["set-cookie"];
-        });
-
-        it("Log out", async () => {
-            await supertest(app).post("/api/auth/logout").set("Cookie", cookie).expect(200);
+            const cookie = ["token=" + generateJwt(user)];
+            await supertest(app)
+                .post("/api/auth/logout")
+                .set("Cookie", cookie)
+                .expect(200)
+                .expect((response) => assertBodyMessage(response, SuccessMessage.LOGOUT_SUCCESS));
         });
     });
 });
 
 describe("POST /delete", () => {
-    makeSuite("Delete user with valid cookie", () => {
-        let cookie = null;
-
-        it("Obtain cookie for user", async () => {
+    makeSuite("Delete user", () => {
+        it("Delete user with valid cookie", async () => {
             const userData = {
                 email: "alice@example.com",
                 password: "alice123",
                 verified: true,
             };
             const user = new User(userData);
-            user.generateResetPasswordToken();
             await user.save();
-            const response = await supertest(app)
-                .post("/api/auth/login")
-                .send({ email: userData.email, password: userData.password })
-                .expect(200);
-            cookie = response.headers["set-cookie"];
-        });
-
-        it("Delete user", async () => {
-            await supertest(app).post("/api/auth/delete").set("Cookie", cookie).expect(200);
+            const cookie = ["token=" + generateJwt(user)];
+            await supertest(app)
+                .post("/api/auth/delete")
+                .set("Cookie", cookie)
+                .expect(200)
+                .expect((response) => assertBodyMessage(response, SuccessMessage.USER_DELETED));
         });
     });
 });

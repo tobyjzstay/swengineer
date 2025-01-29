@@ -9,8 +9,8 @@ import { sendMail } from "../../nodemailer";
 const router = express.Router();
 const logger = log4js.getLogger(process.pid.toString());
 
-enum SuccessMessage {
-    ACCOUNT_DELETED = "ACCOUNT_DELETED",
+export enum SuccessMessage {
+    USER_DELETED = "USER_DELETED",
     LOGIN_SUCCESS = "LOGIN_SUCCESS",
     LOGOUT_SUCCESS = "LOGOUT_SUCCESS",
     RESET_EMAIL_SENT = "RESET_EMAIL_SENT",
@@ -20,7 +20,7 @@ enum SuccessMessage {
     VALID_TOKEN = "VALID_TOKEN",
 }
 
-enum ClientErrorMessage {
+export enum ClientErrorMessage {
     DUPLICATE_USER = "DUPLICATE_USER",
     INVALID_EMAIL = "INVALID_EMAIL",
     INVALID_PASSWORD = "INVALID_PASSWORD",
@@ -30,7 +30,7 @@ enum ClientErrorMessage {
     UNVERIFIED_EMAIL = "UNVERIFIED_EMAIL",
 }
 
-enum ServerErrorMessage {
+export enum ServerErrorMessage {
     REGISTER_ERROR = "REGISTER_ERROR",
     VERIFICATION_ERROR = "VERIFICATION_ERROR",
     LOGIN_ERROR = "LOGIN_ERROR",
@@ -241,7 +241,7 @@ router.post("/delete", auth, async (_request, response) => {
     try {
         await User.findByIdAndDelete(user.id).exec();
         delete app.locals.user;
-        response.clearCookie("token").status(200).json({ message: SuccessMessage.ACCOUNT_DELETED });
+        response.clearCookie("token").status(200).json({ message: SuccessMessage.USER_DELETED });
     } catch (error: unknown) {
         logger.error(error);
         response.status(500).json({ message: ServerErrorMessage.ACCOUNT_DELETION_ERROR });
@@ -274,4 +274,8 @@ function sendResetEmail(host: string, token: string, email: string, ip: string) 
     });
 }
 
-module.exports = router;
+module.exports = {
+    router,
+    SuccessMessage,
+    ClientErrorMessage,
+};

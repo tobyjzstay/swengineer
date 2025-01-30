@@ -70,8 +70,8 @@ userSchema.pre("save", function (next) {
         this.password = bcrypt.hashSync(this.password, saltRounds);
         logger.debug(this.email + " password hashed");
         next();
-    } catch (err) {
-        next(err);
+    } catch (error) {
+        next(error);
     }
 });
 
@@ -102,15 +102,6 @@ userSchema.methods.generateResetPasswordToken = function (): string {
     this.resetPasswordExpires = tokenExpiration;
 
     return token;
-};
-
-// sanitize output
-userSchema.methods.toJSON = function () {
-    const object = this.toObject();
-    delete object.password;
-    delete object.verificationToken;
-    delete object.resetPasswordToken;
-    return object;
 };
 
 export const User = mongoose.model<User>("User", userSchema);

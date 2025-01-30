@@ -96,7 +96,16 @@ router.post("/register", async (request, response) => {
         const verificationToken = user.generateVerificationToken();
         await user.save();
         const host = request.headers.referer;
-        sendVerificationEmail(host, verificationToken, email);
+
+        sendMail({
+            to: email,
+            subject: "Email Verification",
+            text:
+                `Verify your email address to finish registering your swengineer account.\n` +
+                `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
+                `${host}/${verificationToken}\n\n`,
+        });
+
         response.status(201).json({ message: SuccessMessage.VERIFICATION_EMAIL_SENT });
     } catch (error: unknown) {
         logger.error(error);
@@ -181,7 +190,20 @@ router.post("/reset", async (request, response) => {
         await user.save();
         const host = request.headers?.referer?.split("reset")[0] + "reset"; // TODO: fix this undefined error
         const ip = request.ip;
-        sendResetEmail(host, token, email, ip);
+
+        sendMail({
+            to: email,
+            subject: "Password Reset",
+            text:
+                `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n` +
+                `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
+                `${host}/${token}\n\n` +
+                `If you did not request this, please ignore this email and your password will remain unchanged.\n\n` +
+                `Email: ${email}\n` +
+                `IP Address: ${ip}\n` +
+                `Created: ${new Date().toString()}\n`,
+        });
+
         response.status(200).json({ message: SuccessMessage.RESET_EMAIL_SENT });
     } catch (error: unknown) {
         logger.error(error);
@@ -247,32 +269,6 @@ router.post("/delete", auth, async (_request, response) => {
         response.status(500).json({ message: ServerErrorMessage.ACCOUNT_DELETION_ERROR });
     }
 });
-
-function sendVerificationEmail(host: string, token: string, email: string) {
-    return sendMail({
-        to: email,
-        subject: "Email Verification",
-        text:
-            `Verify your email address to finish registering your swengineer account.\n` +
-            `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
-            `${host}/${token}\n\n`,
-    });
-}
-
-function sendResetEmail(host: string, token: string, email: string, ip: string) {
-    return sendMail({
-        to: email,
-        subject: "Password Reset",
-        text:
-            `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n` +
-            `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
-            `${host}/${token}\n\n` +
-            `If you did not request this, please ignore this email and your password will remain unchanged.\n\n` +
-            `Email: ${email}\n` +
-            `IP Address: ${ip}\n` +
-            `Created: ${new Date().toString()}\n`,
-    });
-}
 
 module.exports = {
     router,

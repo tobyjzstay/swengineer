@@ -13,9 +13,9 @@ enum ServerErrorMessage {
     INTERNAL_SERVER_ERROR = "INTERNAL_SERVER_ERROR",
 }
 
-export function internalServerError(res: Response, error: unknown) {
+export function internalServerError(response: Response, error: unknown) {
     logger.error(error, new Error().stack);
-    res.status(500).json({ message: ServerErrorMessage.INTERNAL_SERVER_ERROR });
+    response.status(500).json({ message: ServerErrorMessage.INTERNAL_SERVER_ERROR });
 }
 
 module.exports = router;

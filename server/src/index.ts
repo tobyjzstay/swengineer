@@ -1,5 +1,5 @@
-const dotenv = require("dotenv");
-const dotenvExpand = require("dotenv-expand");
+import dotenv from "dotenv";
+import dotenvExpand from "dotenv-expand";
 
 dotenvExpand.expand(dotenv.config({ path: ".env" }));
 dotenvExpand.expand(dotenv.config({ path: ".env." + process.env.NODE_ENV + ".local", override: true }));
@@ -67,18 +67,20 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
     app.use(cors({ credentials: true }));
     app.use(cookieParser());
 
-    app.use((req, res, next) => {
-        const requestUrl = req.url;
-        const responseSend = res.send;
+    app.use((request, response, next) => {
+        const requestUrl = request.url;
+        const responseSend = response.send;
 
-        res.send = function (body): express.Response {
+        response.send = function (body): express.Response {
             let bodyMessage: string;
             if (process.env.NODE_ENV !== "production") {
                 try {
                     bodyMessage = JSON.parse(body)?.message;
                 } catch (error) {}
             }
-            logger.trace(req.method + " " + res.statusCode + (bodyMessage ? " " + bodyMessage : "") + " " + requestUrl);
+            logger.trace(
+                request.method + " " + response.statusCode + (bodyMessage ? " " + bodyMessage : "") + " " + requestUrl
+            );
             return responseSend.call(this, body);
         };
 

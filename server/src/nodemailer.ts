@@ -15,15 +15,9 @@ const transporter = nodemailer.createTransport({
 export async function sendMail(options: Options) {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { from, ...rest } = options;
-    try {
-        const info = await transporter.sendMail({
-            from: process.env.GMAIL_SENDER,
-            ...rest,
-        });
-        logger.info(info.messageId + " email sent to " + rest.to);
-        return true;
-    } catch (error) {
-        logger.error(error);
-    }
-    return false;
+    const info = await transporter.sendMail({
+        from: process.env.GMAIL_SENDER,
+        ...rest,
+    });
+    logger.info(info.messageId + " email sent to " + rest.to);
 }

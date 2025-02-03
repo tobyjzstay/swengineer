@@ -29,12 +29,13 @@ export const Context = React.createContext<Context>({
 
 function App() {
     const [loading, setLoading] = React.useState(0);
-    const [mode, setMode] = React.useState<PaletteMode>("dark");
+    const [mode, setMode] = React.useState<PaletteMode>((localStorage.getItem("theme") as PaletteMode) || "dark");
     const [user, setUser] = React.useState<User>(null);
 
     const { i18n } = useTranslation();
 
     React.useEffect(() => {
+        if (localStorage.getItem("theme")) return;
         // set the mode based on user's system preference by default
         const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
         const handleChange = (event: MediaQueryListEvent) => {

@@ -100,7 +100,15 @@ function Header({ logo = true }: { logo?: boolean }) {
                             </Grid>
                         </DialogContent>
                     </Dialog>
-                    <IconButton onClick={() => context.mode[1]((prev) => (prev === "light" ? "dark" : "light"))}>
+                    <IconButton
+                        onClick={() => {
+                            context.mode[1]((prev) => {
+                                const mode = prev === "light" ? "dark" : "light";
+                                localStorage.setItem("theme", mode);
+                                return mode;
+                            });
+                        }}
+                    >
                         {context.mode[0] === "light" ? <DarkMode /> : <LightMode />}
                     </IconButton>
 

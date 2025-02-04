@@ -22,7 +22,7 @@ import Header from "../components/Header";
 import { getRequest, postRequest, showResponse } from "../components/Request";
 
 interface Notepad {
-    id: string;
+    _id: string;
     title: string;
     content: string;
     created: Date;
@@ -77,7 +77,7 @@ function Notepad() {
         e.stopPropagation();
         const notepad = notepads[index];
         const json = {
-            id: notepad.id,
+            id: notepad._id,
         };
         postRequest("/notepad/delete", json).then((response) => {
             const success = response.status === 200;
@@ -95,7 +95,7 @@ function Notepad() {
         if (!edit) return;
         const notepad = notepads[notepadIndex];
         const json = {
-            id: notepad.id,
+            id: notepad._id,
             title: notepad.title,
             content: notepad.content,
         };
@@ -148,7 +148,7 @@ function Notepad() {
                         {notepads
                             .sort((a, b) => b.modified.getTime() - a.modified.getTime())
                             .map((notepad, i) => (
-                                <Grid key={notepad.id} size={{ xs: 12 }}>
+                                <Grid key={notepad._id} size={{ xs: 12 }}>
                                     <Card sx={{ width: "100%", marginTop: 2 }}>
                                         <CardActionArea onClick={() => handleClick(i)}>
                                             <CardContent>

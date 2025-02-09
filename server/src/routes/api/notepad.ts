@@ -87,10 +87,9 @@ router.post("/edit", auth, async (request, response) => {
         } else {
             notepad.title = title;
             notepad.content = content;
-            notepad.modified = new Date();
             notepad.save();
 
-            response.status(200).json({ modified: notepad.modified });
+            response.status(200).json({ modified: notepad.updatedAt });
         }
     } catch (error) {
         logger.error(error);

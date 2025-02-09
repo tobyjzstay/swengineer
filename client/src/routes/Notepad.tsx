@@ -1,43 +1,49 @@
+import Add from "@mui/icons-material/Add";
+import Delete from "@mui/icons-material/Delete";
+import { Masonry } from "@mui/lab";
 import {
-    Box,
     Card,
     CardActionArea,
     CardActions,
     CardContent,
-    Container,
     Dialog,
     DialogContent,
     DialogTitle,
     Fab,
-    Grid2 as Grid,
-    Icon,
     IconButton,
     TextField,
     Typography,
 } from "@mui/material";
-import { useSnackbar } from "notistack";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/Header";
+import Layout, { LayoutType } from "../components/Layout";
 import { getRequest, postRequest, showResponse } from "../components/Request";
 
 interface Notepad {
     _id: string;
     title: string;
     content: string;
-    created: Date;
-    modified: Date;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 function Notepad() {
-    const { enqueueSnackbar, closeSnackbar } = useSnackbar();
-    const navigate = useNavigate();
-    const forceUpdate = useForceUpdate();
-
+    const [initialised, setInitialised] = React.useState(false);
     const [refresh, setRefresh] = React.useState(true);
     const [notepads, setNotepads] = React.useState<Notepad[]>([]);
     const [notepadIndex, setNotepadIndex] = React.useState(-1);
     const [edit, setEdit] = React.useState(false);
+
+    const navigate = useNavigate();
+    const forceUpdate = useForceUpdate();
+
+    React.useMemo(() => {
+        const pathname = window.location.pathname;
+        getRequest(pathname).then(async (response) => {
+            if (!response.ok) navigate("/login?redirect=" + pathname, { replace: true });
+            else setInitialised(true);
+        });
+    }, [navigate]);
 
     React.useEffect(() => {
         if (!refresh) return;
@@ -49,8 +55,8 @@ function Notepad() {
                 setNotepads(
                     notepads?.map((notepad: Notepad) => ({
                         ...notepad,
-                        created: new Date(notepad.created),
-                        modified: new Date(notepad.modified),
+                        createdAt: new Date(notepad.createdAt),
+                        updatedAt: new Date(notepad.updatedAt),
                     }))
                 );
             setRefresh(false);
@@ -102,7 +108,7 @@ function Notepad() {
         postRequest("/notepad/edit", json).then(async (response) => {
             const json = await response.json();
             const { modified } = json;
-            if (modified) notepads[notepadIndex].modified = new Date(modified);
+            if (modified) notepads[notepadIndex].updatedAt = new Date(modified);
             setEdit(false);
             forceUpdate();
         });
@@ -133,58 +139,40 @@ function Notepad() {
     };
 
     return (
-        <>
-            <Header />
-            <Container maxWidth="sm">
-                <Box
-                    sx={{
-                        marginTop: 8,
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                    }}
-                >
-                    <Grid container spacing={2}>
-                        {notepads
-                            .sort((a, b) => b.modified.getTime() - a.modified.getTime())
-                            .map((notepad, i) => (
-                                <Grid key={notepad._id} size={{ xs: 12 }}>
-                                    <Card sx={{ width: "100%", marginTop: 2 }}>
-                                        <CardActionArea onClick={() => handleClick(i)}>
-                                            <CardContent>
-                                                {notepad.title && (
-                                                    <Typography gutterBottom noWrap>
-                                                        {notepad.title}
-                                                    </Typography>
-                                                )}
-                                                {notepad.content && (
-                                                    <Typography gutterBottom noWrap sx={{ fontSize: 12 }}>
-                                                        {notepad.content}
-                                                    </Typography>
-                                                )}
-                                                <Typography sx={{ fontSize: 12 }} color="text.secondary">
-                                                    Created {notepad.created.toISOString()}
-                                                </Typography>
-                                                <Typography sx={{ fontSize: 12 }} color="text.secondary">
-                                                    Modified {notepad.modified.toISOString()}
-                                                </Typography>
-                                            </CardContent>
-                                            <CardActions>
-                                                <IconButton
-                                                    component="span"
-                                                    size="small"
-                                                    onClick={(e) => handleDelete(e, i)}
-                                                >
-                                                    <Icon fontSize="small">delete</Icon>
-                                                </IconButton>
-                                            </CardActions>
-                                        </CardActionArea>
-                                    </Card>
-                                </Grid>
-                            ))}
-                    </Grid>
-                </Box>
-            </Container>
+        <Layout initialised={initialised} layoutType={LayoutType.Page}>
+            <Masonry columns={{ xs: 1, sm: 2, md: 3 }}>
+                {notepads
+                    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
+                    .map((notepad, i) => (
+                        <Card>
+                            <CardActionArea onClick={() => handleClick(i)}>
+                                <CardContent>
+                                    {notepad.title && (
+                                        <Typography gutterBottom noWrap>
+                                            {notepad.title}
+                                        </Typography>
+                                    )}
+                                    {notepad.content && (
+                                        <Typography gutterBottom sx={{ fontSize: 12 }}>
+                                            {notepad.content}
+                                        </Typography>
+                                    )}
+                                    <Typography sx={{ fontSize: 12 }} color="text.secondary">
+                                        Created {notepad.createdAt.toISOString()}
+                                    </Typography>
+                                    <Typography sx={{ fontSize: 12 }} color="text.secondary">
+                                        Modified {notepad.updatedAt.toISOString()}
+                                    </Typography>
+                                </CardContent>
+                                <CardActions>
+                                    <IconButton component="span" size="small" onClick={(e) => handleDelete(e, i)}>
+                                        <Delete />
+                                    </IconButton>
+                                </CardActions>
+                            </CardActionArea>
+                        </Card>
+                    ))}
+            </Masonry>
             <Dialog
                 fullWidth
                 maxWidth="sm"
@@ -223,9 +211,9 @@ function Notepad() {
                     right: 16,
                 }}
             >
-                <Icon fontSize="small">add</Icon>
+                <Add />
             </Fab>
-        </>
+        </Layout>
     );
 }
 

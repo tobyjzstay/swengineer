@@ -4,30 +4,27 @@ export interface Notepad extends mongoose.Document {
     title: string;
     content: string;
     owner: mongoose.Types.ObjectId;
-    created: Date;
-    modified: Date;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
-const notepadSchema = new mongoose.Schema({
-    title: {
-        type: String,
-        trim: true,
+const notepadSchema = new mongoose.Schema(
+    {
+        title: {
+            type: String,
+            trim: true,
+        },
+        content: {
+            type: String,
+        },
+        owner: {
+            type: mongoose.Types.ObjectId,
+            ref: "User",
+        },
     },
-    content: {
-        type: String,
-    },
-    owner: {
-        type: mongoose.Types.ObjectId,
-        ref: "User",
-    },
-    created: {
-        type: Date,
-        default: Date.now,
-    },
-    modified: {
-        type: Date,
-        default: Date.now,
-    },
-} as any);
+    {
+        timestamps: true,
+    }
+);
 
 export const Notepad = mongoose.model<Notepad>("Notepad", notepadSchema);

@@ -2,6 +2,7 @@ import Add from "@mui/icons-material/Add";
 import Delete from "@mui/icons-material/Delete";
 import { Masonry } from "@mui/lab";
 import {
+    Box,
     Card,
     CardActionArea,
     CardActions,
@@ -18,6 +19,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import Layout, { LayoutType } from "../components/Layout";
 import { getRequest, postRequest, showResponse } from "../components/Request";
+import "./Notepad.scss";
 
 interface Notepad {
     _id: string;
@@ -141,76 +143,77 @@ function Notepad() {
     return (
         <Layout initialised={initialised} layoutType={LayoutType.Page}>
             <Masonry columns={{ xs: 1, sm: 2, md: 3 }}>
-                {notepads
-                    .sort((a, b) => b.updatedAt.getTime() - a.updatedAt.getTime())
-                    .map((notepad, i) => (
-                        <Card>
-                            <CardActionArea onClick={() => handleClick(i)}>
-                                <CardContent>
-                                    {notepad.title && (
-                                        <Typography gutterBottom noWrap>
-                                            {notepad.title}
-                                        </Typography>
-                                    )}
-                                    {notepad.content && (
-                                        <Typography gutterBottom sx={{ fontSize: 12 }}>
-                                            {notepad.content}
-                                        </Typography>
-                                    )}
-                                    <Typography sx={{ fontSize: 12 }} color="text.secondary">
-                                        Created {notepad.createdAt.toISOString()}
+                {notepads.map((notepad, i) => (
+                    <Card>
+                        <CardActionArea onClick={() => handleClick(i)}>
+                            <CardContent>
+                                {notepad.title && (
+                                    <Typography gutterBottom noWrap>
+                                        {notepad.title}
                                     </Typography>
-                                    <Typography sx={{ fontSize: 12 }} color="text.secondary">
-                                        Modified {notepad.updatedAt.toISOString()}
+                                )}
+                                {notepad.content && (
+                                    <Typography gutterBottom sx={{ fontSize: 12 }}>
+                                        {notepad.content}
                                     </Typography>
-                                </CardContent>
-                                <CardActions>
-                                    <IconButton component="span" size="small" onClick={(e) => handleDelete(e, i)}>
-                                        <Delete />
-                                    </IconButton>
-                                </CardActions>
-                            </CardActionArea>
-                        </Card>
-                    ))}
+                                )}
+                                <Typography sx={{ fontSize: 12 }} color="text.secondary">
+                                    Created {notepad.createdAt.toISOString()}
+                                </Typography>
+                                <Typography sx={{ fontSize: 12 }} color="text.secondary">
+                                    Modified {notepad.updatedAt.toISOString()}
+                                </Typography>
+                            </CardContent>
+                            <CardActions>
+                                <IconButton component="span" size="small" onClick={(e) => handleDelete(e, i)}>
+                                    <Delete />
+                                </IconButton>
+                            </CardActions>
+                        </CardActionArea>
+                    </Card>
+                ))}
             </Masonry>
             <Dialog
-                fullWidth
                 maxWidth="sm"
-                open={notepadIndex >= 0}
                 onClose={() => {
                     handleEdit();
                     setNotepadIndex(-1);
                 }}
+                slotProps={{ paper: { className: "notepad-dialog-paper" } }}
+                open={notepadIndex >= 0}
+                scroll="paper"
             >
-                <DialogTitle>
-                    <TextField
-                        fullWidth
-                        label="Title"
-                        margin="dense"
-                        onChange={onTitleChange}
-                        defaultValue={notepadIndex >= 0 ? notepads[notepadIndex].title : ""}
-                    />
-                </DialogTitle>
-                <DialogContent>
-                    <TextField
-                        fullWidth
-                        label="Content"
-                        margin="dense"
-                        multiline
-                        onChange={onContentChange}
-                        defaultValue={notepadIndex >= 0 ? notepads[notepadIndex].content : ""}
-                    />
-                </DialogContent>
+                <Box className="notepad-dialog-box">
+                    <DialogTitle>
+                        <TextField
+                            className="notepad-dialog-title-text-field"
+                            defaultValue={notepadIndex >= 0 ? notepads[notepadIndex].title : ""}
+                            onChange={onTitleChange}
+                            slotProps={{ input: { className: "notepad-dialog-title-text-field-input" } }}
+                            variant="standard"
+                        />
+                    </DialogTitle>
+                    <DialogContent>
+                        <TextField
+                            className="notepad-dialog-content-text-field"
+                            defaultValue={notepadIndex >= 0 ? notepads[notepadIndex].content : ""}
+                            hiddenLabel
+                            minRows={8}
+                            multiline
+                            onChange={onContentChange}
+                            size="small"
+                            slotProps={{
+                                input: {
+                                    className: "notepad-dialog-content-text-field-input",
+                                    disableUnderline: true,
+                                },
+                            }}
+                            variant="filled"
+                        />
+                    </DialogContent>
+                </Box>
             </Dialog>
-            <Fab
-                color="primary"
-                onClick={handleCreate}
-                sx={{
-                    position: "absolute",
-                    bottom: 16,
-                    right: 16,
-                }}
-            >
+            <Fab className="notepad-fab" color="primary" onClick={handleCreate}>
                 <Add />
             </Fab>
         </Layout>

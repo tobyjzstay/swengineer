@@ -28,5 +28,11 @@
         "sendEmail": "Send email",
         "back": "Back",
         "register": "Don't have an account? Register"
+    },
+    "notepad": {
+        "created": "Created",
+        "modified": "Modified",
+        "placeholderTitle": "Title",
+        "placeholderContent": "Take a note..."
     }
 }

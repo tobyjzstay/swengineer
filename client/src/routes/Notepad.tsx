@@ -15,6 +15,7 @@ import {
     TextField,
     Typography,
 } from "@mui/material";
+import { t } from "i18next";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import Layout, { LayoutType } from "../components/Layout";
@@ -153,15 +154,15 @@ function Notepad() {
                                     </Typography>
                                 )}
                                 {notepad.content && (
-                                    <Typography gutterBottom sx={{ fontSize: 12 }}>
+                                    <Typography gutterBottom variant="body2">
                                         {notepad.content}
                                     </Typography>
                                 )}
-                                <Typography sx={{ fontSize: 12 }} color="text.secondary">
-                                    Created {notepad.createdAt.toISOString()}
+                                <Typography className="notepad-typography-caption" component="p" variant="caption">
+                                    {t("notepad.created") + " " + notepad.createdAt.toISOString()}
                                 </Typography>
-                                <Typography sx={{ fontSize: 12 }} color="text.secondary">
-                                    Modified {notepad.updatedAt.toISOString()}
+                                <Typography className="notepad-typography-caption" component="p" variant="caption">
+                                    {t("notepad.modified") + " " + notepad.updatedAt.toISOString()}
                                 </Typography>
                             </CardContent>
                             <CardActions>
@@ -179,9 +180,9 @@ function Notepad() {
                     handleEdit();
                     setNotepadIndex(-1);
                 }}
-                slotProps={{ paper: { className: "notepad-dialog-paper" } }}
                 open={notepadIndex >= 0}
                 scroll="paper"
+                slotProps={{ paper: { className: "notepad-dialog-paper" } }}
             >
                 <Box className="notepad-dialog-box">
                     <DialogTitle>
@@ -189,6 +190,7 @@ function Notepad() {
                             className="notepad-dialog-title-text-field"
                             defaultValue={notepadIndex >= 0 ? notepads[notepadIndex].title : ""}
                             onChange={onTitleChange}
+                            placeholder={t("notepad.placeholderTitle")}
                             slotProps={{ input: { className: "notepad-dialog-title-text-field-input" } }}
                             variant="standard"
                         />
@@ -201,6 +203,7 @@ function Notepad() {
                             minRows={8}
                             multiline
                             onChange={onContentChange}
+                            placeholder={t("notepad.placeholderContent")}
                             size="small"
                             slotProps={{
                                 input: {

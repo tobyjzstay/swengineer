@@ -12,8 +12,7 @@ import "./Login.scss";
 function Login() {
     const context = React.useContext(Context);
 
-    const hasToken = document.cookie.includes("token");
-    const [initialised, setInitialised] = React.useState(!hasToken);
+    const [initialised, setInitialised] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const disabled = !initialised && loading;
 
@@ -25,6 +24,7 @@ function Login() {
         // redirect user if already logged in
         getRequest("/auth", true).then(async (response) => {
             setLoading(false);
+            console.log(redirectTo);
             if (response.ok) navigate(redirectTo, { replace: true });
             else setInitialised(true);
         });

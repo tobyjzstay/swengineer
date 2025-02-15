@@ -1,6 +1,5 @@
 import { AlertColor } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
-import { useParams } from "react-router-dom";
 import { snackbars } from "../App";
 
 declare module "notistack" {
@@ -84,5 +83,7 @@ function isJsonString(str: string) {
 }
 
 export function getRedirectTo() {
-    return useParams().redirect || "/";
+    const query = new URLSearchParams(window.location.search);
+    const redirect = query.get("redirect");
+    return redirect || "/";
 }

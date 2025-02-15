@@ -12,8 +12,7 @@ import "./ResetPassword.scss";
 function ResetPassword() {
     const context = React.useContext(Context);
 
-    const hasToken = document.cookie.includes("token");
-    const [initialised, setInitialised] = React.useState(!hasToken);
+    const [initialised, setInitialised] = React.useState(false);
     const [loading, setLoading] = React.useState(false);
     const [componentToRender, setComponentToRender] = React.useState<React.JSX.Element>();
     const disabled = !initialised && loading;

@@ -1,12 +1,8 @@
 import DarkMode from "@mui/icons-material/DarkMode";
 import Language from "@mui/icons-material/Language";
 import LightMode from "@mui/icons-material/LightMode";
-import Login from "@mui/icons-material/Login";
-import Logout from "@mui/icons-material/Logout";
-import Person from "@mui/icons-material/Person";
 import {
     AppBar,
-    Avatar,
     Box,
     Button,
     Dialog,
@@ -14,10 +10,7 @@ import {
     Grid2 as Grid,
     Icon,
     IconButton,
-    ListItemIcon,
-    Menu,
-    MenuItem,
-    Toolbar,
+    Toolbar
 } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
@@ -26,7 +19,7 @@ import { Context } from "../App";
 import languages from "../locales/languages.json";
 import "./Header.scss";
 import { Logo } from "./Logo";
-import { getRequest, postRequest } from "./Request";
+import { getRequest } from "./Request";
 
 function Header({ logo = true }: { logo?: boolean }) {
     const context = React.useContext(Context);
@@ -112,7 +105,7 @@ function Header({ logo = true }: { logo?: boolean }) {
                         {context.mode[0] === "light" ? <DarkMode /> : <LightMode />}
                     </IconButton>
 
-                    <>
+                    {/* <>
                         <IconButton onClick={(event) => setAnchorEl(event.currentTarget)}>
                             <Avatar className="header-avatar" />
                         </IconButton>
@@ -175,7 +168,7 @@ function Header({ logo = true }: { logo?: boolean }) {
                                 </>
                             )}
                         </Menu>
-                    </>
+                    </> */}
                 </Box>
             </Toolbar>
         </AppBar>

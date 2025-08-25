@@ -49,7 +49,9 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
     });
 
     mongoose.connection.on("connected", () => {
-        logger.info("Connected to MongoDB");
+        const uri = new URL(process.env.MONGODB_URI);
+        uri.password = "*".repeat(uri.password.length);
+        logger.info("Connected to MongoDB at " + uri);
     });
 
     mongoose.connection.on("error", (error) => {

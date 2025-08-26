@@ -12,6 +12,7 @@ if (!process.env.NODE_ENV) {
 require("./passport");
 
 import cluster from "cluster";
+import MongoStore from "connect-mongo";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
@@ -62,9 +63,26 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
     app.use(express.urlencoded({ extended: true }));
     app.use(express.json());
 
-    // initialize passport
+    app.use(
+        session({
+            secret: process.env.SESSION_SECRET,
+            resave: true,
+            saveUninitialized: true,
+            store: MongoStore.create({
+                mongoUrl: process.env.MONGODB_URI,
+                collectionName: "sessions",
+                ttl: 14 * 24 * 60 * 60, // 14 days
+            }),
+            cookie: {
+                maxAge: 1000 * 60 * 60 * 24, // 1 day
+                sameSite: "strict",
+                secure: process.env.NODE_ENV === "production",
+            },
+        })
+    );
+
     app.use(passport.initialize());
-    app.use(session({ secret: process.env.SESSION_SECRET, resave: true, saveUninitialized: true }));
+    app.use(passport.session());
 
     app.use(cors({ credentials: true }));
     app.use(cookieParser());

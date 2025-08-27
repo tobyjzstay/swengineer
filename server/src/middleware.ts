@@ -30,7 +30,7 @@ export const auth = async (request: Request, response: Response, next: NextFunct
     }
 
     try {
-        const data = jwt.verify(token, process.env.API_SECRET);
+        const data = jwt.verify(token, process.env.JWT_SECRET);
         const { id } = data as Payload;
         try {
             const user: User = await User.findOne({ _id: id });
@@ -61,5 +61,5 @@ export function generateJwt(user: User, expiresIn = 86400) {
     const payload: Payload = {
         id: user.id,
     };
-    return jwt.sign(payload, process.env.API_SECRET, { expiresIn });
+    return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn });
 }

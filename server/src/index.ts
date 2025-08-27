@@ -2,6 +2,7 @@ import dotenv from "dotenv";
 import dotenvExpand from "dotenv-expand";
 
 dotenvExpand.expand(dotenv.config({ path: ".env" }));
+dotenvExpand.expand(dotenv.config({ path: ".env." + process.env.NODE_ENV, override: true }));
 dotenvExpand.expand(dotenv.config({ path: ".env." + process.env.NODE_ENV + ".local", override: true }));
 
 if (!process.env.NODE_ENV) {
@@ -21,7 +22,6 @@ import log4js from "log4js";
 import mongoose from "mongoose";
 import os from "os";
 import passport from "passport";
-import path from "path";
 
 const logger = log4js.getLogger(process.pid.toString());
 logger.level = log4js.levels.ALL;
@@ -108,12 +108,6 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
     });
 
     app.use(require("./routes/index"));
-
-    const root = path.join(__dirname, "../../client/build");
-    app.use(express.static(root));
-    app.get("*", function (_req, res) {
-        res.sendFile("index.html", { root });
-    });
 
     const port = parseInt(process.env.PORT) || 0;
     const server = app.listen(port, process.env.HOSTNAME, () => {

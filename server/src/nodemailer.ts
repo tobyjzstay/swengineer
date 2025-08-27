@@ -7,7 +7,7 @@ const logger = log4js.getLogger(process.pid.toString());
 const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
-        user: process.env.GMAIL_EMAIL,
+        user: process.env.GMAIL_USER,
         pass: process.env.GMAIL_PASSWORD,
     },
 });

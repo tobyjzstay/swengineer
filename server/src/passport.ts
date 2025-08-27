@@ -2,6 +2,8 @@ import passport from "passport";
 import { Strategy } from "passport-google-oauth20";
 import { User } from "./models/User";
 
+const callbackURL = `${process.env.API_URI}/api/auth/google/redirect`;
+
 passport.serializeUser((user: User, done) => {
     done(null, user.id);
 });
@@ -18,7 +20,7 @@ passport.use(
             // options for google strategy
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: "/api/auth/google/redirect",
+            callbackURL,
         },
         (_accessToken, _refreshToken, profile, done) => {
             // check if user already exists in our own db

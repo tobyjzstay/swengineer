@@ -8,10 +8,10 @@ declare module "notistack" {
     }
 }
 
-const API_SERVER_URL = "/api";
+const API_URL = process.env.REACT_APP_API_URL || "";
 
 export async function getRequest(input: RequestInfo | URL, quiet?: boolean) {
-    return fetch(API_SERVER_URL + input, {
+    return fetch(API_URL + input, {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
@@ -21,7 +21,7 @@ export async function getRequest(input: RequestInfo | URL, quiet?: boolean) {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function postRequest(input: RequestInfo | URL, body: any, quiet?: boolean) {
-    return fetch(API_SERVER_URL + input, {
+    return fetch(API_URL + input, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",

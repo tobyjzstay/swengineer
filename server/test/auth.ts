@@ -3,14 +3,14 @@ import { assertBodyMessage, makeSuite } from ".";
 import { app } from "../src/index";
 import { generateJwt } from "../src/middleware";
 import { User } from "../src/models/User";
-import { ClientErrorMessage, SuccessMessage } from "../src/routes/api/auth";
+import { ClientErrorMessage, SuccessMessage } from "../src/routes/auth";
 import supertest = require("supertest");
 
 describe("POST /register", () => {
     makeSuite("Register user", () => {
         it("Register a new user", async () => {
             await supertest(app)
-                .post("/api/auth/register")
+                .post("/auth/register")
                 .send({ email: "alice@example.com", password: "alice123" })
                 .expect(201)
                 .expect((response) => assertBodyMessage(response, SuccessMessage.VERIFICATION_EMAIL_SENT));
@@ -26,7 +26,7 @@ describe("POST /register", () => {
             const user = new User(userData);
             await user.save();
             await supertest(app)
-                .post("/api/auth/register")
+                .post("/auth/register")
                 .send({ email: userData.email, password: userData.password })
                 .expect(409)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.DUPLICATE_USER));
@@ -36,7 +36,7 @@ describe("POST /register", () => {
     makeSuite("Email is required", () => {
         it("Register a new user with invalid email", async () => {
             await supertest(app)
-                .post("/api/auth/register")
+                .post("/auth/register")
                 .send({ email: "", password: "alice123" })
                 .expect(400)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_EMAIL));
@@ -46,7 +46,7 @@ describe("POST /register", () => {
     makeSuite("Password is required", () => {
         it("Register a new user with invalid password", async () => {
             await supertest(app)
-                .post("/api/auth/register")
+                .post("/auth/register")
                 .send({ email: "alice@example.com", password: "" })
                 .expect(400)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_PASSWORD));
@@ -56,7 +56,7 @@ describe("POST /register", () => {
     makeSuite("Password must be at least 8 characters", () => {
         it("Register a new user with less than 8 characters", async () => {
             await supertest(app)
-                .post("/api/auth/register")
+                .post("/auth/register")
                 .send({ email: "alice@example.com", password: "alice" })
                 .expect(400)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_PASSWORD_LENGTH));
@@ -73,7 +73,7 @@ describe("POST /register", () => {
             user.generateVerificationToken();
             await user.save();
             await supertest(app)
-                .post("/api/auth/register")
+                .post("/auth/register")
                 .send({ email: "alice@example.com", verify: true })
                 .expect(201)
                 .expect((response) => assertBodyMessage(response, SuccessMessage.VERIFICATION_EMAIL_SENT));
@@ -92,7 +92,7 @@ describe("GET /register/:token", () => {
             user.generateVerificationToken();
             await user.save();
             await supertest(app)
-                .get("/api/auth/register/" + user.verificationToken)
+                .get("/auth/register/" + user.verificationToken)
                 .send()
                 .expect(200)
                 .expect((response) => assertBodyMessage(response, SuccessMessage.VERIFICATION_SUCCESS));
@@ -108,7 +108,7 @@ describe("GET /register/:token", () => {
             const user = new User(userData);
             user.generateVerificationToken();
             await user.save();
-            await supertest(app).get("/api/auth/register/thisisnotavalidtoken").send().expect(404);
+            await supertest(app).get("/auth/register/thisisnotavalidtoken").send().expect(404);
         });
     });
 });
@@ -124,7 +124,7 @@ describe("POST /login", () => {
             const user = new User(userData);
             await user.save();
             await supertest(app)
-                .post("/api/auth/login")
+                .post("/auth/login")
                 .send({ email: "alice@example.com", password: "alice123" })
                 .expect(200)
                 .expect((response) => assertBodyMessage(response, SuccessMessage.LOGIN_SUCCESS));
@@ -135,7 +135,7 @@ describe("POST /login", () => {
     makeSuite("Unregistered user", () => {
         it("Log in with invalid email", async () => {
             await supertest(app)
-                .post("/api/auth/login")
+                .post("/auth/login")
                 .send({ email: "alice@example.com", password: "alice123" })
                 .expect(404)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_EMAIL));
@@ -152,7 +152,7 @@ describe("POST /login", () => {
             const user = new User(userData);
             await user.save();
             await supertest(app)
-                .post("/api/auth/login")
+                .post("/auth/login")
                 .send({ password: userData.password })
                 .expect(404)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_EMAIL));
@@ -169,7 +169,7 @@ describe("POST /login", () => {
             const user = new User(userData);
             await user.save();
             await supertest(app)
-                .post("/api/auth/login")
+                .post("/auth/login")
                 .send({ email: userData.email })
                 .expect(401)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_PASSWORD));
@@ -185,7 +185,7 @@ describe("POST /login", () => {
             const user = new User(userData);
             await user.save();
             await supertest(app)
-                .post("/api/auth/login")
+                .post("/auth/login")
                 .send({ email: userData.email, password: userData.password })
                 .expect(403)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.UNVERIFIED_EMAIL));
@@ -201,7 +201,7 @@ describe("POST /login", () => {
             const user = new User(userData);
             await user.save();
             await supertest(app)
-                .post("/api/auth/login")
+                .post("/auth/login")
                 .send({ email: userData.email, password: "bob12345" })
                 .expect(401)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_PASSWORD));
@@ -217,7 +217,7 @@ describe("POST /login", () => {
             const user = new User(userData);
             await user.save();
             await supertest(app)
-                .post("/api/auth/login")
+                .post("/auth/login")
                 .send({ email: "bob@example.com", password: userData.password })
                 .expect(404)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_EMAIL));
@@ -235,7 +235,7 @@ describe("POST /reset", () => {
             const user = new User(userData);
             await user.save();
             await supertest(app)
-                .post("/api/auth/reset")
+                .post("/auth/reset")
                 .send({ email: userData.email })
                 .expect(200)
                 .expect((response) => assertBodyMessage(response, SuccessMessage.RESET_EMAIL_SENT));
@@ -245,7 +245,7 @@ describe("POST /reset", () => {
     makeSuite("Email is required", () => {
         it("Log in with no email", async () => {
             await supertest(app)
-                .post("/api/auth/reset")
+                .post("/auth/reset")
                 .send({})
                 .expect(404)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_EMAIL));
@@ -255,7 +255,7 @@ describe("POST /reset", () => {
     makeSuite("Invalid email", () => {
         it("Send reset password email to invalid user", async () => {
             await supertest(app)
-                .post("/api/auth/reset")
+                .post("/auth/reset")
                 .send({ email: "alice@example.com" })
                 .expect(404)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_EMAIL));
@@ -274,7 +274,7 @@ describe("GET /reset/:token", () => {
             user.generateResetPasswordToken();
             await user.save();
             await supertest(app)
-                .get("/api/auth/reset/" + user.resetPasswordToken)
+                .get("/auth/reset/" + user.resetPasswordToken)
                 .send()
                 .expect(200)
                 .expect((response) => assertBodyMessage(response, SuccessMessage.VALID_TOKEN));
@@ -290,7 +290,7 @@ describe("GET /reset/:token", () => {
             const user = new User(userData);
             user.generateResetPasswordToken();
             await user.save();
-            await supertest(app).get("/api/auth/reset/thisisnotavalidtoken").send().expect(404);
+            await supertest(app).get("/auth/reset/thisisnotavalidtoken").send().expect(404);
         });
     });
 
@@ -305,7 +305,7 @@ describe("GET /reset/:token", () => {
             user.resetPasswordExpires = new Date(0); // make token expired
             await user.save();
             await supertest(app)
-                .get("/api/auth/reset/" + user.resetPasswordToken)
+                .get("/auth/reset/" + user.resetPasswordToken)
                 .send()
                 .expect(410)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.TOKEN_EXPIRED));
@@ -322,7 +322,7 @@ describe("GET /reset/:token", () => {
             user.generateResetPasswordToken();
             await user.save();
             supertest(app)
-                .post("/api/auth/reset/" + user.resetPasswordToken)
+                .post("/auth/reset/" + user.resetPasswordToken)
                 .send({ email: userData.email })
                 .expect(400)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_PASSWORD));
@@ -339,7 +339,7 @@ describe("GET /reset/:token", () => {
             user.generateResetPasswordToken();
             await user.save();
             await supertest(app)
-                .post("/api/auth/reset/" + user.resetPasswordToken)
+                .post("/auth/reset/" + user.resetPasswordToken)
                 .send({ email: userData.email, password: "alice" })
                 .expect(400)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_PASSWORD_LENGTH));
@@ -358,7 +358,7 @@ describe("POST /reset/:token", () => {
             user.generateResetPasswordToken();
             await user.save();
             await supertest(app)
-                .post("/api/auth/reset/" + user.resetPasswordToken)
+                .post("/auth/reset/" + user.resetPasswordToken)
                 .send({ password: "bob12345" })
                 .expect(200)
                 .expect((response) => assertBodyMessage(response, SuccessMessage.RESET_PASSWORD_SUCCESS));
@@ -374,10 +374,7 @@ describe("POST /reset/:token", () => {
             const user = new User(userData);
             user.generateResetPasswordToken();
             await user.save();
-            await supertest(app)
-                .post("/api/auth/reset/thisisnotavalidtoken")
-                .send({ password: "bob12345" })
-                .expect(404);
+            await supertest(app).post("/auth/reset/thisisnotavalidtoken").send({ password: "bob12345" }).expect(404);
         });
     });
 
@@ -392,7 +389,7 @@ describe("POST /reset/:token", () => {
             user.resetPasswordExpires = new Date(0); // make token expired
             await user.save();
             await supertest(app)
-                .post("/api/auth/reset/" + user.resetPasswordToken)
+                .post("/auth/reset/" + user.resetPasswordToken)
                 .send({ password: "bob12345" })
                 .expect(410)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.TOKEN_EXPIRED));
@@ -412,7 +409,7 @@ describe("POST /logout", () => {
             await user.save();
             const cookie = ["token=" + generateJwt(user)];
             await supertest(app)
-                .post("/api/auth/logout")
+                .post("/auth/logout")
                 .set("Cookie", cookie)
                 .expect(200)
                 .expect((response) => assertBodyMessage(response, SuccessMessage.LOGOUT_SUCCESS));
@@ -432,7 +429,7 @@ describe("POST /delete", () => {
             await user.save();
             const cookie = ["token=" + generateJwt(user)];
             await supertest(app)
-                .post("/api/auth/delete")
+                .post("/auth/delete")
                 .set("Cookie", cookie)
                 .expect(200)
                 .expect((response) => assertBodyMessage(response, SuccessMessage.USER_DELETED));

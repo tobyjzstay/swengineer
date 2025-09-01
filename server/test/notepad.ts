@@ -16,7 +16,7 @@ describe("GET /notepad", () => {
             const user = new User(userData);
             await user.save();
             const cookie = ["token=" + generateJwt(user)];
-            await supertest(app).get("/api/notepad").set("Cookie", cookie).expect(200);
+            await supertest(app).get("/notepad").set("Cookie", cookie).expect(200);
         });
     });
 });

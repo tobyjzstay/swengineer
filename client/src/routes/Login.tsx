@@ -102,7 +102,7 @@ function Login() {
                     className="login-button"
                     component={RouterLink}
                     disabled={disabled}
-                    to="/api/auth/google"
+                    to="/auth/google"
                     variant="outlined"
                 >
                     <Trans i18nKey="login.googleLogIn" />

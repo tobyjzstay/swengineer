@@ -1,9 +1,9 @@
 import express from "express";
 import log4js from "log4js";
-import { app } from "../..";
-import { auth } from "../../middleware";
-import { Notepad } from "../../models/Notepad";
-import { User } from "../../models/User";
+import { app } from "..";
+import { auth } from "../middleware";
+import { Notepad } from "../models/Notepad";
+import { User } from "../models/User";
 
 const router = express.Router();
 const logger = log4js.getLogger(process.pid.toString());

@@ -2,7 +2,7 @@ import passport from "passport";
 import { Strategy } from "passport-google-oauth20";
 import { User } from "./models/User";
 
-const callbackURL = `${process.env.API_URI}/api/auth/google/redirect`;
+const callbackURL = `${process.env.API_URI}/auth/google/redirect`;
 
 passport.serializeUser((user: User, done) => {
     done(null, user.id);

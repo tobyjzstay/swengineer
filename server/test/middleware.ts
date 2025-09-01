@@ -9,7 +9,7 @@ describe("GET /auth", () => {
     makeSuite("No cookie", () => {
         it("Authenticate with no cookie token", async () => {
             await supertest(app)
-                .get("/api/auth")
+                .get("/auth")
                 .expect(401)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_TOKEN));
         });
@@ -19,7 +19,7 @@ describe("GET /auth", () => {
         it("Authenticate with cookie with no token", async () => {
             const cookie = "thisisnotavalidcookie";
             await supertest(app)
-                .get("/api/auth")
+                .get("/auth")
                 .set("Cookie", cookie)
                 .expect(401)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_TOKEN));
@@ -36,7 +36,7 @@ describe("GET /auth", () => {
             const user = new User(userData);
             await user.save();
             const cookie = ["token=" + generateJwt(user)];
-            await supertest(app).get("/api/auth").set("Cookie", cookie).expect(200);
+            await supertest(app).get("/auth").set("Cookie", cookie).expect(200);
         });
     });
 
@@ -51,7 +51,7 @@ describe("GET /auth", () => {
             await user.save();
             const cookie = ["token=thisisnotavalidtoken"];
             await supertest(app)
-                .get("/api/auth")
+                .get("/auth")
                 .set("Cookie", cookie)
                 .expect(401)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_TOKEN));
@@ -70,7 +70,7 @@ describe("GET /auth", () => {
             const cookie = ["token=" + generateJwt(user)];
             await User.findByIdAndDelete(user.id).exec();
             await supertest(app)
-                .get("/api/auth")
+                .get("/auth")
                 .set("Cookie", cookie)
                 .expect(403)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_USER));
@@ -88,7 +88,7 @@ describe("GET /auth", () => {
             await user.save();
             const cookie = ["token=" + generateJwt(user, 0)];
             await supertest(app)
-                .get("/api/auth")
+                .get("/auth")
                 .set("Cookie", cookie)
                 .expect(401)
                 .expect((response) => assertBodyMessage(response, ClientErrorMessage.INVALID_TOKEN));

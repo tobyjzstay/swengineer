@@ -47,9 +47,9 @@
     "main": "dist/index.js",
     "scripts": {
         "build": "tsc",
-        "dev": "NODE_ENV=development DEBUG='*' pnpm start",
         "clean": "rm -rf .nyc_output coverage dist node_modules",
-        "start": "nodemon --watch \"src/**\" --ext \"ts, json\" --exec \"ts-node --transpileOnly src/index.ts\"",
+        "dev": "NODE_ENV=development nodemon --watch \"src/**\" --ext \"ts, json\" --exec \"ts-node --transpileOnly src/index.ts\"",
+        "start": "NODE_ENV=production node dist/index.js",
         "test": "NODE_ENV=test mocha --require ts-node/register test/**/*.ts --recursive --exit --timeout 10000",
         "coverage": "nyc --reporter text --reporter html pnpm test"
     },

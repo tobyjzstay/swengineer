@@ -37,6 +37,7 @@ jobs:
         environment: gcloud
         outputs:
             image: ${{ steps.set-image.outputs.image }}
+            commit: ${{ steps.set-image.outputs.commit }}
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -59,7 +60,8 @@ jobs:
               id: set-image
               run: |
                   IMAGE_BASE="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REPO }}/${{ vars.GCP_CLOUD_RUN_SERVICE }}"
-                  IMAGE_SHA="$IMAGE_BASE:$(git rev-parse --short HEAD)"
+                  COMMIT_SHA="$(git rev-parse --short HEAD)"
+                  IMAGE_SHA="$IMAGE_BASE:$COMMIT_SHA"
                   IMAGE_LATEST="$IMAGE_BASE:latest"
 
                   docker build -t "$IMAGE_SHA" -t "$IMAGE_LATEST" .
@@ -67,6 +69,7 @@ jobs:
                   docker push "$IMAGE_LATEST"
 
                   echo "image=$IMAGE_SHA" >> $GITHUB_OUTPUT
+                  echo "commit=$COMMIT_SHA" >> $GITHUB_OUTPUT
 
     deploy:
         runs-on: ubuntu-latest
@@ -89,7 +92,7 @@ jobs:
                   gcloud auth activate-service-account --key-file=key.json
                   rm key.json
 
-            - name: Download client build artifact
+            - name: Download client build
               uses: actions/download-artifact@v4
               with:
                   name: client-build
@@ -97,12 +100,42 @@ jobs:
 
             - name: Deploy server to Cloud Run
               run: |
-                  gcloud run deploy ${{ vars.GCP_CLOUD_RUN_SERVICE }} \
+                  IMAGE_SHA="${{ needs.build-server.outputs.image }}"
+                  COMMIT_SHA="${{ needs.build-server.outputs.commit }}"
+
+                  DEPLOY_CMD="gcloud run deploy ${{ vars.GCP_CLOUD_RUN_SERVICE }} \
                     --image ${{ needs.build-server.outputs.image }} \
                     --region ${{ vars.GCP_REGION }} \
                     --platform managed \
-                    --allow-unauthenticated
+                    --allow-unauthenticated \
+                    --revision-suffix=$COMMIT_SHA"
+
+                  if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+                    DEPLOY_CMD="$DEPLOY_CMD --revision-tags=${GITHUB_REF_NAME}"
+                  fi
+
+                  eval "$DEPLOY_CMD"
+
+            - name: Delete old Cloud Run revisions
+              run: |
+                  SERVICE=${{ vars.GCP_CLOUD_RUN_SERVICE }}
+                  REGION=${{ vars.GCP_REGION }}
+                  COMMIT_SHA="${{ needs.build-server.outputs.commit }}"
+                  for R in $(gcloud run revisions list --service $SERVICE --region $REGION --format="value(metadata.name)" | grep -v $COMMIT_SHA); do
+                    gcloud run revisions delete $R --region $REGION --quiet
+                  done
+
+            - name: Delete old server images
+              run: |
+                  IMAGE_BASE="${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/${{ vars.GCP_ARTIFACT_REPO }}/${{ vars.GCP_CLOUD_RUN_SERVICE }}"
+                  COMMIT_SHA="${{ needs.build-server.outputs.commit }}"
+
+                  for TAG in $(gcloud artifacts docker images list $IMAGE_BASE --include-tags --format="value(TAGS)" | tr ',' '\n' | grep -v -E "^($COMMIT_SHA|latest)$"); do
+                    if [ -n "$TAG" ]; then
+                      gcloud artifacts docker images delete "$IMAGE_BASE:$TAG" --quiet --delete-tags
+                    fi
+                  done
 
             - name: Upload client to GCS
               run: |
-                  gsutil -m rsync -r build gs://${{ vars.GCP_BUCKET }}
+                  gsutil -m rsync -d -r build gs://${{ vars.GCP_BUCKET }}

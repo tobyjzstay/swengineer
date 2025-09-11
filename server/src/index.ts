@@ -24,7 +24,7 @@ import os from "os";
 import passport from "passport";
 
 const logger = log4js.getLogger(process.pid.toString());
-logger.level = log4js.levels.ALL;
+logger.level = process.env.LOG_LEVEL || log4js.levels.ALL;
 
 export const app = express();
 

@@ -41,7 +41,7 @@
         "generate-sitemap": "ts-node --compilerOptions '{\"module\": \"CommonJS\"}' generate-sitemap.ts",
         "build": "DISABLE_ESLINT_PLUGIN=true react-scripts build && pnpm generate-sitemap",
         "clean": "rm -rf build dist node_modules",
-        "dev": "react-scripts start",
+        "dev": "PORT=3000 react-scripts start",
         "start": "serve -s build",
         "test": "react-scripts test --passWithNoTests --watchAll=false",
         "coverage": "nyc --reporter=html --reporter=text-summary pnpm test",

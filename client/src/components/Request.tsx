@@ -9,48 +9,78 @@ declare module "notistack" {
 }
 
 const API_URL = process.env.REACT_APP_API_URL || "";
+const EMPTY_JSON = JSON.stringify({});
 
 export async function getRequest(input: RequestInfo | URL, quiet?: boolean) {
-    return fetch(API_URL + input, {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-        },
-    }).then((response) => (quiet ? response : showResponse(response)));
+    let response: Response;
+    try {
+        response = await fetch(API_URL + input, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+    } catch (error) {
+        console.error(error);
+        response = new Response(EMPTY_JSON, {
+            status: 500,
+            statusText: "Internal Server Error",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+    }
+
+    if (!quiet) showResponse(response.clone());
+    return response;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function postRequest(input: RequestInfo | URL, body: any, quiet?: boolean) {
-    return fetch(API_URL + input, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-    }).then((response) => (quiet ? response : showResponse(response)));
+    let response: Response;
+    try {
+        response = await fetch(API_URL + input, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(body),
+        });
+    } catch (error) {
+        console.error(error);
+        response = new Response(EMPTY_JSON, {
+            status: 500,
+            statusText: "Internal Server Error",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+    }
+
+    if (!quiet) showResponse(response.clone());
+    return response;
 }
 
 export async function showResponse(response: Response) {
-    const clone = response.clone();
+    const { status, statusText } = response;
 
     let json;
     try {
         json = await response.json();
-    } catch {
+    } catch (error) {
+        // don't handle error here - caller is responsible
         json = null;
     }
 
-    let severity: AlertColor = "info";
-    switch (~~(response.status / 100)) {
+    let severity: AlertColor;
+    switch (~~(status / 100)) {
         default:
         case 1:
+        case 3:
             severity = "info";
             break;
         case 2:
             severity = "success";
-            break;
-        case 3:
-            severity = "info";
             break;
         case 4:
             severity = "error";
@@ -60,26 +90,14 @@ export async function showResponse(response: Response) {
             break;
     }
 
-    const message = isJsonString(json) ? json ?? "" : json?.message ?? "";
     snackbars.push(
-        enqueueSnackbar(message, {
+        enqueueSnackbar(json?.message || "", {
             variant: "alert",
-            severity: severity,
-            status: response.status,
-            statusText: response.statusText,
+            severity,
+            status,
+            statusText,
         })
     );
-
-    return clone;
-}
-
-function isJsonString(str: string) {
-    try {
-        JSON.parse(str);
-    } catch {
-        return false;
-    }
-    return true;
 }
 
 export function getRedirectTo() {

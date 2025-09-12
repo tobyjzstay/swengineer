@@ -26,6 +26,10 @@ jobs:
                   pnpm install --frozen-lockfile
                   pnpm build
 
+            - name: Create 404.html from index.html
+              working-directory: client/build
+              run: cp index.html 404.html
+
             - name: Upload client build
               uses: actions/upload-artifact@v4
               with:

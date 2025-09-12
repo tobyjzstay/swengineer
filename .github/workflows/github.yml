@@ -14,11 +14,6 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
-            - name: Create client .env for React build
-              working-directory: client
-              run: |
-                  env | grep '^REACT_APP_' > .env
-
             - name: Build client
               working-directory: client
               run: |

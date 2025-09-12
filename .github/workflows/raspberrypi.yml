@@ -14,6 +14,11 @@ jobs:
             - name: Checkout code
               uses: actions/checkout@v4
 
+            - name: Create .env file
+              working-directory: client
+              run: |
+                  env | grep '^REACT_APP_' > .env
+
             - name: Build client
               working-directory: client
               run: |
@@ -36,6 +41,7 @@ jobs:
         environment: raspberrypi
         outputs:
             image: ${{ steps.set-image.outputs.image }}
+            repo: ${{ steps.set-image.outputs.repo }}
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
@@ -66,10 +72,13 @@ jobs:
                     --push .
 
                   echo "image=$IMAGE_SHA" >> $GITHUB_OUTPUT
+                  echo "repo=$IMAGE_BASE" >> $GITHUB_OUTPUT
 
     deploy:
         runs-on: [self-hosted, Linux, ARM64]
         environment: raspberrypi
+        env:
+            REACT_APP_API_URL: ${{ vars.REACT_APP_API_URL }}
         needs: [build-client, build-server]
         steps:
             - name: Download client build
@@ -84,8 +93,10 @@ jobs:
             - name: Deploy to Raspberry Pi
               run: |
                   IMAGE_SHA="${{ needs.build-server.outputs.image }}"
+                  IMAGE_REPO="${{ needs.build-server.outputs.repo }}"
 
-                  cp -r client/build/ ${{ vars.DEPLOY_TARGET }}/
+                  rm -rf ${{ vars.DEPLOY_TARGET }}/*
+                  cp -r client/build/* ${{ vars.DEPLOY_TARGET }}/
 
                   docker pull $IMAGE_SHA
                   docker stop swengineer || true
@@ -108,3 +119,11 @@ jobs:
                     -e SESSION_SECRET="${{ secrets.SESSION_SECRET }}" \
                     -e TOKEN_SIZE=${{ vars.TOKEN_SIZE }} \
                     $IMAGE_SHA
+                  docker container prune -f
+                  docker images "$IMAGE_REPO" --format "{{.Repository}}:{{.Tag}}" |
+                    grep -v "$IMAGE_SHA" | \
+                    xargs -r docker rmi -f
+
+            - name: Cleanup GitHub Actions workspace
+              if: always()
+              run: rm -rf $GITHUB_WORKSPACE/*

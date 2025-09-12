@@ -1,17 +1,7 @@
 import DarkMode from "@mui/icons-material/DarkMode";
 import Language from "@mui/icons-material/Language";
 import LightMode from "@mui/icons-material/LightMode";
-import {
-    AppBar,
-    Box,
-    Button,
-    Dialog,
-    DialogContent,
-    Grid2 as Grid,
-    Icon,
-    IconButton,
-    Toolbar
-} from "@mui/material";
+import { AppBar, Box, Button, Dialog, DialogContent, Grid2 as Grid, Icon, IconButton, Toolbar } from "@mui/material";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -44,11 +34,18 @@ function Header({ logo = true }: { logo?: boolean }) {
     };
 
     React.useEffect(() => {
-        getRequest("/auth", true).then(async (response) => {
-            const json = await response.json();
-            const { user } = json;
-            context.user[1](user);
-        });
+        const fetchUser = async () => {
+            try {
+                const response = await getRequest("/auth", true);
+                const json = await response.json();
+                const { user } = json;
+                context.user[1](user);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchUser();
     }, []);
 
     return (

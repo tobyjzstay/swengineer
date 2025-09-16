@@ -29,15 +29,16 @@
         <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
         <link rel="canonical" href="https://swengineer.dev" />
 
-        <script async src="https://www.googletagmanager.com/gtag/js?id=G-DP37TW8LLV"></script>
+        <script async src="%REACT_APP_API_URL%/gtm.js"></script>
         <script>
             window.dataLayer = window.dataLayer || [];
             function gtag() {
                 dataLayer.push(arguments);
             }
             gtag("js", new Date());
-            gtag("config", "G-DP37TW8LLV");
+            gtag("config", "%REACT_APP_GTM_ID%");
         </script>
+
         <title>swengineer</title>
     </head>
     <body>

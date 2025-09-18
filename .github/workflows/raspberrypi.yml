@@ -117,9 +117,6 @@ jobs:
                   docker run -d --name swengineer \
                     --restart unless-stopped \
                     -p ${{ vars.PORT }}:${{ vars.PORT }} \
-                    -e GMAIL_PASSWORD="${{ secrets.GMAIL_PASSWORD }}" \
-                    -e GMAIL_SENDER='${{ vars.GMAIL_SENDER }}' \
-                    -e GMAIL_USER="${{ vars.GMAIL_USER }}" \
                     -e GOOGLE_CLIENT_ID="${{ vars.GOOGLE_CLIENT_ID }}" \
                     -e GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
                     -e HOSTNAME="${{ vars.HOSTNAME }}" \
@@ -133,6 +130,11 @@ jobs:
                     -e SALT_ROUNDS=${{ vars.SALT_ROUNDS }} \
                     -e SESSION_COOKIE_DOMAIN="${{ vars.SESSION_COOKIE_DOMAIN }}" \
                     -e SESSION_SECRET="${{ secrets.SESSION_SECRET }}" \
+                    -e SMTP_HOST="${{ vars.SMTP_HOST }}" \
+                    -e SMTP_PASSWORD="${{ secrets.SMTP_PASSWORD }}" \
+                    -e SMTP_PORT="${{ vars.SMTP_PORT }}" \
+                    -e SMTP_SENDER='${{ vars.SMTP_SENDER }}' \
+                    -e SMTP_USERNAME="${{ vars.SMTP_USERNAME }}" \
                     -e TOKEN_SIZE=${{ vars.TOKEN_SIZE }} \
                     $IMAGE_SHA
                   docker container prune -f

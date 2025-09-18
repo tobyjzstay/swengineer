@@ -119,6 +119,7 @@ jobs:
                     -e REACT_APP_API_URL="${{ vars.REACT_APP_API_URL }}" \
                     -e REACT_APP_GTM_ID="${{ vars.REACT_APP_GTM_ID }}" \
                     -e SALT_ROUNDS=${{ vars.SALT_ROUNDS }} \
+                    -e SESSION_COOKIE_DOMAIN="${{ vars.SESSION_COOKIE_DOMAIN }}" \
                     -e SESSION_SECRET="${{ secrets.SESSION_SECRET }}" \
                     -e TOKEN_SIZE=${{ vars.TOKEN_SIZE }} \
                     $IMAGE_SHA

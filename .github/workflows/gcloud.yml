@@ -63,7 +63,11 @@ jobs:
                   IMAGE_SHA="$IMAGE_BASE:$COMMIT_SHA"
                   IMAGE_LATEST="$IMAGE_BASE:latest"
 
-                  docker build -t "$IMAGE_SHA" -t "$IMAGE_LATEST" .
+                  docker build \
+                    --build-arg SESSION_COOKIE_DOMAIN="${{ vars.SESSION_COOKIE_DOMAIN }}" \
+                    -t "$IMAGE_SHA" \
+                    -t "$IMAGE_LATEST" \
+                    .
                   docker push "$IMAGE_SHA"
                   docker push "$IMAGE_LATEST"
 
@@ -97,17 +101,12 @@ jobs:
                   name: client-build
                   path: build
 
-            - name: Deploy server to Cloud Run
-              run: |
-                  gcloud run deploy ${{ vars.GCP_CLOUD_RUN_SERVICE }} \
-                    --image ${{ needs.build-server.outputs.image }} \
-                    --region ${{ vars.GCP_REGION }} \
-                    --platform managed \
-                    --allow-unauthenticated
-
             - name: Upload client to GCS
               run: |
                   gsutil -m rsync -r build gs://${{ vars.GCP_BUCKET }}
+
+            - name: Deploy server to Cloud Run
+              run: |
                   IMAGE_SHA="${{ needs.build-server.outputs.image }}"
                   COMMIT_SHA="${{ needs.build-server.outputs.commit }}"
 

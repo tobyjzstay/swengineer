@@ -65,19 +65,20 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
 
     app.use(
         session({
+            cookie: {
+                ...(process.env.NODE_ENV === "production" && { domain: process.env.SESSION_COOKIE_DOMAIN }),
+                httpOnly: true,
+                maxAge: 1000 * 60 * 60 * 24, // 1 day
+                secure: process.env.NODE_ENV === "production",
+            },
+            resave: false,
+            saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
-            resave: true,
-            saveUninitialized: true,
             store: MongoStore.create({
                 mongoUrl: process.env.MONGODB_URI,
                 collectionName: "sessions",
                 ttl: 14 * 24 * 60 * 60, // 14 days
             }),
-            cookie: {
-                maxAge: 1000 * 60 * 60 * 24, // 1 day
-                sameSite: "strict",
-                secure: process.env.NODE_ENV === "production",
-            },
         })
     );
 

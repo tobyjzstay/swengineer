@@ -26,6 +26,8 @@ import passport from "passport";
 const logger = log4js.getLogger(process.pid.toString());
 logger.level = process.env.LOG_LEVEL || log4js.levels.ALL;
 
+const version = process.env.REACT_APP_VERSION || "0.0.0-" + process.env.NODE_ENV;
+
 export const app = express();
 
 if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
@@ -90,8 +92,10 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
 
     app.use((request, response, next) => {
         const requestUrl = request.url;
-        const responseSend = response.send;
 
+        response.setHeader("X-App-Version", version);
+
+        const responseSend = response.send;
         response.send = function (body): express.Response {
             let bodyMessage: string;
             if (process.env.NODE_ENV !== "production") {

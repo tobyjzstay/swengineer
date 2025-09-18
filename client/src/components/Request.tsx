@@ -1,5 +1,6 @@
 import { AlertColor } from "@mui/material";
 import { enqueueSnackbar } from "notistack";
+import { version } from "..";
 import { snackbars } from "../App";
 
 declare module "notistack" {
@@ -18,6 +19,7 @@ export async function getRequest(input: RequestInfo | URL, quiet?: boolean) {
             method: "GET",
             headers: {
                 "Content-Type": "application/json",
+                "X-App-Version": version,
             },
         });
     } catch (error) {
@@ -27,6 +29,7 @@ export async function getRequest(input: RequestInfo | URL, quiet?: boolean) {
             statusText: "Internal Server Error",
             headers: {
                 "Content-Type": "application/json",
+                "X-App-Version": version,
             },
         });
     }
@@ -43,6 +46,7 @@ export async function postRequest(input: RequestInfo | URL, body: any, quiet?: b
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "X-App-Version": version,
             },
             body: JSON.stringify(body),
         });

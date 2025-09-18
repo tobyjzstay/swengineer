@@ -10,13 +10,23 @@ jobs:
         environment: gcloud
         env:
             REACT_APP_API_URL: ${{ vars.REACT_APP_API_URL }}
+        outputs:
+            version: ${{ steps.build-client.outputs.version }}
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
             - name: Build client
               working-directory: client
+              id: build-client
               run: |
+                  TAG="$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")"
+                  COMMIT_SHA="$(git rev-parse --short HEAD)"
+                  export REACT_APP_VERSION="${TAG#v}-gcloud+${COMMIT_SHA}"
+                  echo "version=$REACT_APP_VERSION" >> $GITHUB_OUTPUT
+
                   npm install -g pnpm
                   pnpm install --frozen-lockfile
                   pnpm build
@@ -64,6 +74,7 @@ jobs:
                   IMAGE_LATEST="$IMAGE_BASE:latest"
 
                   docker build \
+                    --build-arg REACT_APP_VERSION="${{ needs.build-client.outputs.version }}" \
                     --build-arg SESSION_COOKIE_DOMAIN="${{ vars.SESSION_COOKIE_DOMAIN }}" \
                     -t "$IMAGE_SHA" \
                     -t "$IMAGE_LATEST" \
@@ -109,6 +120,7 @@ jobs:
               run: |
                   IMAGE_SHA="${{ needs.build-server.outputs.image }}"
                   COMMIT_SHA="${{ needs.build-server.outputs.commit }}"
+                  VERSION="${{ needs.build-client.outputs.version }}"
 
                   DEPLOY_CMD="gcloud run deploy ${{ vars.GCP_CLOUD_RUN_SERVICE }} \
                     --image ${{ needs.build-server.outputs.image }} \

@@ -7,5 +7,8 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./i18n";
 
+export const version = process.env.REACT_APP_VERSION || "0.0.0-" + process.env.NODE_ENV;
+console.debug(version);
+
 const root = ReactDOM.createRoot(document.getElementById("root") as HTMLElement);
 root.render(<App />);

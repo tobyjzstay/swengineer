@@ -11,9 +11,13 @@ jobs:
         env:
             REACT_APP_API_URL: ${{ vars.REACT_APP_API_URL }}
             REACT_APP_GTM_ID: ${{ vars.REACT_APP_GTM_ID }}
+        outputs:
+            version: ${{ steps.build-client.outputs.version }}
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
             - name: Create .env file
               working-directory: client
@@ -22,7 +26,13 @@ jobs:
 
             - name: Build client
               working-directory: client
+              id: build-client
               run: |
+                  TAG="$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")"
+                  COMMIT_SHA="$(git rev-parse --short HEAD)"
+                  export REACT_APP_VERSION="${TAG#v}-raspberrypi+${COMMIT_SHA}"
+                  echo "version=$REACT_APP_VERSION" >> $GITHUB_OUTPUT
+
                   npm install -g pnpm
                   pnpm install --frozen-lockfile
                   pnpm build
@@ -81,6 +91,7 @@ jobs:
         env:
             REACT_APP_API_URL: ${{ vars.REACT_APP_API_URL }}
             REACT_APP_GTM_ID: ${{ vars.REACT_APP_GTM_ID }}
+            REACT_APP_VERSION: ${{ needs.build-client.outputs.version }}
         needs: [build-client, build-server]
         steps:
             - name: Download client build
@@ -118,6 +129,7 @@ jobs:
                     -e PORT=${{ vars.PORT }} \
                     -e REACT_APP_API_URL="${{ vars.REACT_APP_API_URL }}" \
                     -e REACT_APP_GTM_ID="${{ vars.REACT_APP_GTM_ID }}" \
+                    -e REACT_APP_VERSION="${{ needs.build-client.outputs.version }}" \
                     -e SALT_ROUNDS=${{ vars.SALT_ROUNDS }} \
                     -e SESSION_COOKIE_DOMAIN="${{ vars.SESSION_COOKIE_DOMAIN }}" \
                     -e SESSION_SECRET="${{ secrets.SESSION_SECRET }}" \

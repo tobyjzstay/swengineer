@@ -13,10 +13,16 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+              with:
+                  fetch-depth: 0
 
             - name: Build client
               working-directory: client
               run: |
+                  TAG="$(git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0")"
+                  COMMIT_SHA="$(git rev-parse --short HEAD)"
+                  export REACT_APP_VERSION="${TAG#v}-github+${COMMIT_SHA}"
+
                   npm install -g pnpm
                   pnpm install --frozen-lockfile
                   pnpm build

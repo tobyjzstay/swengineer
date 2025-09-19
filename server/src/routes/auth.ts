@@ -95,7 +95,6 @@ router.post("/register", async (request, response) => {
 
         const verificationToken = user.generateVerificationToken();
         await user.save();
-        const host = request.headers.referer;
 
         sendMail({
             to: email,
@@ -103,7 +102,7 @@ router.post("/register", async (request, response) => {
             text:
                 `Verify your email address to finish registering your swengineer account.\n` +
                 `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
-                `${host}/${verificationToken}\n\n`,
+                `${process.env.REACT_APP_BASE_URL}/${verificationToken}\n\n`,
         });
 
         response.status(201).json({ message: SuccessMessage.VERIFICATION_EMAIL_SENT });
@@ -188,7 +187,6 @@ router.post("/reset", async (request, response) => {
 
         const token = user.generateResetPasswordToken();
         await user.save();
-        const host = request.headers?.referer?.split("reset")[0] + "reset"; // TODO: fix this undefined error
         const ip = request.ip;
 
         sendMail({
@@ -197,7 +195,7 @@ router.post("/reset", async (request, response) => {
             text:
                 `You are receiving this because you (or someone else) have requested the reset of the password for your account.\n` +
                 `Please click on the following link, or paste this into your browser to complete the process:\n\n` +
-                `${host}/${token}\n\n` +
+                `${process.env.REACT_APP_BASE_URL}/reset/${token}\n\n` +
                 `If you did not request this, please ignore this email and your password will remain unchanged.\n\n` +
                 `Email: ${email}\n` +
                 `IP Address: ${ip}\n` +

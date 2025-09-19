@@ -10,6 +10,7 @@ jobs:
         environment: github
         env:
             REACT_APP_API_URL: ${{ vars.REACT_APP_API_URL }}
+            REACT_APP_BASE_URL: ${{ vars.REACT_APP_BASE_URL }}
             REACT_APP_GTM_ID: ${{ vars.REACT_APP_GTM_ID }}
         steps:
             - name: Checkout code

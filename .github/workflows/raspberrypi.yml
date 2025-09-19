@@ -19,11 +19,6 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - name: Create .env file
-              working-directory: client
-              run: |
-                  env | grep '^REACT_APP_' > .env
-
             - name: Build client
               working-directory: client
               id: build-client

@@ -1,21 +1,9 @@
-import dotenv from "dotenv";
-import dotenvExpand from "dotenv-expand";
-
-dotenvExpand.expand(dotenv.config({ path: ".env" }));
-dotenvExpand.expand(dotenv.config({ path: ".env." + process.env.NODE_ENV, override: true }));
-dotenvExpand.expand(dotenv.config({ path: ".env." + process.env.NODE_ENV + ".local", override: true }));
-
-if (!process.env.NODE_ENV) {
-    console.error("NODE_ENV is not set");
-    process.exit(1);
-}
-
-require("./passport");
-
 import cluster from "cluster";
 import MongoStore from "connect-mongo";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import dotenv from "dotenv";
+import dotenvExpand from "dotenv-expand";
 import express from "express";
 import session from "express-session";
 import log4js from "log4js";
@@ -26,7 +14,39 @@ import passport from "passport";
 const logger = log4js.getLogger(process.pid.toString());
 logger.level = process.env.LOG_LEVEL || log4js.levels.ALL;
 
-const version = process.env.REACT_APP_VERSION || "0.0.0-" + process.env.NODE_ENV;
+dotenvExpand.expand(dotenv.config({ path: ".env" }));
+dotenvExpand.expand(dotenv.config({ path: ".env." + process.env.NODE_ENV, override: true }));
+
+const requiredEnvVariables = [
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
+    "JWT_SECRET",
+    "NODE_ENV",
+    "REACT_APP_API_URL",
+    "REACT_APP_BASE_URL",
+    "REACT_APP_GTM_ID",
+    "SESSION_SECRET",
+    "SMTP_HOST",
+    "SMTP_PASSWORD",
+    "SMTP_PORT",
+    "SMTP_USERNAME",
+];
+const productionEnvVariables = ["SESSION_COOKIE_DOMAIN"];
+if (process.env.NODE_ENV === "production") requiredEnvVariables.push(...productionEnvVariables);
+
+const missingEnvVariables = requiredEnvVariables.filter((envVariable) => !process.env[envVariable]);
+if (missingEnvVariables.length > 0) {
+    logger.error("Missing required environment variable(s): " + missingEnvVariables.join(", "));
+    process.exit(1);
+}
+
+let apiUrl = process.env.REACT_APP_API_URL;
+const hostname = process.env.HOSTNAME || "localhost";
+const mongoUrl = process.env.MONGODB_URI || `http://localhost:27017/${process.env.NODE_ENV}`;
+const port = Number(process.env.PORT) || 0;
+const saltRounds = Number(process.env.SALT_ROUNDS) || 10;
+const tokenSize = Number(process.env.TOKEN_SIZE) || 16;
+const version = process.env.REACT_APP_VERSION || `0.0.0-${process.env.NODE_ENV}`;
 
 export const app = express();
 
@@ -44,15 +64,13 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
         cluster.fork();
     });
 } else {
-    const logger = log4js.getLogger(process.pid.toString());
-
     mongoose.set("strictQuery", false);
-    mongoose.connect(process.env.MONGODB_URI).catch((error) => {
+    mongoose.connect(mongoUrl).catch((error) => {
         logger.error(error);
     });
 
     mongoose.connection.on("connected", () => {
-        const uri = new URL(process.env.MONGODB_URI);
+        const uri = new URL(mongoUrl);
         uri.password = "*".repeat(uri.password.length);
         logger.info("Connected to MongoDB at " + uri);
     });
@@ -77,13 +95,14 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
             saveUninitialized: false,
             secret: process.env.SESSION_SECRET,
             store: MongoStore.create({
-                mongoUrl: process.env.MONGODB_URI,
+                mongoUrl,
                 collectionName: "sessions",
                 ttl: 14 * 24 * 60 * 60, // 14 days
             }),
         })
     );
 
+    require("./passport");
     app.use(passport.initialize());
     app.use(passport.session());
 
@@ -114,13 +133,15 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
 
     app.use(require("./routes/index"));
 
-    const port = parseInt(process.env.PORT) || 0;
-    const server = app.listen(port, process.env.HOSTNAME, () => {
+    const server = app.listen(port, hostname, () => {
         const address = server.address();
-        const uri = typeof address === "string" ? address : "http://" + address?.address + ":" + address?.port + "/";
-        logger.info("HTTP server listening at " + uri);
+        if (typeof address === "string") logger.info(`HTTP server listening on pipe ${address}`);
+        else {
+            apiUrl ??= `http://${hostname}:${address?.port}`;
+            logger.info(`HTTP server listening at ${apiUrl}`);
+        }
     });
 }
 
-export { mongoose };
+export { apiUrl, mongoose, saltRounds, tokenSize };
 

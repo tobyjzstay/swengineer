@@ -2,11 +2,9 @@ import bcrypt from "bcryptjs";
 import log4js from "log4js";
 import mongoose from "mongoose";
 import crypto from "node:crypto";
+import { saltRounds, tokenSize } from "..";
 
 const logger = log4js.getLogger(process.pid.toString());
-
-const TOKEN_SIZE = Number(process.env.TOKEN_SIZE) || 16;
-const SALT_ROUNDS = Number(process.env.SALT_ROUNDS) || 10;
 
 export interface User extends mongoose.Document {
     email: string;
@@ -67,7 +65,7 @@ const userSchema = new mongoose.Schema(
 userSchema.pre("save", function (next) {
     if (!this.isModified("password")) return next();
     try {
-        this.password = bcrypt.hashSync(this.password, SALT_ROUNDS);
+        this.password = bcrypt.hashSync(this.password, saltRounds);
         logger.debug(this.email + " password hashed");
         next();
     } catch (error) {
@@ -81,7 +79,7 @@ userSchema.methods.comparePassword = async function (candidatePassword: string) 
 };
 
 userSchema.methods.generateVerificationToken = function (): string {
-    const token = crypto.randomBytes(TOKEN_SIZE).toString("hex");
+    const token = crypto.randomBytes(tokenSize).toString("hex");
     this.verificationToken = token;
     logger.debug(this.email + " verification token generated");
 
@@ -93,7 +91,7 @@ userSchema.methods.verifyResetPasswordToken = function (): boolean {
 };
 
 userSchema.methods.generateResetPasswordToken = function (): string {
-    const token = crypto.randomBytes(TOKEN_SIZE).toString("hex");
+    const token = crypto.randomBytes(tokenSize).toString("hex");
     this.resetPasswordToken = token;
     logger.debug(this.email + " reset password token generated");
 

@@ -1,13 +1,11 @@
 import express from "express";
-import log4js from "log4js";
 import passport from "passport";
-import { app } from "..";
+import { app, logger } from "..";
 import { auth, generateJwt } from "../middleware";
 import { User } from "../models/User";
 import { sendMail } from "../nodemailer";
 
 const router = express.Router();
-const logger = log4js.getLogger(process.pid.toString());
 
 export enum SuccessMessage {
     USER_DELETED = "USER_DELETED",

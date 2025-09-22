@@ -143,5 +143,5 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
     });
 }
 
-export { apiUrl, mongoose, saltRounds, tokenSize };
+export { apiUrl, logger, mongoose, saltRounds, tokenSize };
 

@@ -1,12 +1,10 @@
 import express from "express";
-import log4js from "log4js";
-import { app } from "..";
+import { app, logger } from "..";
 import { auth } from "../middleware";
 import { Notepad } from "../models/Notepad";
 import { User } from "../models/User";
 
 const router = express.Router();
-const logger = log4js.getLogger(process.pid.toString());
 
 export enum SuccessMessage {
     NOTEPAD_CREATED = "NOTEPAD_CREATED",

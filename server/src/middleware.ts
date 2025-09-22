@@ -1,10 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import log4js from "log4js";
-import { app } from "./";
+import { app, logger } from ".";
 import { User } from "./models/User";
-
-const logger = log4js.getLogger(process.pid.toString());
 
 type Payload = {
     id: string;

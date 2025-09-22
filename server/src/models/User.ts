@@ -1,10 +1,7 @@
 import bcrypt from "bcryptjs";
-import log4js from "log4js";
 import mongoose from "mongoose";
 import crypto from "node:crypto";
-import { saltRounds, tokenSize } from "..";
-
-const logger = log4js.getLogger(process.pid.toString());
+import { logger, saltRounds, tokenSize } from "..";
 
 export interface User extends mongoose.Document {
     email: string;

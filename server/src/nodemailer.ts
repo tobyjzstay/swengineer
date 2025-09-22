@@ -1,8 +1,6 @@
-import log4js from "log4js";
 import nodemailer from "nodemailer";
 import { Options } from "nodemailer/lib/mailer";
-
-const logger = log4js.getLogger(process.pid.toString());
+import { logger } from ".";
 
 const transporter = nodemailer.createTransport({
     auth: {

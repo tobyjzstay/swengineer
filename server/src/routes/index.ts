@@ -1,8 +1,7 @@
 import express, { Response } from "express";
-import log4js from "log4js";
+import { logger } from "..";
 
 const router = express.Router();
-const logger = log4js.getLogger(process.pid.toString());
 
 enum SuccessMessage {
     PONG = "PONG",

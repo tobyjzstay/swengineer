@@ -5,11 +5,16 @@
         position: sticky;
     }
     .footer-start {
-        align-items: center;
+        flex-direction: column;
         display: flex;
+
+        .MuiTypography-root {
+            line-height: 1.2;
+            color: var(--mui-palette-text-primary);
+        }
     }
     .footer-end {
-        align-items: center;
+        align-items: flex-end;
         display: flex;
         flex-grow: 1;
         justify-content: flex-end;

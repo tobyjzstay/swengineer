@@ -1,4 +1,4 @@
-import { Box, Collapse, Container, Fade, Typography } from "@mui/material";
+import { Box, Container, Typography } from "@mui/material";
 import { ThemeProvider, responsiveFontSizes, useTheme } from "@mui/material/styles";
 import React from "react";
 import { Trans } from "react-i18next";
@@ -27,10 +27,8 @@ function Home() {
     });
 
     React.useLayoutEffect(() => {
-        if (!pageRef.current) return;
-        pageRef.current.focus();
-        pageRef.current.onclick = handleInteraction;
-        pageRef.current.onkeydown = handleInteraction;
+        window.addEventListener("click", handleInteraction);
+        window.addEventListener("keydown", handleInteraction);
         setTimeout(function () {
             setExpanded(false);
         }, DELAY);
@@ -41,6 +39,10 @@ function Home() {
         setTimeout(function () {
             setHeader(true);
         }, HEADER_DELAY);
+        return () => {
+            window.removeEventListener("click", handleInteraction);
+            window.removeEventListener("keydown", handleInteraction);
+        };
     }, [pageRef.current]);
 
     function handleInteraction() {
@@ -49,17 +51,15 @@ function Home() {
         setExpanded(false);
         setTimeout(function () {
             setReplace(true);
-        }, 800);
+        }, COLOUR_DELAY);
     }
 
     return (
         <>
             <Container className="home-page" ref={pageRef}>
-                <Fade in={header}>
-                    <div>
-                        <Header />
-                    </div>
-                </Fade>
+                <div className={"home-header " + (header ? "visible" : "")}>
+                    <Header />
+                </div>
                 <ThemeProvider theme={theme}>
                     <Box className="home-container">
                         <Typography // using `Typography` to handle `responsiveFontSizes`
@@ -72,30 +72,12 @@ function Home() {
                                 ) : (
                                     <>
                                         <strong>s</strong>
-                                        <Collapse
-                                            in={expanded}
-                                            orientation="horizontal"
-                                            timeout={{
-                                                enter: 250,
-                                                exit: 750,
-                                            }}
-                                        >
-                                            <Fade in={expanded}>
-                                                <span>oft</span>
-                                            </Fade>
+                                        <Collapse in={expanded} timeout={750}>
+                                            <Typography variant="h1">oft</Typography>
                                         </Collapse>
                                         <strong>w</strong>
-                                        <Collapse
-                                            in={expanded}
-                                            orientation="horizontal"
-                                            timeout={{
-                                                enter: 400,
-                                                exit: 800,
-                                            }}
-                                        >
-                                            <Fade in={expanded}>
-                                                <span>are&nbsp;</span>
-                                            </Fade>
+                                        <Collapse in={expanded} timeout={800}>
+                                            <Typography variant="h1">are&nbsp;</Typography>
                                         </Collapse>
                                         <strong>engineer</strong>
                                     </>
@@ -105,14 +87,51 @@ function Home() {
                         </Typography>
                     </Box>
                 </ThemeProvider>
-                <Fade in={header}>
-                    <div>
-                        <Footer />
-                    </div>
-                </Fade>
+                <div className={"home-footer " + (header ? "visible" : "")}>
+                    <Footer />
+                </div>
             </Container>
             <LoadingProgress />
         </>
+    );
+}
+
+function Collapse({ children, in: expanded, timeout }: { children: React.ReactNode; in: boolean; timeout: number }) {
+    const ref = React.useRef<HTMLSpanElement>(null);
+    const [width, setWidth] = React.useState(0);
+
+    React.useEffect(() => {
+        if (!ref.current) return;
+
+        const updateWidth = () => {
+            if (ref.current) setWidth(ref.current.scrollWidth);
+        };
+
+        updateWidth();
+
+        const observer = new ResizeObserver(updateWidth);
+        observer.observe(ref.current);
+
+        return () => observer.disconnect();
+    }, [children]);
+
+    return (
+        <span
+            className={`collapse ${expanded ? "" : "hidden"}`}
+            ref={ref}
+            style={
+                expanded
+                    ? {
+                          maxWidth: width,
+                      }
+                    : {
+                          maxWidth: 0,
+                          transition: `max-width ${timeout}ms cubic-bezier(0.4, 0, 0.2, 1), opacity 225ms cubic-bezier(0.4, 0, 0.2, 1)`,
+                      }
+            }
+        >
+            {children}
+        </span>
     );
 }
 

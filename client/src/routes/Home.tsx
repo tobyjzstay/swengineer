@@ -1,7 +1,7 @@
 import { Box, Container, Typography } from "@mui/material";
 import { ThemeProvider, responsiveFontSizes, useTheme } from "@mui/material/styles";
 import React from "react";
-import { Trans } from "react-i18next";
+import { Trans, useTranslation } from "react-i18next";
 import { Context } from "../App";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
@@ -10,11 +10,13 @@ import "./Home.scss";
 
 const INITIALISE_DELAY = 3500;
 const INITIALISED_DELAY = 1000;
-const SWENGINEER_DURATION = 2000;
-const SYNONYM_DURATION = 500;
+const SWENGINEER_DURATION = 15000;
+const SYNONYM_DURATION = 7500;
+const TYPING_SPEED = 120;
+const DELETING_SPEED = 80;
 
 const SWENGINEER = "swengineer";
-const SYNONYMS = ["software engineer", "coder", "developer", "programmer"];
+const SYNONYMS_I18N_KEYS = ["home.coder", "home.developer", "home.programmer", "home.softwareEngineer"];
 
 function Home() {
     const [initialise, setInitialise] = React.useState(false);
@@ -23,15 +25,22 @@ function Home() {
     const [colour, setColour] = React.useState(false);
 
     const [currentWord, setCurrentWord] = React.useState(SWENGINEER);
+    const [synonymWord, setSynonymWord] = React.useState(false);
     const [displayedText, setDisplayedText] = React.useState(currentWord);
     const [cursorIndex, setCursorIndex] = React.useState(0);
     const [deleting, setDeleting] = React.useState(false);
-    const [synonymWord, setSynonymWord] = React.useState(false);
 
-    const randomSynonyms = React.useMemo(() => {
-        const shuffled = SYNONYMS.sort(() => 0.5 - Math.random());
-        return shuffled.slice(0, shuffled.length);
-    }, []);
+    const context = React.useContext(Context);
+    const theme = responsiveFontSizes(useTheme(), {
+        factor: 5,
+    });
+    const { i18n, t } = useTranslation();
+
+    const shuffledKeys = React.useMemo(() => {
+        const keys = SYNONYMS_I18N_KEYS.filter((key) => i18n.exists(key));
+        return keys.sort(() => 0.5 - Math.random());
+    }, [t, i18n.language]);
+    const synonyms = React.useMemo(() => shuffledKeys.map((key) => t(key)), [i18n.language]);
 
     React.useEffect(() => {
         if (!initialised) return;
@@ -39,13 +48,13 @@ function Home() {
 
         if (!deleting && displayedText === currentWord)
             timeout = setTimeout(() => setDeleting(true), synonymWord ? SYNONYM_DURATION : SWENGINEER_DURATION);
-        else if (deleting && displayedText === "") {
+        else if (deleting && !displayedText.length) {
             if (synonymWord) {
                 setCurrentWord(SWENGINEER);
                 setSynonymWord(false);
             } else {
-                const nextIndex = cursorIndex % randomSynonyms.length;
-                setCurrentWord(randomSynonyms[nextIndex]);
+                const nextIndex = cursorIndex % synonyms.length;
+                setCurrentWord(synonyms[nextIndex]);
                 setCursorIndex(nextIndex + 1);
                 setSynonymWord(true);
             }
@@ -55,18 +64,12 @@ function Home() {
                 () => {
                     setDisplayedText((prev) => (deleting ? prev.slice(0, -1) : currentWord.slice(0, prev.length + 1)));
                 },
-                deleting ? 80 : 120
+                deleting ? DELETING_SPEED : TYPING_SPEED
             );
         }
 
         return () => clearTimeout(timeout);
     }, [displayedText, deleting, initialised, cursorIndex, currentWord, synonymWord]);
-
-    const context = React.useContext(Context);
-
-    const theme = responsiveFontSizes(useTheme(), {
-        factor: 5,
-    });
 
     React.useLayoutEffect(() => {
         window.addEventListener("click", handleInteraction);
@@ -111,7 +114,12 @@ function Home() {
                             <Trans i18nKey="home.greeting" />
                             <Box className={"home-swengineer " + (colour ? "colour " + context.mode[0] : "default")}>
                                 {initialised ? (
-                                    <strong className={`keyword ${isTyping ? "typing" : ""}`}>{displayedText}</strong>
+                                    <strong
+                                        className={`keyword ${isTyping ? "typing" : ""}`}
+                                        data-cursor={t("home.cursor")}
+                                    >
+                                        {displayedText}
+                                    </strong>
                                 ) : (
                                     <>
                                         <strong>s</strong>
@@ -122,7 +130,9 @@ function Home() {
                                         <Collapse in={expanded} timeout={800}>
                                             <Typography variant="h1">are&nbsp;</Typography>
                                         </Collapse>
-                                        <strong className="keyword">engineer</strong>
+                                        <strong className="keyword" data-cursor={t("home.cursor")}>
+                                            engineer
+                                        </strong>
                                     </>
                                 )}
                             </Box>
@@ -168,7 +178,6 @@ function Collapse({ children, in: expanded, timeout }: { children: React.ReactNo
                           maxWidth: width,
                       }
                     : {
-                          maxWidth: 0,
                           transition: `max-width ${timeout}ms cubic-bezier(0.4, 0, 0.2, 1), opacity 225ms cubic-bezier(0.4, 0, 0.2, 1)`,
                       }
             }

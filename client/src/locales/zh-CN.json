@@ -1,6 +1,11 @@
 {
     "home": {
+        "coder": "编码员",
+        "cursor": "｜",
         "greeting": "你好，我是<strong>Toby</strong>，<br />一名",
-        "greetingSuffix": "。"
+        "greetingSuffix": "。",
+        "developer": "软件开发人员",
+        "programmer": "程序员",
+        "softwareEngineer": "软件工程师"
     }
 }

@@ -1,7 +1,11 @@
 {
     "home": {
+        "coder": "coder",
+        "cursor": "|",
+        "developer": "developer",
         "greeting": "Hi, I'm <strong>Toby</strong>,<br />a ",
-        "greetingSuffix": "."
+        "greetingSuffix": ".",
+        "programmer": "programmer"
     },
     "login": {
         "title": "Login",

@@ -8,19 +8,61 @@ import Header from "../components/Header";
 import LoadingProgress from "../components/LoadingProgress";
 import "./Home.scss";
 
-const DELAY = 3500;
-const COLOUR_DELAY = DELAY + 800;
-const HEADER_DELAY = DELAY + 1000;
+const INITIALISE_DELAY = 3500;
+const INITIALISED_DELAY = 1000;
+const SWENGINEER_DURATION = 2000;
+const SYNONYM_DURATION = 500;
+
+const SWENGINEER = "swengineer";
+const SYNONYMS = ["software engineer", "coder", "developer", "programmer"];
 
 function Home() {
-    const [header, setHeader] = React.useState(false);
+    const [initialise, setInitialise] = React.useState(false);
+    const [initialised, setInitialised] = React.useState(false);
     const [expanded, setExpanded] = React.useState(true);
     const [colour, setColour] = React.useState(false);
-    const [replace, setReplace] = React.useState(false);
+
+    const [currentWord, setCurrentWord] = React.useState(SWENGINEER);
+    const [displayedText, setDisplayedText] = React.useState(currentWord);
+    const [cursorIndex, setCursorIndex] = React.useState(0);
+    const [deleting, setDeleting] = React.useState(false);
+    const [synonymWord, setSynonymWord] = React.useState(false);
+
+    const randomSynonyms = React.useMemo(() => {
+        const shuffled = SYNONYMS.sort(() => 0.5 - Math.random());
+        return shuffled.slice(0, shuffled.length);
+    }, []);
+
+    React.useEffect(() => {
+        if (!initialised) return;
+        let timeout: NodeJS.Timeout;
+
+        if (!deleting && displayedText === currentWord)
+            timeout = setTimeout(() => setDeleting(true), synonymWord ? SYNONYM_DURATION : SWENGINEER_DURATION);
+        else if (deleting && displayedText === "") {
+            if (synonymWord) {
+                setCurrentWord(SWENGINEER);
+                setSynonymWord(false);
+            } else {
+                const nextIndex = cursorIndex % randomSynonyms.length;
+                setCurrentWord(randomSynonyms[nextIndex]);
+                setCursorIndex(nextIndex + 1);
+                setSynonymWord(true);
+            }
+            setDeleting(false);
+        } else {
+            timeout = setTimeout(
+                () => {
+                    setDisplayedText((prev) => (deleting ? prev.slice(0, -1) : currentWord.slice(0, prev.length + 1)));
+                },
+                deleting ? 80 : 120
+            );
+        }
+
+        return () => clearTimeout(timeout);
+    }, [displayedText, deleting, initialised, cursorIndex, currentWord, synonymWord]);
 
     const context = React.useContext(Context);
-
-    const pageRef = React.useRef<HTMLDivElement>(null);
 
     const theme = responsiveFontSizes(useTheme(), {
         factor: 5,
@@ -29,35 +71,36 @@ function Home() {
     React.useLayoutEffect(() => {
         window.addEventListener("click", handleInteraction);
         window.addEventListener("keydown", handleInteraction);
-        setTimeout(function () {
-            setExpanded(false);
-        }, DELAY);
-        setTimeout(function () {
-            setColour(true);
-            setReplace(true);
-        }, COLOUR_DELAY);
-        setTimeout(function () {
-            setHeader(true);
-        }, HEADER_DELAY);
+        const timer = setTimeout(function () {
+            setInitialise(true);
+        }, INITIALISE_DELAY);
         return () => {
             window.removeEventListener("click", handleInteraction);
             window.removeEventListener("keydown", handleInteraction);
+            clearTimeout(timer);
         };
-    }, [pageRef.current]);
+    }, []);
 
-    function handleInteraction() {
-        setHeader(true);
+    React.useEffect(() => {
+        if (!initialise) return;
         setColour(true);
         setExpanded(false);
-        setTimeout(function () {
-            setReplace(true);
-        }, COLOUR_DELAY);
+        const timer = setTimeout(() => {
+            setInitialised(true);
+        }, INITIALISED_DELAY);
+        return () => clearTimeout(timer);
+    }, [initialise]);
+
+    function handleInteraction() {
+        setInitialise(true);
     }
+
+    const isTyping = deleting || displayedText.length !== currentWord.length;
 
     return (
         <>
-            <Container className="home-page" ref={pageRef}>
-                <div className={"home-header " + (header ? "visible" : "")}>
+            <Container className="home-page">
+                <div className={"home-header " + (initialised ? "visible" : "")}>
                     <Header />
                 </div>
                 <ThemeProvider theme={theme}>
@@ -67,8 +110,8 @@ function Home() {
                         >
                             <Trans i18nKey="home.greeting" />
                             <Box className={"home-swengineer " + (colour ? "colour " + context.mode[0] : "default")}>
-                                {replace ? (
-                                    <strong>swengineer</strong>
+                                {initialised ? (
+                                    <strong className={`keyword ${isTyping ? "typing" : ""}`}>{displayedText}</strong>
                                 ) : (
                                     <>
                                         <strong>s</strong>
@@ -79,7 +122,7 @@ function Home() {
                                         <Collapse in={expanded} timeout={800}>
                                             <Typography variant="h1">are&nbsp;</Typography>
                                         </Collapse>
-                                        <strong>engineer</strong>
+                                        <strong className="keyword">engineer</strong>
                                     </>
                                 )}
                             </Box>
@@ -87,7 +130,7 @@ function Home() {
                         </Typography>
                     </Box>
                 </ThemeProvider>
-                <div className={"home-footer " + (header ? "visible" : "")}>
+                <div className={"home-footer " + (initialised ? "visible" : "")}>
                     <Footer />
                 </div>
             </Container>

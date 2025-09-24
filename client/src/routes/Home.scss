@@ -27,8 +27,8 @@
     .home-swengineer {
         display: inline-flex;
         flex-direction: row;
-        padding: 0 0.05em;
-        margin: 0 -0.05em;
+        padding: 0 0.05em 0.1em 0.05em;
+        margin: 0 0 -0.1em 0;
         transition: background-color 0.5s, color 0.5s;
 
         .collapse {
@@ -43,9 +43,30 @@
 
         &.colour {
             color: var(--mui-palette-secondary-main);
+            transition: none;
 
             &.light {
                 background-color: var(--mui-palette-text-primary);
+            }
+        }
+
+        .keyword {
+            &::after {
+                content: "|";
+                display: inline-block;
+                width: 0.5ch;
+                margin-left: 2px;
+                animation: blink 1s step-end infinite;
+            }
+
+            &.typing::after {
+                animation: none;
+            }
+        }
+
+        @keyframes blink {
+            50% {
+                opacity: 0;
             }
         }
     }

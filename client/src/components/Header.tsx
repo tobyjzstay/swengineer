@@ -124,9 +124,11 @@ function Header({ logo = true }: { logo?: boolean }) {
                     </IconButton>
 
                     <>
-                        <IconButton onClick={(event) => setAnchorEl(event.currentTarget)}>
-                            <Avatar className="header-avatar" />
-                        </IconButton>
+                        {context.user[0] && (
+                            <IconButton onClick={(event) => setAnchorEl(event.currentTarget)}>
+                                <Avatar className="header-avatar" />
+                            </IconButton>
+                        )}
                         <Menu
                             anchorEl={anchorEl}
                             open={Boolean(anchorEl)}

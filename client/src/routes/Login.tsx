@@ -6,7 +6,7 @@ import { Trans } from "react-i18next";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { Context } from "../App";
 import Layout, { LayoutType } from "../components/Layout";
-import { getRedirectTo, getRequest, postRequest } from "../components/Request";
+import { API_URL, getRedirectTo, getRequest, postRequest } from "../components/Request";
 import "./Login.scss";
 
 function Login() {
@@ -22,9 +22,8 @@ function Login() {
     React.useMemo(() => {
         if (initialised) return;
         // redirect user if already logged in
-        getRequest("/auth", true).then(async (response) => {
+        getRequest("/auth", { credentials: "include" }, true).then(async (response) => {
             setLoading(false);
-            console.log(redirectTo);
             if (response.ok) navigate(redirectTo, { replace: true });
             else setInitialised(true);
         });
@@ -41,12 +40,14 @@ function Login() {
         setLoading(true);
 
         const data = new FormData(event.currentTarget);
-        const json = {
-            email: data.get("email"),
-            password: data.get("password"),
+        const init: RequestInit = {
+            body: JSON.stringify({
+                email: data.get("email"),
+                password: data.get("password"),
+            }),
         };
 
-        postRequest("/auth/login", json).then((response) => {
+        postRequest("/auth/login", init).then((response) => {
             setLoading(false);
             if (response.ok) navigate(redirectTo, { replace: true });
         });
@@ -102,7 +103,7 @@ function Login() {
                     className="login-button"
                     component={RouterLink}
                     disabled={disabled}
-                    to="/auth/google"
+                    to={API_URL + "/auth/google"}
                     variant="outlined"
                 >
                     <Trans i18nKey="login.googleLogIn" />

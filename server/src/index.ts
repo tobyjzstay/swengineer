@@ -89,6 +89,7 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
                 ...(process.env.NODE_ENV === "production" && { domain: process.env.SESSION_COOKIE_DOMAIN }),
                 httpOnly: true,
                 maxAge: 1000 * 60 * 60 * 24, // 1 day
+                sameSite: "none",
                 secure: process.env.NODE_ENV === "production",
             },
             resave: false,
@@ -106,7 +107,12 @@ if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
     app.use(passport.initialize());
     app.use(passport.session());
 
-    app.use(cors({ credentials: true }));
+    app.use(
+        cors({
+            credentials: true,
+            origin: process.env.REACT_APP_BASE_URL,
+        })
+    );
     app.use(cookieParser());
 
     app.use((request, response, next) => {

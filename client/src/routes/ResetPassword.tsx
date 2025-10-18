@@ -3,10 +3,11 @@ import { Box, Button, Grid2 as Grid, Link, TextField, Typography } from "@mui/ma
 import { t } from "i18next";
 import * as React from "react";
 import { Trans } from "react-i18next";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 import { Context } from "../App";
 import Layout, { LayoutType } from "../components/Layout";
-import { getRequest, postRequest } from "../components/Request";
+import { postRequest } from "../components/Request";
+import { useAuthRedirect } from "../hooks/useAuthRedirect";
 import "./ResetPassword.scss";
 
 function ResetPassword() {
@@ -17,16 +18,7 @@ function ResetPassword() {
     const [componentToRender, setComponentToRender] = React.useState<React.JSX.Element>();
     const disabled = !initialised && loading;
 
-    const navigate = useNavigate();
-
-    React.useMemo(() => {
-        if (initialised) return;
-        // redirect user if already logged in
-        getRequest("/auth", true).then(async (response) => {
-            if (response.ok) navigate("/", { replace: true });
-            else setInitialised(true);
-        });
-    }, [navigate]);
+    useAuthRedirect(setInitialised);
 
     React.useEffect(() => {
         // update local loading state with global loading state
@@ -39,11 +31,13 @@ function ResetPassword() {
         setLoading(true);
 
         const data = new FormData(event.currentTarget);
-        const json = {
-            email: data.get("email"),
+        const init = {
+            body: JSON.stringify({
+                email: data.get("email"),
+            }),
         };
 
-        postRequest("/auth/reset", json).then((response) => {
+        postRequest("/auth/reset", init).then((response) => {
             setLoading(false);
             if (response.ok) setComponentToRender(<ResetPasswordEmail />);
         });

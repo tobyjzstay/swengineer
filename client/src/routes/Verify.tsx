@@ -14,7 +14,8 @@ function Verify() {
 
     React.useMemo(() => {
         context.loading[1]((prev) => prev + 1);
-        getRequest(`/auth/register/${token}`, true).then((response) => {
+
+        getRequest(`/auth/register/${token}`, { credentials: "include" }, true).then((response) => {
             if (response.ok) navigate("/login", { replace: true });
             else setComponentToRender(<PageNotFound />);
             context.loading[1]((prev) => prev - 1);

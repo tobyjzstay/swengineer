@@ -23,7 +23,7 @@ function ChangePassword() {
 
     React.useMemo(() => {
         // check if token is valid
-        getRequest(`/auth/reset/${token}`, true).then((response) => {
+        getRequest(`/auth/reset/${token}`, {}, true).then((response) => {
             if (response.ok) setInitialised(true);
             else if (response.status === 401) setComponentToRender(<ResendEmail />); // token expired
             else setComponentToRender(<PageNotFound />);
@@ -41,11 +41,13 @@ function ChangePassword() {
         setLoading(true);
 
         const data = new FormData(event.currentTarget);
-        const json = {
-            password: data.get("password"),
+        const init = {
+            body: JSON.stringify({
+                password: data.get("password"),
+            }),
         };
 
-        postRequest(`/auth/reset/${token}`, json).then((response) => {
+        postRequest(`/auth/reset/${token}`, init).then((response) => {
             setLoading(false);
             if (response.ok) navigate("/login", { replace: true });
         });
@@ -91,11 +93,13 @@ function ChangePassword() {
             context.loading[1]((prev) => prev + 1);
 
             const data = new FormData(event.currentTarget);
-            const json = {
-                token: data.get("token"),
+            const init: RequestInit = {
+                body: JSON.stringify({
+                    token: data.get("token"),
+                }),
             };
 
-            postRequest("/auth/reset", json).then((response) => {
+            postRequest("/auth/reset", init).then((response) => {
                 context.loading[1]((prev) => prev - 1);
                 setLoading(false);
                 if (response.ok) setComponentToRender(<ResetPasswordEmail />);

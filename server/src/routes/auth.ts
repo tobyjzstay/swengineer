@@ -57,7 +57,7 @@ router.get("/google/redirect", passport.authenticate("google"), (request, respon
     const token = generateJwt(user);
 
     // responding to client request success message and access token
-    response.cookie("token", token).redirect(redirect || "/");
+    response.cookie("token", token).redirect(`${process.env.REACT_APP_BASE_URL}/${redirect || ""}`);
 });
 
 router.post("/register", async (request, response) => {
@@ -151,6 +151,7 @@ router.post("/login", async (request, response) => {
         response
             .cookie("token", token, {
                 httpOnly: true,
+                sameSite: "none",
                 secure: process.env.NODE_ENV === "production",
             })
             .status(200)

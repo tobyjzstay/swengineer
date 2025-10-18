@@ -17,9 +17,9 @@ import {
 } from "@mui/material";
 import { t } from "i18next";
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import Layout, { LayoutType } from "../components/Layout";
 import { getRequest, postRequest, showResponse } from "../components/Request";
+import { useAuthRedirect } from "../hooks/useAuthRedirect";
 import "./Notepad.scss";
 
 interface Notepad {
@@ -37,20 +37,14 @@ function Notepad() {
     const [notepadIndex, setNotepadIndex] = React.useState(-1);
     const [edit, setEdit] = React.useState(false);
 
-    const navigate = useNavigate();
-    const forceUpdate = useForceUpdate();
+    const pathname = window.location.pathname;
+    useAuthRedirect(setInitialised, "/login?redirect=" + pathname);
 
-    React.useMemo(() => {
-        const pathname = window.location.pathname;
-        getRequest(pathname).then(async (response) => {
-            if (!response.ok) navigate("/login?redirect=" + pathname, { replace: true });
-            else setInitialised(true);
-        });
-    }, [navigate]);
+    const forceUpdate = useForceUpdate();
 
     React.useEffect(() => {
         if (!refresh) return;
-        getRequest("/notepad").then(async (response) => {
+        getRequest("/notepad", { credentials: "include" }).then(async (response) => {
             const json = await response.json();
             const { notepads } = json || {};
             if (!notepads) setNotepads([]);
@@ -75,7 +69,7 @@ function Notepad() {
     }, [notepads, notepadIndex]);
 
     const handleCreate = () => {
-        getRequest("/notepad/create").then((response) => {
+        getRequest("/notepad/create", { credentials: "include" }).then((response) => {
             const success = response.status === 201;
             if (success) setRefresh(true);
             showResponse(response);
@@ -84,11 +78,16 @@ function Notepad() {
 
     const handleDelete = (e: React.MouseEvent<HTMLSpanElement, MouseEvent>, index: number) => {
         e.stopPropagation();
+
         const notepad = notepads[index];
-        const json = {
-            id: notepad._id,
+        const init: RequestInit = {
+            body: JSON.stringify({
+                id: notepad._id,
+            }),
+            credentials: "include",
         };
-        postRequest("/notepad/delete", json).then((response) => {
+
+        postRequest("/notepad/delete", init).then((response) => {
             const success = response.status === 200;
             if (success) notepads.splice(index, 1);
             showResponse(response);
@@ -102,13 +101,18 @@ function Notepad() {
 
     const handleEdit = () => {
         if (!edit) return;
+
         const notepad = notepads[notepadIndex];
-        const json = {
-            id: notepad._id,
-            title: notepad.title,
-            content: notepad.content,
+        const init: RequestInit = {
+            body: JSON.stringify({
+                id: notepad._id,
+                title: notepad.title,
+                content: notepad.content,
+            }),
+            credentials: "include",
         };
-        postRequest("/notepad/edit", json).then(async (response) => {
+
+        postRequest("/notepad/edit", init).then(async (response) => {
             const json = await response.json();
             const { modified } = json;
             if (modified) notepads[notepadIndex].updatedAt = new Date(modified);

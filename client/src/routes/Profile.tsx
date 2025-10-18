@@ -4,7 +4,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Context } from "../App";
 import Layout, { LayoutType } from "../components/Layout";
-import { getRequest, postRequest } from "../components/Request";
+import { postRequest } from "../components/Request";
+import { useAuthRedirect } from "../hooks/useAuthRedirect";
 import "./Profile.scss";
 
 function Profile() {
@@ -15,15 +16,10 @@ function Profile() {
     const disabled = !initialised && loading;
     const [value, setValue] = React.useState("");
 
-    const navigate = useNavigate();
+    const pathname = window.location.pathname;
+    useAuthRedirect(setInitialised, "/login?redirect=" + pathname);
 
-    React.useMemo(() => {
-        const pathname = window.location.pathname;
-        getRequest(pathname).then(async (response) => {
-            if (!response.ok) navigate("/login?redirect=" + pathname, { replace: true });
-            else setInitialised(true);
-        });
-    }, [navigate]);
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         // update local loading state with global loading state
@@ -35,10 +31,10 @@ function Profile() {
         event.preventDefault();
         setLoading(true);
 
-        postRequest("/auth/delete", {}).then(async (response) => {
+        postRequest("/auth/delete", { credentials: "include" }).then(async (response) => {
             setLoading(false);
             if (response.ok) {
-                postRequest("/auth/logout", {}).then(() => {
+                postRequest("/auth/logout", { credentials: "include" }).then(() => {
                     navigate("/");
                 });
             }

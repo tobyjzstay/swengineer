@@ -52,8 +52,12 @@ function Header({ logo = true }: { logo?: boolean }) {
 
     React.useEffect(() => {
         const fetchUser = async () => {
+            const init: RequestInit = {
+                credentials: "include",
+            };
+
             try {
-                const response = await getRequest("/auth", true);
+                const response = await getRequest("/auth", init, true);
                 const json = await response.json();
                 const { user } = json;
                 context.user[1](user);
@@ -165,7 +169,7 @@ function Header({ logo = true }: { logo?: boolean }) {
                                     <MenuItem
                                         key="logout"
                                         onClick={() => {
-                                            postRequest("/auth/logout", {}).then((response) => {
+                                            postRequest("/auth/logout", { credentials: "include" }).then((response) => {
                                                 if (response.ok) {
                                                     navigate("/");
                                                     document.cookie =

@@ -9,10 +9,10 @@ declare module "notistack" {
     }
 }
 
-const API_URL = process.env.REACT_APP_API_URL || "";
+export const API_URL = process.env.REACT_APP_API_URL || "";
 const EMPTY_JSON = JSON.stringify({});
 
-export async function getRequest(input: RequestInfo | URL, quiet?: boolean) {
+export async function getRequest(input: RequestInfo | URL, init: RequestInit, quiet?: boolean) {
     let response: Response;
     try {
         response = await fetch(API_URL + input, {
@@ -21,6 +21,7 @@ export async function getRequest(input: RequestInfo | URL, quiet?: boolean) {
                 "Content-Type": "application/json",
                 "X-App-Version": version,
             },
+            ...init,
         });
     } catch (error) {
         console.error(error);
@@ -39,7 +40,7 @@ export async function getRequest(input: RequestInfo | URL, quiet?: boolean) {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function postRequest(input: RequestInfo | URL, body: any, quiet?: boolean) {
+export async function postRequest(input: RequestInfo | URL, init: RequestInit, quiet?: boolean) {
     let response: Response;
     try {
         response = await fetch(API_URL + input, {
@@ -48,7 +49,7 @@ export async function postRequest(input: RequestInfo | URL, body: any, quiet?: b
                 "Content-Type": "application/json",
                 "X-App-Version": version,
             },
-            body: JSON.stringify(body),
+            ...init,
         });
     } catch (error) {
         console.error(error);
@@ -57,6 +58,7 @@ export async function postRequest(input: RequestInfo | URL, body: any, quiet?: b
             statusText: "Internal Server Error",
             headers: {
                 "Content-Type": "application/json",
+                "X-App-Version": version,
             },
         });
     }

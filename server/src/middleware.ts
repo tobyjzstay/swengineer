@@ -19,7 +19,14 @@ export enum ServerErrorMessage {
 }
 
 export const auth = async (request: Request, response: Response, next: NextFunction) => {
+    console.log("Incoming cookies:", request.cookies);
+
     const token = request.cookies.token;
+    console.log("Extracted token:", token);
+
+    response.setHeader("Cache-Control", "no-store");
+    response.setHeader("Expires", "0");
+    response.setHeader("Pragma", "no-cache");
 
     if (!token) {
         response.status(401).json({ message: ClientErrorMessage.INVALID_TOKEN });

@@ -12,7 +12,8 @@ function PageNotFound() {
 
     React.useMemo(() => {
         context.loading[1]((prev) => prev + 1);
-        getRequest(window.location.pathname).then(async (response) => {
+
+        getRequest(window.location.pathname, {}).then(async (response) => {
             context.loading[1]((prev) => prev - 1);
         });
     }, []);

@@ -30,7 +30,7 @@ jobs:
                   export REACT_APP_VERSION="${TAG#v}-gcloud+${COMMIT_SHA}"
                   echo "version=$REACT_APP_VERSION" >> $GITHUB_OUTPUT
 
-                  npm install -g pnpm
+                  npm install -g pnpm@10.33.0
                   pnpm install --frozen-lockfile
                   pnpm build
 

@@ -8,13 +8,13 @@
 -   [pnpm](https://pnpm.io/)
 
 ```bash
-npm install -g pnpm
+npm install -g pnpm@10.33.0
 ```
 
 ## Installation
 
 ```bash
-pnpm install
+pnpm install --frozen-lockfile
 ```
 
 ## Build

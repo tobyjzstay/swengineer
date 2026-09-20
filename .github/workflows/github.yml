@@ -26,7 +26,7 @@ jobs:
                   COMMIT_SHA="$(git rev-parse --short HEAD)"
                   export REACT_APP_VERSION="${TAG#v}-github+${COMMIT_SHA}"
 
-                  npm install -g pnpm
+                  npm install -g pnpm@10.33.0
                   pnpm install --frozen-lockfile
                   pnpm build
 

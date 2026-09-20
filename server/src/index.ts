@@ -47,11 +47,12 @@ const port = Number(process.env.PORT) || 0;
 const saltRounds = Number(process.env.SALT_ROUNDS) || 10;
 const tokenSize = Number(process.env.TOKEN_SIZE) || 16;
 const version = process.env.REACT_APP_VERSION || `0.0.0-${process.env.NODE_ENV}`;
+const workerCount = Number(process.env.WORKER_COUNT) || os.cpus().length;
 
 export const app = express();
 
 if (cluster.isPrimary && process.env.NODE_ENV !== "test") {
-    for (let i = 0; i < os.cpus().length; i++) {
+    for (let i = 0; i < workerCount; i++) {
         cluster.fork();
     }
 

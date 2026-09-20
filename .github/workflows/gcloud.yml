@@ -187,13 +187,14 @@ jobs:
                   SMTP_SENDER: ${{ vars.SMTP_SENDER }}
                   SMTP_USERNAME: ${{ vars.SMTP_USERNAME }}
                   TOKEN_SIZE: ${{ vars.TOKEN_SIZE }}
+                  WORKER_COUNT: ${{ vars.WORKER_COUNT }}
               run: |
                   set -euo pipefail
 
                   required_keys="GOOGLE_CLIENT_ID NODE_ENV REACT_APP_API_URL \
                                  REACT_APP_BASE_URL REACT_APP_GTM_ID SESSION_COOKIE_DOMAIN \
                                  SMTP_HOST SMTP_PORT SMTP_USERNAME"
-                  optional_keys="LOG_LEVEL REACT_APP_VERSION SALT_ROUNDS SMTP_SENDER TOKEN_SIZE"
+                  optional_keys="LOG_LEVEL REACT_APP_VERSION SALT_ROUNDS SMTP_SENDER TOKEN_SIZE WORKER_COUNT"
 
                   emit() {
                     printf "%s: '%s'\n" "$1" "$(printf '%s' "$2" | sed "s/'/''/g")" >> env.yaml

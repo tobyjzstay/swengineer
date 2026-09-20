@@ -137,6 +137,7 @@ jobs:
                     -e SMTP_SENDER='${{ vars.SMTP_SENDER }}' \
                     -e SMTP_USERNAME="${{ vars.SMTP_USERNAME }}" \
                     -e TOKEN_SIZE=${{ vars.TOKEN_SIZE }} \
+                    -e WORKER_COUNT=${{ vars.WORKER_COUNT }} \
                     $IMAGE_SHA
                   docker container prune -f
                   docker images "$IMAGE_REPO" --format "{{.Repository}}:{{.Tag}}" |

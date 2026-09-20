@@ -122,6 +122,7 @@ jobs:
                     -e NODE_ENV="${{ vars.NODE_ENV }}" \
                     -e PORT=${{ vars.PORT }} \
                     -e REACT_APP_API_URL="${{ vars.REACT_APP_API_URL }}" \
+                    -e REACT_APP_BASE_URL="${{ vars.REACT_APP_BASE_URL }}" \
                     -e REACT_APP_GTM_ID="${{ vars.REACT_APP_GTM_ID }}" \
                     -e REACT_APP_VERSION="${{ needs.build-client.outputs.version }}" \
                     -e SALT_ROUNDS=${{ vars.SALT_ROUNDS }} \
